@@ -471,3 +471,117 @@ builder.Services.AddHttpClient<IExternalFoodCatalogProvider, UsdaFoodDataProvide
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthify-Platform/1.0");
 });
 
+// ---------------------------------------------------------------------------------------------
+// 11. Hosted services: the event storming policies that the passage of time triggers.
+// ---------------------------------------------------------------------------------------------
+// Policy "When Expiration Date Reached" - CareRelationship, Subflow 2.1
+builder.Services.AddHostedService<InvitationExpiryHostedService>();
+
+// Policy "When Scheduled Import Due" - FoodCatalog, Subflow 6.1
+builder.Services.AddHostedService<CatalogImportHostedService>();
+
+// Policy "When N Days Without Diary Entry" - MonitoringAdherence, Subflow 5.9
+builder.Services.AddHostedService<LoggingGapDetectionHostedService>();
+
+// Policy "When Consistency Alert Sustained Three Weeks" - MonitoringAdherence, Subflow 5.8
+builder.Services.AddHostedService<ConsistencyEscalationHostedService>();
+
+// Policy "When Scheduled Date Passed Without Visit" - MonitoringAdherence, Subflow 5.10
+builder.Services.AddHostedService<MissedFollowUpHostedService>();
+
+// Policy "When The Week Ends" (IA-2) - MonitoringAdherence: weekly summaries, Ai:Features:WeeklySummary:Cron
+builder.Services.AddHostedService<WeeklySummaryHostedService>();
+
+// Retention of ai_generations (IA-0, §12-#14) - Shared AI module
+builder.Services.AddHostedService<AiGenerationPurgeHostedService>();
+
+// Policy "When A Photo Analysis Expires" (IN-7) - IntakeBodyResponse: the 24-hour meal photo analyses
+builder.Services.AddHostedService<MealPhotoAnalysisPurgeHostedService>();
+
+// NC-10: the AI plan proposals queued by the sustained deviation policy, and the scheduled rechecks.
+builder.Services.AddHostedService<PlanProposalGenerationHostedService>();
+builder.Services.AddHostedService<ReviewItemRecheckHostedService>();
+// NC-10: the queue is in memory; at start-up and every N minutes the lost proposals are queued again.
+builder.Services.AddHostedService<PlanProposalRecoveryHostedService>();
+
+var app = builder.Build();
+
+// ---------------------------------------------------------------------------------------------
+// 12a. One-shot maintenance, only when asked for on the command line (IN-3):
+//      dotnet Healthify.Platform.dll recalculate-weight-trends
+//      It does not migrate and does not serve: it refuses to run while migrations are pending, runs
+//      Recalculate Weight Trend once per patient with readings, and exits.
+// ---------------------------------------------------------------------------------------------
+if (args.Contains(WeightTrendRecalculationJob.CommandLineVerb))
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var pending = (await context.Database.GetPendingMigrationsAsync()).ToList();
+    if (pending.Count > 0)
+    {
+        app.Logger.LogError("Pending migrations ({Migrations}); start the API once to apply them first",
+            string.Join(", ", pending));
+        Environment.ExitCode = 1;
+        return;
+    }
+
+    var report = await scope.ServiceProvider.GetRequiredService<WeightTrendRecalculationJob>().RunAsync();
+    app.Logger.LogInformation("Weight trends recalculated: {Recalculated} of {Patients}",
+        report.Recalculated, report.Patients);
+    Environment.ExitCode = report.FailedPatientIds.Count == 0 ? 0 : 1;
+    return;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 12. Migrations and reference data seeding
+// ---------------------------------------------------------------------------------------------
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+
+    // Idempotent and gated behind Seeder:Enabled. It writes through Cache Food Locally, so seeded
+    // rows enter the catalog by the same single door as imported ones.
+    var referenceFoodSeeder = scope.ServiceProvider.GetRequiredService<ReferenceFoodSeeder>();
+    await referenceFoodSeeder.SeedAsync();
+}
+
+// ---------------------------------------------------------------------------------------------
+// 13. HTTP pipeline. The order below is significant.
+// ---------------------------------------------------------------------------------------------
+string[] supportedCultures = ["en", "en-US", "es", "es-PE"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
+// IAM-3: last provider, so query string, cookie and Accept-Language keep precedence; it answers only when
+// the request carries no Accept-Language, from the lang claim of the session token.
+localizationOptions.RequestCultureProviders.Add(new LanguageClaimRequestCultureProvider());
+
+app.UseExceptionHandler();
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Healthify Platform API v1");
+    options.DocumentTitle = "Healthify Platform API";
+});
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
+app.UseCors(frontendCorsPolicy); // before authentication, so preflight and Authorization survive
+app.UseAuthentication();
+// IAM-3: after authentication, so the lang claim is readable; before authorization, so the 401/403
+// problem details and every controller already run in the request culture.
+app.UseRequestLocalization(localizationOptions);
+// D-RL: after authentication (user partitions) and localization (429 texts); before authorization, so an anonymous
+// flood is counted by IP before the 401.
+app.UseRateLimiter();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
+/// <summary>
+///     Assembly marker used by the Cortex.Mediator scanner. Declared explicitly so that the
+///     top-level program class is reachable from the registration call above.
+/// </summary>
+public partial class Program;
