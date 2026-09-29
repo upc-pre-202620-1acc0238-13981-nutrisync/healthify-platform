@@ -289,3 +289,185 @@ builder.Services.AddCortexMediator(
     [typeof(Program)],
     options => options.AddDefaultBehaviors());
 
+// ---------------------------------------------------------------------------------------------
+// 10. Dependency injection, grouped by bounded context.
+//     Order inside each block: repositories -> infrastructure domain services ->
+//     command/query services -> ACL facade.
+// ---------------------------------------------------------------------------------------------
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Shared AI module (IA-0). Technical only: no business rule and no reference to any context. Each AI function
+// lives in the context that owns its data; the consent policy is implemented by CareRelationship (IA-1).
+// Off unless Ai:Enabled is true (default in code). Gemini is the only provider; tests use
+// FakeLanguageModelClient and never reach Google.
+builder.Services.AddSingleton<IAiSettings, ConfiguredAiSettings>();
+builder.Services.AddSingleton<IPromptCatalog>(PromptCatalog.FromEmbeddedResources(typeof(Program).Assembly));
+builder.Services.AddScoped<IAiGenerationLog, EfAiGenerationLog>();
+builder.Services.AddScoped<IAiGenerationPipeline, AiGenerationPipeline>();
+builder.Services.AddSingleton<IGoogleAccessTokenProvider, GoogleApplicationDefaultTokenProvider>();
+// Each attempt is bounded by Ai:TimeoutSeconds inside the client, which also owns the single retry (5xx or
+// timeout only); the HttpClient's own timeout is only an outer safety net.
+builder.Services.AddHttpClient<ILanguageModelClient, GeminiLanguageModelClient>("Gemini", client =>
+{
+    client.Timeout = TimeSpan.FromMinutes(5);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthify-Platform/1.0");
+});
+
+// Iam Bounded Context
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
+builder.Services.AddScoped<IHashingService, BCryptHashingService>();
+builder.Services.AddScoped<ITokenService, JwtTokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<ISignInLockoutPolicy, ConfiguredSignInLockoutPolicy>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserSessionCommandService, UserSessionCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<IUserSessionQueryService, UserSessionQueryService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+// CareRelationship Bounded Context
+builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
+builder.Services.AddScoped<ICareLinkRepository, CareLinkRepository>();
+builder.Services.AddScoped<IAiPreferencesRepository, AiPreferencesRepository>();
+builder.Services.AddScoped<IInvitationCommandService, InvitationCommandService>();
+builder.Services.AddScoped<ICareLinkCommandService, CareLinkCommandService>();
+builder.Services.AddScoped<IAiPreferencesCommandService, AiPreferencesCommandService>();
+builder.Services.AddScoped<IInvitationQueryService, InvitationQueryService>();
+builder.Services.AddScoped<ICareLinkQueryService, CareLinkQueryService>();
+builder.Services.AddScoped<IAiPreferencesQueryService, AiPreferencesQueryService>();
+builder.Services.AddScoped<ICareRelationshipContextFacade, CareRelationshipContextFacade>();
+// IA-1: consent lives here, so this context answers the AI pipeline's consent question (port in Shared).
+builder.Services.AddScoped<IAiConsentPolicy, CareRelationshipAiConsentPolicy>();
+
+// NutritionalCare Bounded Context
+builder.Services.AddScoped<INutritionalAssessmentRepository, NutritionalAssessmentRepository>();
+builder.Services.AddScoped<INutritionalDiagnosisRepository, NutritionalDiagnosisRepository>();
+builder.Services.AddScoped<INutritionPlanRepository, NutritionPlanRepository>();
+builder.Services.AddScoped<IReviewItemRepository, ReviewItemRepository>();
+builder.Services.AddScoped<IPatientBaselineRepository, PatientBaselineRepository>();
+builder.Services.AddScoped<IConsultationRepository, ConsultationRepository>();
+builder.Services.AddScoped<IBmrCalculator, BmrCalculator>();
+builder.Services.AddScoped<IActivityFactorProvider, ConfiguredActivityFactorProvider>();
+builder.Services.AddScoped<IDefaultTargetParametersPolicy, DefaultTargetParametersPolicy>();
+builder.Services.AddScoped<IDefaultGuidelinesProvider, ConfiguredDefaultGuidelinesProvider>();
+builder.Services.AddScoped<ICalorieFloorPolicy, ConfiguredCalorieFloorPolicy>();
+builder.Services.AddSingleton<IPatientMessageLexicon>(EmbeddedPatientMessageLexicon.Instance);
+builder.Services.TryAddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IClinicalDateProvider, ClinicalTimeZoneDateProvider>();
+builder.Services.AddScoped<INutritionalAssessmentCommandService, NutritionalAssessmentCommandService>();
+builder.Services.AddScoped<INutritionalDiagnosisCommandService, NutritionalDiagnosisCommandService>();
+builder.Services.AddScoped<INutritionPlanCommandService, NutritionPlanCommandService>();
+builder.Services.AddScoped<IReviewItemCommandService, ReviewItemCommandService>();
+builder.Services.AddScoped<IPatientBaselineCommandService, PatientBaselineCommandService>();
+builder.Services.AddScoped<IConsultationCommandService, ConsultationCommandService>();
+builder.Services.AddScoped<IConsultationAiCommandService, ConsultationAiCommandService>();
+builder.Services.AddScoped<IPlanAdjustmentProposer, PlanAdjustmentProposer>();
+builder.Services.AddScoped<PlanAdjustmentInputReader>();
+builder.Services.AddSingleton<IPlanProposalGenerationQueue, InMemoryPlanProposalGenerationQueue>();
+builder.Services.AddScoped<IPlanProposalCommandService, PlanProposalCommandService>();
+builder.Services.AddScoped<INutritionalAssessmentQueryService, NutritionalAssessmentQueryService>();
+builder.Services.AddScoped<INutritionalDiagnosisQueryService, NutritionalDiagnosisQueryService>();
+builder.Services.AddScoped<INutritionPlanQueryService, NutritionPlanQueryService>();
+builder.Services.AddScoped<IReviewItemQueryService, ReviewItemQueryService>();
+builder.Services.AddScoped<IPatientBaselineQueryService, PatientBaselineQueryService>();
+builder.Services.AddScoped<IConsultationQueryService, ConsultationQueryService>();
+builder.Services.AddScoped<INutritionalCareContextFacade, NutritionalCareContextFacade>();
+
+// FoodCatalog Bounded Context
+builder.Services.AddScoped<IReferenceFoodRepository, ReferenceFoodRepository>();
+builder.Services.AddScoped<IReferenceFoodCommandService, ReferenceFoodCommandService>();
+builder.Services.AddScoped<IReferenceFoodQueryService, ReferenceFoodQueryService>();
+builder.Services.AddScoped<IFoodCatalogContextFacade, FoodCatalogContextFacade>();
+builder.Services.AddScoped<ReferenceFoodSeeder>();
+
+// IntakeBodyResponse Bounded Context
+builder.Services.AddScoped<IActiveTargetsCacheRepository, ActiveTargetsCacheRepository>();
+builder.Services.AddScoped<IDiaryEntryRepository, DiaryEntryRepository>();
+builder.Services.AddScoped<ISelfWeighInRepository, SelfWeighInRepository>();
+builder.Services.AddScoped<IWeightTrendRepository, WeightTrendRepository>();
+builder.Services.AddScoped<IMealPhotoAnalysisRepository, MealPhotoAnalysisRepository>();
+builder.Services.AddScoped<ISelfWeighInProtocolProvider, ConfiguredSelfWeighInProtocolProvider>();
+// IN-7: the metadata of a meal photo is removed in memory before it reaches the AI.
+builder.Services.AddSingleton<IPhotoMetadataStripper, PhotoMetadataStripper>();
+// IA-3: the ingredient -> restriction map and the two-hour cache of meal ideas.
+builder.Services.AddSingleton<IRestrictionLexicon>(EmbeddedRestrictionLexicon.Instance);
+builder.Services.AddSingleton<IMealIdeasCache, InMemoryMealIdeasCache>();
+// IN-7: the catalog names of the photo recognition prompt, one hour in memory.
+builder.Services.AddSingleton<ICatalogNameHintsCache, InMemoryCatalogNameHintsCache>();
+builder.Services.AddScoped<IActiveTargetsCacheCommandService, ActiveTargetsCacheCommandService>();
+builder.Services.AddScoped<IDiaryEntryCommandService, DiaryEntryCommandService>();
+builder.Services.AddScoped<ISelfWeighInCommandService, SelfWeighInCommandService>();
+builder.Services.AddScoped<IWeightTrendCommandService, WeightTrendCommandService>();
+builder.Services.AddScoped<IMealIdeasCommandService, MealIdeasCommandService>();
+builder.Services.AddScoped<IMealPhotoAnalysisCommandService, MealPhotoAnalysisCommandService>();
+builder.Services.AddScoped<IActiveTargetsCacheQueryService, ActiveTargetsCacheQueryService>();
+builder.Services.AddScoped<IDiaryEntryQueryService, DiaryEntryQueryService>();
+builder.Services.AddScoped<ISelfWeighInQueryService, SelfWeighInQueryService>();
+builder.Services.AddScoped<IWeightTrendQueryService, WeightTrendQueryService>();
+builder.Services.AddScoped<IIntakeContextFacade, IntakeContextFacade>();
+builder.Services.AddScoped<WeightTrendRecalculationJob>();
+
+// MonitoringAdherence Bounded Context
+builder.Services.AddScoped<IEvaluationWindowRepository, EvaluationWindowRepository>();
+builder.Services.AddScoped<IDeviationRepository, DeviationRepository>();
+builder.Services.AddScoped<IConsistencyIndexRepository, ConsistencyIndexRepository>();
+builder.Services.AddScoped<IReferralRepository, ReferralRepository>();
+builder.Services.AddScoped<IScheduledFollowUpRepository, ScheduledFollowUpRepository>();
+builder.Services.AddScoped<IPreVisitCheckInRepository, PreVisitCheckInRepository>();
+builder.Services.AddScoped<IWeeklySummaryRepository, WeeklySummaryRepository>();
+builder.Services.AddSingleton<IFollowUpCalendar, ClinicalTimeZoneFollowUpCalendar>();
+// IA-2/IA-4/IA-5: the words a generated text must not contain, and the in-memory cache of IA-4 and IA-5.
+builder.Services.AddSingleton<IAiLanguageLexicon>(EmbeddedAiLanguageLexicon.Instance);
+builder.Services.AddSingleton<IMonitoringAiCache, InMemoryMonitoringAiCache>();
+builder.Services.AddScoped<MonitoringFactsReader>();
+builder.Services.AddScoped<IEvaluationWindowCommandService, EvaluationWindowCommandService>();
+builder.Services.AddScoped<IDeviationCommandService, DeviationCommandService>();
+builder.Services.AddScoped<IConsistencyIndexCommandService, ConsistencyIndexCommandService>();
+builder.Services.AddScoped<IReferralCommandService, ReferralCommandService>();
+builder.Services.AddScoped<IScheduledFollowUpCommandService, ScheduledFollowUpCommandService>();
+builder.Services.AddScoped<IPreVisitCheckInCommandService, PreVisitCheckInCommandService>();
+builder.Services.AddScoped<IWeeklySummaryCommandService, WeeklySummaryCommandService>();
+builder.Services.AddScoped<ISuggestedQuestionsCommandService, SuggestedQuestionsCommandService>();
+builder.Services.AddScoped<IMonitoringSummaryCommandService, MonitoringSummaryCommandService>();
+builder.Services.AddScoped<IMonitoringAiContentCommandService, MonitoringAiContentCommandService>();
+builder.Services.AddScoped<IEvaluationWindowQueryService, EvaluationWindowQueryService>();
+builder.Services.AddScoped<IDeviationQueryService, DeviationQueryService>();
+builder.Services.AddScoped<IConsistencyIndexQueryService, ConsistencyIndexQueryService>();
+builder.Services.AddScoped<IReferralQueryService, ReferralQueryService>();
+builder.Services.AddScoped<IScheduledFollowUpQueryService, ScheduledFollowUpQueryService>();
+builder.Services.AddScoped<IPreVisitCheckInQueryService, PreVisitCheckInQueryService>();
+builder.Services.AddScoped<IWeeklySummaryQueryService, WeeklySummaryQueryService>();
+builder.Services.AddScoped<IMonitoringContextFacade, MonitoringContextFacade>();
+
+// ReadModels (composition layer, ACL facades only)
+// Not a bounded context: no repository, no command service, no error enum and no table. The
+// composers reach nothing but the ACL contracts of the five contexts they read.
+builder.Services.AddScoped<PatientRecordComposer>();
+builder.Services.AddScoped<PatientMonitoringPanelComposer>();
+builder.Services.AddScoped<PatientSummaryComposer>();
+builder.Services.AddScoped<PatientRosterComposer>();
+builder.Services.AddScoped<PatientConsultationsComposer>();
+
+// Typed HttpClients (FoodCatalog only). Both implementations are registered against the same
+// contract on purpose: Import Catalog Snapshot consults every provider it is handed, so adding a
+// third one is a registration and nothing else.
+// Each registration is given an explicit name. Without one, the name is derived from the service
+// type, both providers end up sharing a single configured client, and the second base address
+// silently wins for both.
+builder.Services.AddHttpClient<IExternalFoodCatalogProvider, OpenFoodFactsProvider>("OpenFoodFacts",
+    client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["OpenFoodFacts:BaseUrl"]
+                                 ?? "https://world.openfoodfacts.org");
+    client.Timeout = externalProviderTimeout;
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthify-Platform/1.0");
+});
+builder.Services.AddHttpClient<IExternalFoodCatalogProvider, UsdaFoodDataProvider>("Usda", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Usda:BaseUrl"]
+                                 ?? "https://api.nal.usda.gov/fdc/v1");
+    client.Timeout = externalProviderTimeout;
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthify-Platform/1.0");
+});
+
