@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+    <resheader name="version"><value>2.0</value></resheader>
+    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>Not found</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Invalid request</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflict</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>Unauthorized</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Not allowed</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>Request cannot be processed</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Unexpected server error</value>
+    </data>
+    <data name="ActiveCareLinkRequired" xml:space="preserve">
+        <value>An active care link with this patient is required.</value>
+    </data>
+    <data name="PractitionerOnly" xml:space="preserve">
+        <value>Only the practitioner responsible for this patient can do this.</value>
+    </data>
+    <data name="HabitsHistoryAndActivityRequired" xml:space="preserve">
+        <value>Habits, medical history and physical activity are all required.</value>
+    </data>
+    <data name="AssessmentNotFound" xml:space="preserve">
+        <value>No assessment was found.</value>
+    </data>
+    <data name="AssessmentAlreadyClosed" xml:space="preserve">
+        <value>This assessment is closed and cannot be changed. Record a new one that corrects it.</value>
+    </data>
+    <data name="MeasurementProtocolRequired" xml:space="preserve">
+        <value>The measurement protocol must be recorded with the reading.</value>
+    </data>
+    <data name="ClosedAssessmentRequired" xml:space="preserve">
+        <value>The assessment must be closed before a diagnosis can be issued.</value>
+    </data>
+    <data name="ClinicalRationaleRequired" xml:space="preserve">
+        <value>A clinical rationale is required.</value>
+    </data>
+    <data name="PatientAlreadyHasActiveDiagnosis" xml:space="preserve">
+        <value>This patient already has an active diagnosis.</value>
+    </data>
+    <data name="DiagnosisNotFound" xml:space="preserve">
+        <value>No diagnosis was found.</value>
+    </data>
+    <data name="ActiveDiagnosisRequired" xml:space="preserve">
+        <value>An active diagnosis is required before targets can be proposed.</value>
+    </data>
+    <data name="IncompleteCalculationBasis" xml:space="preserve">
+        <value>The calculation basis is incomplete or inconsistent.</value>
+    </data>
+    <data name="UnsupportedEquation" xml:space="preserve">
+        <value>That equation is not supported. Choose MifflinStJeor, HarrisBenedict, FaoWhoUnu or KatchMcArdle.</value>
+    </data>
+    <data name="InvalidActivityFactor" xml:space="preserve">
+        <value>The activity factor must be between 1.0 and 2.5.</value>
+    </data>
+    <data name="InvalidDeficitStrategy" xml:space="preserve">
+        <value>The deficit strategy is not valid, or it leaves no energy at all.</value>
+    </data>
+    <data name="InvalidReferenceWeight" xml:space="preserve">
+        <value>The reference weight is not valid.</value>
+    </data>
+    <data name="PreviousProposalRequired" xml:space="preserve">
+        <value>The targets must be proposed and prescribed before this step.</value>
+    </data>
+    <data name="OverrideReasonRequired" xml:space="preserve">
+        <value>Overriding the calculated targets requires a reason.</value>
+    </data>
+    <data name="PlanNotFound" xml:space="preserve">
+        <value>No nutrition plan was found.</value>
+    </data>
+    <data name="PlanRequiresDiagnosis" xml:space="preserve">
+        <value>A plan cannot exist without the diagnosis that grounds it.</value>
+    </data>
+    <data name="PatientAlreadyHasActivePlanVersion" xml:space="preserve">
+        <value>This patient already has an active plan version.</value>
+    </data>
+    <data name="CalculationBasisRequired" xml:space="preserve">
+        <value>A plan is never published without its calculation basis recorded.</value>
+    </data>
+    <data name="ChangeReasonRequired" xml:space="preserve">
+        <value>Every new plan version requires a change reason.</value>
+    </data>
+    <data name="PlanVersionAlreadySuperseded" xml:space="preserve">
+        <value>This plan version was already superseded by a newer one.</value>
+    </data>
+    <data name="PlanNotInExpectedState" xml:space="preserve">
+        <value>The plan is not at the step this action expects.</value>
+    </data>
+    <data name="ClinicalMeasurementRequired" xml:space="preserve">
+        <value>A clinical measurement is needed before the targets can be calculated.</value>
+    </data>
+    <data name="ReviewItemNotFound" xml:space="preserve">
+        <value>No open review item was found.</value>
+    </data>
+    <data name="ReviewItemAlreadyOpenForSignalType" xml:space="preserve">
+        <value>There is already an open review item for this patient and signal.</value>
+    </data>
+    <data name="ResolutionOutcomeRequired" xml:space="preserve">
+        <value>The resolution must state whether the plan was adjusted.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>An unexpected error occurred.</value>
+    </data>
+    <data name="BaselineNotFound" xml:space="preserve">
+        <value>This patient has no baseline data yet.</value>
+    </data>
+    <data name="BaselineAlreadyRecorded" xml:space="preserve">
+        <value>This patient already has baseline data. You can edit it from the Summary tab.</value>
+    </data>
+    <data name="InvalidBirthDate" xml:space="preserve">
+        <value>Check the birth date: it must be between 1 and 120 years ago.</value>
+    </data>
+    <data name="InvalidHeight" xml:space="preserve">
+        <value>Check the height: it must be between 50 and 250 cm.</value>
+    </data>
+    <data name="UnknownMedicalCondition" xml:space="preserve">
+        <value>Choose the medical history from the list.</value>
+    </data>
+    <data name="InvalidBiologicalSex" xml:space="preserve">
+        <value>Choose Female or Male as biological sex.</value>
+    </data>
+    <data name="InvalidActivityLevel" xml:space="preserve">
+        <value>Choose the physical activity level: Sedentary, Light, Moderate or Intense.</value>
+    </data>
+    <data name="ProtocolChecklistEmpty" xml:space="preserve">
+        <value>Tick at least one item of the measurement protocol.</value>
+    </data>
+    <data name="ImplausibleMeasurement" xml:space="preserve">
+        <value>Check the measurement: weight goes from 20 to 350 kg, waist from 40 to 200 cm and body fat from 3 to 70 %.</value>
+    </data>
+    <data name="ImplausibleBiochemistry" xml:space="preserve">
+        <value>Check the biochemistry: a value is outside the expected range.</value>
+    </data>
+    <data name="InvalidEatingHabits" xml:space="preserve">
+        <value>Check the eating habits: 1 to 10 meals a day, 0 to 10 litres of water and 0 to 21 meals out a week.</value>
+    </data>
+    <data name="BaselineRequired" xml:space="preserve">
+        <value>Record the patient baseline first.</value>
+    </data>
+    <data name="ConsultationNotFound" xml:space="preserve">
+        <value>The consultation was not found.</value>
+    </data>
+    <data name="ConsultationAlreadyInProgress" xml:space="preserve">
+        <value>This patient already has a consultation in progress. You can continue it.</value>
+    </data>
+    <data name="ConsultationNotInProgress" xml:space="preserve">
+        <value>This consultation is no longer in progress.</value>
+    </data>
+    <data name="UnknownProtocolCheck" xml:space="preserve">
+        <value>Choose the protocol items from the list: Fasting, NoShoes, LightClothing, EmptyBladder, SameScale.</value>
+    </data>
+    <data name="ConsultationStepOutOfOrder" xml:space="preserve">
+        <value>This step comes later. Save the previous step of the consultation first.</value>
+    </data>
+    <data name="UnknownDiagnosisCode" xml:space="preserve">
+        <value>Choose the diagnosis from the list: Underweight, NormalWeight, OverweightGradeI, ObesityGradeI, ObesityGradeII, ObesityGradeIII.</value>
+    </data>
+    <data name="InvalidDiagnosisSource" xml:space="preserve">
+        <value>Indicate whether you used the suggestion or chose another diagnosis. A used AI suggestion keeps its generation and rationale.</value>
+    </data>
+    <data name="UnknownRestriction" xml:space="preserve">
+        <value>Choose the restrictions from the list: LactoseFree, GlutenFree, Vegan, Vegetarian, TreeNutFree, ShellfishFree, Kosher, Halal.</value>
+    </data>
+    <data name="UnknownGuideline" xml:space="preserve">
+        <value>Choose the guidelines from the catalog, or add your own as another guideline.</value>
+    </data>
+    <data name="InvalidCustomGuideline" xml:space="preserve">
+        <value>Each guideline of your own can have between 3 and 140 characters.</value>
+    </data>
+    <data name="TooManyCustomGuidelines" xml:space="preserve">
+        <value>You can add up to 5 guidelines of your own per version.</value>
+    </data>
+    <data name="InvalidIdempotencyKey" xml:space="preserve">
+        <value>The Idempotency-Key header must have 1 to 64 visible characters.</value>
+    </data>
+    <data name="InvalidConsultationState" xml:space="preserve">
+        <value>Filter consultations by InProgress, Completed or Abandoned.</value>
+    </data>
+    <data name="DiagnosisSuggestionDisclaimer" xml:space="preserve">
+        <value>This is a suggestion. The diagnosis is your clinical decision.</value>
+    </data>
+    <data name="InvalidReviewItemState" xml:space="preserve">
+        <value>Filter review items by Open or Resolved.</value>
+    </data>
+    <data name="InvalidPatientMessage" xml:space="preserve">
+        <value>The message for the patient can have up to 500 characters.</value>
+    </data>
+    <data name="PlanProposalNotFound" xml:space="preserve">
+        <value>This review item has no proposed plan. You can review it and adjust the plan yourself.</value>
+    </data>
+    <data name="PlanProposalAlreadyDecided" xml:space="preserve">
+        <value>This proposed plan was already decided.</value>
+    </data>
+    <data name="PlanProposalOutOfSafetyBounds" xml:space="preserve">
+        <value>The daily energy cannot go below the minimum for this patient, and every target must be greater than zero.</value>
+    </data>
+    <data name="ReviewItemNotSustainedDeviation" xml:space="preserve">
+        <value>Only a sustained deviation comes with a proposed plan.</value>
+    </data>
+    <data name="PlanProposalEditsRequired" xml:space="preserve">
+        <value>To assign an edited plan, send the energy, macros and guidelines.</value>
+    </data>
+    <data name="PlanProposalGenerating" xml:space="preserve">
+        <value>The proposed plan is being prepared. Try again in a few seconds.</value>
+    </data>
+</root>
