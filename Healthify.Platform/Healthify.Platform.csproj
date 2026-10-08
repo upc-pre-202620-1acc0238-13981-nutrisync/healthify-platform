@@ -1,0 +1,81 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>Healthify.Platform</RootNamespace>
+        <AssemblyName>Healthify.Platform</AssemblyName>
+        <Version>0.5.0</Version>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="Cortex.Mediator" Version="3.1.2" />
+        <!-- IA-0. Application Default Credentials for Gemini on Vertex AI (Ai:Gemini:Mode = VertexAi). Only read
+             on the first Vertex call; the Gemini API mode does not use it. -->
+        <PackageReference Include="Google.Apis.Auth" Version="1.77.0" />
+        <PackageReference Include="Humanizer" Version="3.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+        <!-- TODO: package not listed in the prompt's stack table (section 3). Required by the
+             `dotnet ef migrations add` / `dotnet ef database update` design-time tooling that the
+             phase acceptance criteria mandate. Dev-only: PrivateAssets keeps it out of the runtime
+             output, so it adds nothing to the published image. -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
+        <!-- TODO: package not listed in the prompt's stack table (section 3). It is a transitive
+             dependency of Swashbuckle 10.1.7, which resolves it to 2.4.1 — a version flagged by
+             NU1903 (GHSA-v5pm-xwqc-g5wc, high severity). Pinned forward to clear the advisory
+             without moving Swashbuckle off its pinned version. Revisit when Swashbuckle ships a
+             release that resolves a patched version on its own. -->
+        <PackageReference Include="Microsoft.OpenApi" Version="2.7.6" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- .resx files are compiled as embedded resources consumed through IStringLocalizer.
+             No designer-generated .Designer.cs is produced: the marker classes are hand written. -->
+        <EmbeddedResource Update="**\*.resx">
+            <Generator></Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- IA-0. Versioned AI prompts (<feature>@<n>.md) of every context, embedded under AiPrompts/ so the
+             shared PromptCatalog reads them without referencing any context. -->
+        <EmbeddedResource Include="**\Infrastructure\Ai\Prompts\*@*.md" Exclude="bin\**;obj\**"
+                          LogicalName="AiPrompts/%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- IA-2/IA-4/IA-5. Words a generated text of Monitoring and Adherence must not contain (es/en). Embedded,
+             never published as content. -->
+        <Content Remove="MonitoringAdherence\Infrastructure\Ai\Lexicon\*.json" />
+        <EmbeddedResource Include="MonitoringAdherence\Infrastructure\Ai\Lexicon\*.json"
+                          LogicalName="MonitoringAdherence/%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- IA-3. Ingredient -> category -> dietary restriction map and the words a text for the patient must not
+             carry (es/en). Embedded, never published as content. -->
+        <Content Remove="IntakeBodyResponse\Infrastructure\Ai\Lexicon\*.json" />
+        <EmbeddedResource Include="IntakeBodyResponse\Infrastructure\Ai\Lexicon\*.json"
+                          LogicalName="IntakeBodyResponse/%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- IA-8. Words a message the AI drafts for the patient must not carry (es/en). Embedded, never published as
+             content. -->
+        <Content Remove="NutritionalCare\Infrastructure\Ai\Lexicon\*.json" />
+        <EmbeddedResource Include="NutritionalCare\Infrastructure\Ai\Lexicon\*.json"
+                          LogicalName="NutritionalCare/%(Filename)%(Extension)" />
+    </ItemGroup>
+
+</Project>
