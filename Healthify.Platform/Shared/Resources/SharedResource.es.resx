@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Error inesperado del servidor</value>
+    </data>
+    <data name="UnexpectedErrorProcessingRequest" xml:space="preserve">
+        <value>Ocurrió un error inesperado al procesar la solicitud.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>Ocurrió un error inesperado.</value>
+    </data>
+    <data name="Unauthorized" xml:space="preserve">
+        <value>No autorizado</value>
+    </data>
+    <data name="AuthenticationRequired" xml:space="preserve">
+        <value>Se requiere autenticación para acceder a este recurso.</value>
+    </data>
+    <data name="Forbidden" xml:space="preserve">
+        <value>Acceso denegado</value>
+    </data>
+    <data name="AccessNotAllowed" xml:space="preserve">
+        <value>No tiene permiso para acceder a este recurso.</value>
+    </data>
+    <data name="TooManyRequests" xml:space="preserve">
+        <value>Demasiadas solicitudes</value>
+    </data>
+    <data name="RequestRateExceeded" xml:space="preserve">
+        <value>Recibimos muchas solicitudes seguidas. Espera un momento y vuelve a intentarlo.</value>
+    </data>
+</root>
