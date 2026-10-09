@@ -1,0 +1,41 @@
+{
+  "_comment": "IA-2/IA-4/IA-5. Words a generated text of Monitoring and Adherence must not contain. Compared as whole words or phrases, without case or accents. Add terms; removing one needs a reason (Invitation Tone Never Accusation, Diagnosis Never Leaves The Context, Patient Shown First).",
+  "accusatory": {
+    "es": [
+      "fallaste", "falle", "fallar", "fallo", "fallos", "fallado", "fallaron", "fracase", "fracaso", "fracasaste", "fracasar",
+      "te pasaste", "te excediste", "te descontrolaste", "descontrol", "descontrolado", "descontrolada",
+      "mal", "malo", "mala", "malos", "malas", "pesimo", "pesima", "terrible", "horrible",
+      "incumpliste", "incumplimiento", "incumplio", "no cumpliste", "no cumplio",
+      "descuidaste", "descuido", "deberias haber", "debiste", "tendrias que haber",
+      "culpa", "culpable", "irresponsable", "excusa", "excusas", "vergüenza", "verguenza",
+      "decepcionante", "decepcion", "trampa", "hiciste trampa", "desobediente", "desobedeciste",
+      "flojo", "floja", "perezoso", "perezosa", "de nuevo fallaste", "sin disciplina", "indisciplina"
+    ],
+    "en": [
+      "failed", "fail", "failure", "failing", "you failed", "bad", "badly", "terrible", "awful", "poor",
+      "overdid it", "out of control", "cheated", "cheat", "cheating", "should have", "you should have",
+      "blame", "fault", "careless", "lazy", "irresponsible", "excuse", "excuses", "shameful", "shame",
+      "disappointing", "disappointment", "non-compliant", "noncompliant", "non compliant", "noncompliance",
+      "non-compliance", "disobeyed", "undisciplined", "lack of discipline"
+    ]
+  },
+  "diagnosis": {
+    "es": [
+      "diagnostico", "obesidad", "obeso", "obesa", "sobrepeso", "bajo peso", "delgadez", "desnutricion",
+      "malnutricion", "imc", "indice de masa corporal", "categoria de imc", "riesgo cardiovascular",
+      "sindrome metabolico", "diabetes", "prediabetes", "dislipidemia", "hipertension", "hipotiroidismo",
+      "metabolismo basal", "tasa metabolica", "tmb", "gasto energetico", "factor de actividad", "base de calculo",
+      "deficit calorico", "harris-benedict", "mifflin"
+    ],
+    "en": [
+      "diagnosis", "diagnosed", "obesity", "obese", "overweight", "underweight", "malnutrition", "bmi",
+      "body mass index", "metabolic syndrome", "prediabetes", "dyslipidemia", "hypertension", "hypothyroidism",
+      "basal metabolic rate", "bmr", "resting energy expenditure", "activity factor", "calculation basis",
+      "caloric deficit", "calorie deficit"
+    ]
+  },
+  "consistency": {
+    "es": [ "indice de consistencia", "consistencia", "alerta de consistencia", "coherencia de registro" ],
+    "en": [ "consistency index", "consistency", "consistency alert" ]
+  }
+}

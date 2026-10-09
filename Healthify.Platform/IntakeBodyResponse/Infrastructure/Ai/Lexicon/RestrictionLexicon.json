@@ -1,0 +1,120 @@
+{
+  "_comment": "IA-3. Ingredient -> category -> dietary restriction (NC-6), es/en, matched on whole words without accents or a final plural 's'. Errs on the side of the patient: a doubtful ingredient breaks the restriction. 'exceptions' are phrases removed before a category is matched ('leche de almendras' is not dairy). 'forbiddenInPatientText': accusatory words (Invitation Tone Never Accusation) and diagnosis vocabulary (Diagnosis Never Leaves The Context). Starting point for the MVP, to be reviewed with the nutritionist; a change here is a change of a safety rule and needs a test.",
+  "categories": {
+    "shellfish": {
+      "terms": [
+        "marisco", "mariscos", "langostino", "camaron", "camarones", "gamba", "concha", "conchas", "concha de abanico",
+        "calamar", "calamares", "pulpo", "choro", "choros", "mejillon", "mejillones", "cangrejo", "langosta", "almeja",
+        "ostra", "vieira", "pota", "erizo", "percebe", "chicharron de calamar",
+        "seafood", "shellfish", "shrimp", "prawn", "crab", "lobster", "clam", "mussel", "oyster", "scallop", "squid",
+        "octopus", "calamari"
+      ],
+      "exceptions": []
+    },
+    "fish": {
+      "terms": [
+        "pescado", "bonito", "jurel", "trucha", "perico", "anchoveta", "atun", "salmon", "caballa", "tilapia",
+        "merluza", "corvina", "lenguado", "sardina", "cojinova", "paiche", "bacalao", "ceviche",
+        "fish", "tuna", "trout", "cod", "sardine", "anchovy", "mackerel", "hake", "sea bass"
+      ],
+      "exceptions": []
+    },
+    "meat": {
+      "terms": [
+        "carne", "res", "lomo", "bistec", "ternera", "cordero", "alpaca", "cuy", "higado", "chorizo", "salchicha",
+        "hamburguesa", "anticucho", "cabrito", "mondongo",
+        "beef", "steak", "lamb", "veal", "liver", "sausage", "burger", "meat", "goat"
+      ],
+      "exceptions": ["carne de soya", "carne vegetal", "soy meat", "plant based meat", "plant-based meat"]
+    },
+    "poultry": {
+      "terms": ["pollo", "pavo", "gallina", "pato", "chicken", "turkey", "hen", "duck"],
+      "exceptions": ["huevo de gallina", "huevos de gallina"]
+    },
+    "pork": {
+      "terms": [
+        "cerdo", "chancho", "jamon", "tocino", "chicharron", "panceta", "manteca de cerdo", "lechon", "chorizo",
+        "pork", "ham", "bacon", "lard", "prosciutto"
+      ],
+      "exceptions": ["chicharron de calamar", "chicharron de pescado", "chicharron de pollo"]
+    },
+    "dairy": {
+      "terms": [
+        "leche", "queso", "yogur", "yogurt", "mantequilla", "crema de leche", "nata", "suero de leche", "requeson",
+        "manjar blanco", "leche evaporada", "helado",
+        "milk", "cheese", "butter", "cream", "whey", "ice cream", "ghee"
+      ],
+      "exceptions": [
+        "leche de almendra", "leche de almendras", "leche de soya", "leche de soja", "leche de avena",
+        "leche de coco", "leche de arroz", "leche vegetal", "queso vegano", "crema de coco",
+        "almond milk", "soy milk", "oat milk", "coconut milk", "rice milk", "plant milk", "vegan cheese",
+        "coconut cream", "peanut butter", "mantequilla de mani"
+      ]
+    },
+    "lactose": {
+      "terms": [
+        "leche", "queso fresco", "yogur", "yogurt", "crema de leche", "nata", "suero de leche", "requeson",
+        "manjar blanco", "leche evaporada", "helado",
+        "milk", "cream cheese", "whey", "ice cream", "cream"
+      ],
+      "exceptions": [
+        "sin lactosa", "deslactosada", "deslactosado", "lactose free", "lactose-free",
+        "leche de almendra", "leche de almendras", "leche de soya", "leche de soja", "leche de avena",
+        "leche de coco", "leche de arroz", "leche vegetal", "crema de coco",
+        "almond milk", "soy milk", "oat milk", "coconut milk", "rice milk", "plant milk", "coconut cream"
+      ]
+    },
+    "gluten": {
+      "terms": [
+        "trigo", "harina", "harina de trigo", "pan", "pan integral", "fideo", "fideos", "pasta", "tallarin",
+        "tallarines", "spaghetti", "espagueti", "cebada", "centeno", "avena", "cuscus", "galleta", "galletas",
+        "tostada", "tortilla de trigo", "seitan", "salvado", "empanada", "pizza",
+        "wheat", "flour", "bread", "noodle", "noodles", "barley", "rye", "oat", "oats", "couscous", "cracker",
+        "toast", "bran"
+      ],
+      "exceptions": [
+        "sin gluten", "gluten free", "gluten-free", "harina de maiz", "harina de arroz", "fideo de arroz",
+        "fideos de arroz", "pasta de arroz", "rice noodles", "rice noodle", "rice flour", "corn flour",
+        "pan sin gluten", "avena sin gluten", "gluten free oats", "pasta de tomate", "pasta de aji",
+        "pasta de mani", "pasta de ajo", "tomato paste", "garlic paste"
+      ]
+    },
+    "egg": {
+      "terms": ["huevo", "huevos", "clara de huevo", "yema", "egg", "eggs", "egg white", "omelette", "omelet"],
+      "exceptions": []
+    },
+    "treeNuts": {
+      "terms": [
+        "nuez", "nueces", "almendra", "almendras", "avellana", "castana", "castana de brasil", "pecana", "pistacho",
+        "maranon", "anacardo", "macadamia",
+        "walnut", "almond", "hazelnut", "cashew", "pecan", "pistachio", "brazil nut", "tree nut", "tree nuts"
+      ],
+      "exceptions": []
+    },
+    "honey": {
+      "terms": ["miel", "honey"],
+      "exceptions": ["miel de agave", "agave syrup"]
+    },
+    "alcohol": {
+      "terms": ["vino", "cerveza", "ron", "pisco", "licor", "vodka", "whisky", "wine", "beer", "rum", "liquor"],
+      "exceptions": ["vinagre de vino", "wine vinegar"]
+    }
+  },
+  "restrictions": {
+    "ShellfishFree": ["shellfish"],
+    "LactoseFree": ["lactose"],
+    "GlutenFree": ["gluten"],
+    "TreeNutFree": ["treeNuts"],
+    "Vegetarian": ["meat", "poultry", "pork", "fish", "shellfish"],
+    "Vegan": ["meat", "poultry", "pork", "fish", "shellfish", "dairy", "egg", "honey"],
+    "Kosher": ["pork", "shellfish"],
+    "Halal": ["pork", "alcohol"]
+  },
+  "forbiddenInPatientText": [
+    "fallaste", "fallar", "fracaso", "te pasaste", "mal", "incumpliste", "incumplimiento", "culpa", "trampa",
+    "prohibido", "deberias haber",
+    "failed", "failure", "cheat", "cheated", "bad", "guilt", "guilty", "forbidden",
+    "obesidad", "sobrepeso", "bajo peso", "diagnostico", "imc", "indice de masa corporal",
+    "obesity", "overweight", "underweight", "diagnosis", "bmi", "body mass index"
+  ]
+}

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+    <resheader name="version"><value>2.0</value></resheader>
+    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>No encontrado</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Solicitud no válida</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflicto</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>No autorizado</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Acción no permitida</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>No se puede procesar la solicitud</value>
+    </data>
+    <data name="ServiceUnavailableTitle" xml:space="preserve">
+        <value>Servicio temporalmente no disponible</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Error inesperado del servidor</value>
+    </data>
+    <data name="ExternalCatalogUnavailable" xml:space="preserve">
+        <value>No se pudo contactar con ningún proveedor externo de alimentos. El catálogo local sigue disponible.</value>
+    </data>
+    <data name="TaxonomyTranslationFailed" xml:space="preserve">
+        <value>El registro no se pudo expresar en el vocabulario de esta plataforma.</value>
+    </data>
+    <data name="ExternalIdNotAllowed" xml:space="preserve">
+        <value>Un identificador externo no puede usarse como nombre de un alimento.</value>
+    </data>
+    <data name="SourceHashRequired" xml:space="preserve">
+        <value>Toda entrada del catálogo requiere una huella de origen.</value>
+    </data>
+    <data name="ReferenceFoodNotFound" xml:space="preserve">
+        <value>No se encontró la entrada del catálogo.</value>
+    </data>
+    <data name="PractitionerOnly" xml:space="preserve">
+        <value>Solo un profesional puede hacer esto.</value>
+    </data>
+    <data name="LocalNameAndNutrientsRequired" xml:space="preserve">
+        <value>El nombre local y los cuatro nutrientes por 100 gramos son obligatorios.</value>
+    </data>
+    <data name="DuplicatedLocalOverride" xml:space="preserve">
+        <value>Ya existe un alimento local con este nombre.</value>
+    </data>
+    <data name="InconsistentNutrients" xml:space="preserve">
+        <value>Los nutrientes estimados no describen un alimento real (la energía y los macronutrientes no cuadran).</value>
+    </data>
+    <data name="AiGenerationRequired" xml:space="preserve">
+        <value>Un alimento estimado por IA necesita la generación que lo estimó.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>No se pudo completar la solicitud.</value>
+    </data>
+</root>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+    <resheader name="version"><value>2.0</value></resheader>
+    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>Not found</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Invalid request</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflict</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>Unauthorized</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Not allowed</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>Request cannot be processed</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Unexpected server error</value>
+    </data>
+    <data name="EvaluationWindowNotFound" xml:space="preserve">
+        <value>There is no evaluation window for this patient yet.</value>
+    </data>
+    <data name="PatientAlreadyHasOpenWindow" xml:space="preserve">
+        <value>This patient already has an evaluation window that is still counting days.</value>
+    </data>
+    <data name="WindowShorterThanMinimum" xml:space="preserve">
+        <value>An evaluation window is never shorter than seven days. A single day off target is not a pattern.</value>
+    </data>
+    <data name="WindowClosed" xml:space="preserve">
+        <value>This evaluation window has stopped counting days.</value>
+    </data>
+    <data name="ClosedWindowCannotBeReopened" xml:space="preserve">
+        <value>A closed evaluation window is never reopened. What it holds stays readable.</value>
+    </data>
+    <data name="TargetsSnapshotMissing" xml:space="preserve">
+        <value>There were no targets in force on that day, so there is nothing to compare it against.</value>
+    </data>
+    <data name="DayAlreadyEvaluated" xml:space="preserve">
+        <value>That day already says exactly this. Nothing changed.</value>
+    </data>
+    <data name="InsufficientWindowLength" xml:space="preserve">
+        <value>This window has not been running for long enough yet. A day off target is not a pattern.</value>
+    </data>
+    <data name="NoLoggedDays" xml:space="preserve">
+        <value>There are no logged days to read. Days without entries are not counted as anything.</value>
+    </data>
+    <data name="DeviationNotFound" xml:space="preserve">
+        <value>No deviation was found.</value>
+    </data>
+    <data name="BothSeriesRequired" xml:space="preserve">
+        <value>The consistency index needs both the weight series and the recorded intake. With only one of them there is no index.</value>
+    </data>
+    <data name="ConsistencyThresholdNotConfigured" xml:space="preserve">
+        <value>The consistency threshold has not been set, so nothing is raised. This value is pending clinical calibration.</value>
+    </data>
+    <data name="PatientPromptRequiredBeforeEscalation" xml:space="preserve">
+        <value>You are always asked first. Nothing reaches your practitioner before you have seen it.</value>
+    </data>
+    <data name="ThreeWeeksInAlertRequired" xml:space="preserve">
+        <value>This has not been in alert for three weeks yet.</value>
+    </data>
+    <data name="ActiveCareLinkRequired" xml:space="preserve">
+        <value>An active care link is required.</value>
+    </data>
+    <data name="SpecialtyAndReasonRequired" xml:space="preserve">
+        <value>A referral says which speciality it is to and why.</value>
+    </data>
+    <data name="PatientAlreadyHasActiveScheduledFollowUp" xml:space="preserve">
+        <value>This patient already has a visit on the calendar.</value>
+    </data>
+    <data name="UnknownPreparationInstruction" xml:space="preserve">
+        <value>Choose the preparation from the list: fasting, light clothing, bring blood tests or empty bladder.</value>
+    </data>
+    <data name="UnknownConsultationModality" xml:space="preserve">
+        <value>The visit is either in person or remote.</value>
+    </data>
+    <data name="FollowUpNotScheduled" xml:space="preserve">
+        <value>This visit is no longer on the calendar.</value>
+    </data>
+    <data name="InvalidFollowUpState" xml:space="preserve">
+        <value>The state filter must be Scheduled, Completed, Missed or Cancelled.</value>
+    </data>
+    <data name="ScheduledFollowUpNotFound" xml:space="preserve">
+        <value>No scheduled visit was found.</value>
+    </data>
+    <data name="LoggingGapReminder" xml:space="preserve">
+        <value>It has been a few days since your last entry. Whenever you are ready, your diary is here.</value>
+    </data>
+    <data name="ConsistencyPrompt" xml:space="preserve">
+        <value>Your weight trend and what you have recorded do not quite line up. Would you like to go over the last few days together?</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>The request could not be processed.</value>
+    </data>
+    <data name="CheckInLocked" xml:space="preserve">
+        <value>The visit has already started, so this answer can no longer be edited. Your practitioner will read what you sent.</value>
+    </data>
+    <data name="FeelingRequired" xml:space="preserve">
+        <value>Tell us how you felt with your plan: Good, Fair or Hard.</value>
+    </data>
+    <data name="TooManyQuestions" xml:space="preserve">
+        <value>You can send up to 3 questions of your own and add up to 3 suggestions.</value>
+    </data>
+    <data name="UnknownCheckInDifficulty" xml:space="preserve">
+        <value>Choose from the list: dinners, weekends, eating out, schedules or cravings.</value>
+    </data>
+    <data name="InvalidCheckInQuestion" xml:space="preserve">
+        <value>Each question needs between 3 and 300 characters.</value>
+    </data>
+    <data name="PreVisitCheckInNotFound" xml:space="preserve">
+        <value>There is no answer for this visit yet.</value>
+    </data>
+    <data name="ScheduledForMustBeInFuture" xml:space="preserve">
+        <value>Choose a future date and time.</value>
+    </data>
+    <data name="CancellationReasonTooLong" xml:space="preserve">
+        <value>The cancellation reason can have at most 30 characters.</value>
+    </data>
+    <data name="ReferralNotFound" xml:space="preserve">
+        <value>The referral does not exist or was recorded by another practitioner.</value>
+    </data>
+    <data name="ReferralAlreadyClosed" xml:space="preserve">
+        <value>This referral is already closed.</value>
+    </data>
+    <data name="ConsistencyPromptNotIssued" xml:space="preserve">
+        <value>There is nothing to acknowledge right now.</value>
+    </data>
+    <data name="PatientAcknowledgementTooRecent" xml:space="preserve">
+        <value>The patient saw this card recently; they still have time to answer it.</value>
+    </data>
+    <data name="InvalidComplianceRange" xml:space="preserve">
+        <value>Send from and to (or only date), with from not after to and at most 31 days.</value>
+    </data>
+    <data name="NotEnoughData" xml:space="preserve">
+        <value>There is not enough in the diary to prepare this yet. Keep logging and it will appear soon.</value>
+    </data>
+    <data name="InvalidWeekStart" xml:space="preserve">
+        <value>A weekly summary starts on the Monday of a week that is already over.</value>
+    </data>
+</root>

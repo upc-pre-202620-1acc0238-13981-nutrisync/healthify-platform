@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+    <resheader name="version"><value>2.0</value></resheader>
+    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>No encontrado</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Solicitud no válida</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflicto</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>No autorizado</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Acción no permitida</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>No se puede procesar la solicitud</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Error inesperado del servidor</value>
+    </data>
+    <data name="ActiveTargetsCacheNotFound" xml:space="preserve">
+        <value>Todavía no se han publicado metas para ti.</value>
+    </data>
+    <data name="PublishedContractOnly" xml:space="preserve">
+        <value>Aquí solo se guardan las metas, las pautas y las restricciones publicadas.</value>
+    </data>
+    <data name="ProvenanceRequired" xml:space="preserve">
+        <value>Una entrada debe indicar si vino de una foto, se escribió a mano o fue fuera del plan.</value>
+    </data>
+    <data name="LocalTimestampRequired" xml:space="preserve">
+        <value>Una entrada debe indicar cuándo ocurrió.</value>
+    </data>
+    <data name="RetroactiveLoggingWindowExceeded" xml:space="preserve">
+        <value>Ese momento queda más atrás de lo que permite el registro. Las entradas se anotan cerca de cuando ocurren.</value>
+    </data>
+    <data name="DiaryEntryNotFound" xml:space="preserve">
+        <value>No se encontró la entrada del diario.</value>
+    </data>
+    <data name="DiaryEntryCannotBeDeleted" xml:space="preserve">
+        <value>Una entrada del diario nunca se elimina. Lo que se registró queda registrado.</value>
+    </data>
+    <data name="ReferenceFoodNotResolved" xml:space="preserve">
+        <value>Ese alimento no está en el catálogo. Búscalo o pide a tu profesional que lo añada.</value>
+    </data>
+    <data name="EstimateNotProposed" xml:space="preserve">
+        <value>Todavía no hay una estimación en esta entrada.</value>
+    </data>
+    <data name="EstimateAlreadyConfirmed" xml:space="preserve">
+        <value>Ya confirmaste esta entrada.</value>
+    </data>
+    <data name="ConfidenceRequired" xml:space="preserve">
+        <value>Una estimación siempre se guarda con su nivel de certeza.</value>
+    </data>
+    <data name="ImplausibleWeightValue" xml:space="preserve">
+        <value>Esa lectura queda fuera del rango que una balanza puede dar. Revisa el número.</value>
+    </data>
+    <data name="ProtocolComplianceRequired" xml:space="preserve">
+        <value>Una lectura se registra junto con las condiciones en que se tomó.</value>
+    </data>
+    <data name="SelfWeighInNotFound" xml:space="preserve">
+        <value>No se encontró la lectura.</value>
+    </data>
+    <data name="WeightTrendNotFound" xml:space="preserve">
+        <value>Todavía no hay tendencia de peso. Aparece cuando hay lecturas que suavizar.</value>
+    </data>
+    <data name="DuplicatedClientEntryId" xml:space="preserve">
+        <value>La misma entrada se envió dos veces en un mismo lote.</value>
+    </data>
+    <data name="LocalTimestampCannotBeRewritten" xml:space="preserve">
+        <value>Esta entrada ya tiene el momento que declaraste, y el servidor no lo cambia.</value>
+    </data>
+    <data name="PatientWriteOnly" xml:space="preserve">
+        <value>Solo el paciente puede leer y escribir su propio diario.</value>
+    </data>
+    <data name="ActiveCareLinkRequired" xml:space="preserve">
+        <value>Se requiere un vínculo de cuidado activo.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>No se pudo completar la solicitud.</value>
+    </data>
+    <data name="PlanAdherenceRequired" xml:space="preserve">
+        <value>Responde Sí o No: ¿esta comida estaba en tu plan?</value>
+    </data>
+    <data name="InvalidPlanAdherence" xml:space="preserve">
+        <value>La respuesta sobre tu plan no es válida. Usa InPlan u OffPlan.</value>
+    </data>
+    <data name="InvalidEstimateConfirmation" xml:space="preserve">
+        <value>La confirmación no es válida. Envía AsProposed, o Adjusted con un alimento y una porción.</value>
+    </data>
+    <data name="ClientEntryIdRequired" xml:space="preserve">
+        <value>Cada registro pendiente debe llevar el identificador que le dio el dispositivo.</value>
+    </data>
+    <data name="NotEnoughRemaining" xml:space="preserve">
+        <value>Ya cubriste tu energía de hoy. Vuelve mañana por nuevas ideas.</value>
+    </data>
+    <data name="InvalidLocalDate" xml:space="preserve">
+        <value>Envía la fecha de hoy, tal como la muestra tu dispositivo.</value>
+    </data>
+    <data name="MealIdeasDisclaimer" xml:space="preserve">
+        <value>Son ideas generadas con IA a partir de tu plan y tu diario. No reemplazan las indicaciones de tu nutricionista.</value>
+    </data>
+    <data name="InvalidMealGroupItems" xml:space="preserve">
+        <value>Agrega entre uno y diez alimentos, cada uno con su porción en gramos.</value>
+    </data>
+    <data name="PayloadTooLargeTitle" xml:space="preserve">
+        <value>Contenido demasiado grande</value>
+    </data>
+    <data name="PhotoRequired" xml:space="preserve">
+        <value>Envía la foto de tu plato.</value>
+    </data>
+    <data name="UnsupportedPhotoFormat" xml:space="preserve">
+        <value>La foto debe ser una imagen JPEG o WebP.</value>
+    </data>
+    <data name="PhotoTooLarge" xml:space="preserve">
+        <value>La foto es muy grande. Vuelve a intentarlo con una foto más liviana (hasta 2 MB).</value>
+    </data>
+    <data name="PhotoNotRecognized" xml:space="preserve">
+        <value>No pudimos reconocer el plato de esta foto. Puedes registrarlo a mano.</value>
+    </data>
+    <data name="MealPhotoAnalysisNotFound" xml:space="preserve">
+        <value>No se encontró el análisis de la foto.</value>
+    </data>
+    <data name="MealPhotoAnalysisExpired" xml:space="preserve">
+        <value>Este análisis de la foto ya venció. Vuelve a tomar la foto o registra la comida a mano.</value>
+    </data>
+    <data name="InvalidEntryOrigin" xml:space="preserve">
+        <value>El origen de la comida no es válido. Permitido: MealIdea.</value>
+    </data>
+</root>
