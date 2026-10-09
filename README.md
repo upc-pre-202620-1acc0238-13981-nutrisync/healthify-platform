@@ -38,3 +38,16 @@ dotnet run --project Healthify.Platform   # Swagger: http://localhost:5146/swagg
 
 With Docker: set `JWT_SECRET`, then `docker compose up --build` (API on `http://localhost:8080/swagger`, MySQL
 on `3307`). Migrations are applied at startup.
+
+## Configuration and tests
+
+| Variable | Meaning |
+|---|---|
+| `TokenSettings__Secret` / `JWT_SECRET` | Signing key, 32+ characters (required) |
+| `ConnectionStrings__DefaultConnection` | Overrides the connection string |
+| `Usda__ApiKey` | USDA FoodData Central key; empty disables that provider |
+| `Ai__Enabled`, `Ai__Gemini__ApiKey` | Turn AI on and give it its key |
+
+Secrets are never committed: `appsettings.Development.json` is git-ignored. Run the tests with
+`dotnet test healthify-platform.sln`; the MySQL integration tests run only when `HEALTHIFY_IT_MYSQL` points to a
+server.
