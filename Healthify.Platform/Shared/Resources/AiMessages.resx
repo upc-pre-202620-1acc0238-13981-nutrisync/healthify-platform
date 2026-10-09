@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ServiceUnavailableTitle" xml:space="preserve">
+        <value>Service unavailable</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Forbidden</value>
+    </data>
+    <data name="TooManyRequestsTitle" xml:space="preserve">
+        <value>Too many requests</value>
+    </data>
+    <data name="BadGatewayTitle" xml:space="preserve">
+        <value>Bad gateway</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Unexpected server error</value>
+    </data>
+    <data name="AiFeatureDisabled" xml:space="preserve">
+        <value>This AI feature is not available right now.</value>
+    </data>
+    <data name="AiConsentRequired" xml:space="preserve">
+        <value>AI features are not turned on for this patient's data. They can be turned on from the consent settings.</value>
+    </data>
+    <data name="AiRateLimited" xml:space="preserve">
+        <value>Today's limit for this AI feature has been reached. You can try again tomorrow.</value>
+    </data>
+    <data name="AiProviderUnavailable" xml:space="preserve">
+        <value>The AI service is not responding right now. Please try again later.</value>
+    </data>
+    <data name="AiOutputRejected" xml:space="preserve">
+        <value>The AI could not prepare a suitable answer this time. Please try again later.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>An unexpected error occurred.</value>
+    </data>
+</root>

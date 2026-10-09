@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ServiceUnavailableTitle" xml:space="preserve">
+        <value>Servicio no disponible</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Prohibido</value>
+    </data>
+    <data name="TooManyRequestsTitle" xml:space="preserve">
+        <value>Demasiadas solicitudes</value>
+    </data>
+    <data name="BadGatewayTitle" xml:space="preserve">
+        <value>Respuesta no válida del proveedor</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Error inesperado del servidor</value>
+    </data>
+    <data name="AiFeatureDisabled" xml:space="preserve">
+        <value>Esta función con IA no está disponible en este momento.</value>
+    </data>
+    <data name="AiConsentRequired" xml:space="preserve">
+        <value>Las funciones con IA no están activadas para los datos de este paciente. Se pueden activar desde el consentimiento.</value>
+    </data>
+    <data name="AiRateLimited" xml:space="preserve">
+        <value>Se alcanzó el límite de hoy para esta función con IA. Puedes volver a intentarlo mañana.</value>
+    </data>
+    <data name="AiProviderUnavailable" xml:space="preserve">
+        <value>El servicio de IA no responde en este momento. Inténtalo de nuevo más tarde.</value>
+    </data>
+    <data name="AiOutputRejected" xml:space="preserve">
+        <value>La IA no pudo preparar una respuesta adecuada esta vez. Inténtalo de nuevo más tarde.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>Ocurrió un error inesperado.</value>
+    </data>
+</root>
