@@ -25,3 +25,16 @@ test project (`Healthify.Platform.Tests`), one `.sln`. Contexts are top-level fo
 | `MonitoringAdherence` | **Core** | Deviations, consistency index, follow-ups and weekly summaries |
 
 `ReadModels/` is a composition layer, not a context: it only composes ACL facades into patient views.
+
+## Running it
+
+Requirements: .NET SDK 10.0 and MySQL 8.x (or Docker). The app refuses to start without a secret of at least
+32 characters.
+
+```bash
+export TokenSettings__Secret="a-long-random-secret-of-at-least-32-characters"
+dotnet run --project Healthify.Platform   # Swagger: http://localhost:5146/swagger
+```
+
+With Docker: set `JWT_SECRET`, then `docker compose up --build` (API on `http://localhost:8080/swagger`, MySQL
+on `3307`). Migrations are applied at startup.
