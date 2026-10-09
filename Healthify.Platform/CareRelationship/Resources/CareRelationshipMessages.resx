@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>Not found</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Invalid request</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflict</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>Unauthorized</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Not allowed</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>Request cannot be processed</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Unexpected server error</value>
+    </data>
+
+    <data name="PractitionerOnly" xml:space="preserve">
+        <value>Only the practitioner who is part of this care relationship can do this.</value>
+    </data>
+    <data name="ExpirationDateRequired" xml:space="preserve">
+        <value>An invitation needs an expiration date in the future.</value>
+    </data>
+    <data name="InvitationNotFound" xml:space="preserve">
+        <value>No invitation was found.</value>
+    </data>
+    <data name="InvitationExpired" xml:space="preserve">
+        <value>This invitation is no longer valid. Ask your practitioner for a new one.</value>
+    </data>
+    <data name="InvitationAlreadyRedeemed" xml:space="preserve">
+        <value>This invitation has already been used. Each one works once.</value>
+    </data>
+    <data name="InvitationNotValid" xml:space="preserve">
+        <value>The invitation code is not readable.</value>
+    </data>
+    <data name="RedeemedInvitationCannotExpire" xml:space="preserve">
+        <value>An invitation that was already used cannot expire.</value>
+    </data>
+    <data name="PatientCannotSelfLink" xml:space="preserve">
+        <value>An invitation cannot be redeemed by the person who issued it.</value>
+    </data>
+    <data name="PatientAlreadyHasActiveLink" xml:space="preserve">
+        <value>This patient already has an open care link. Close it before opening another one.</value>
+    </data>
+    <data name="AlreadyLinkedToThisPractitioner" xml:space="preserve">
+        <value>You are already linked to this practitioner.</value>
+    </data>
+    <data name="CareLinkNotFound" xml:space="preserve">
+        <value>No care link was found.</value>
+    </data>
+    <data name="ConsentScopeRequired" xml:space="preserve">
+        <value>Consent needs a recorded scope saying what is being shared.</value>
+    </data>
+    <data name="ConsentAlreadyGranted" xml:space="preserve">
+        <value>Consent has already been granted for this care link.</value>
+    </data>
+    <data name="NoActiveConsent" xml:space="preserve">
+        <value>There is no live consent on this care link.</value>
+    </data>
+    <data name="CareLinkNotActive" xml:space="preserve">
+        <value>This care link is not active. Nothing is shared until consent is granted.</value>
+    </data>
+    <data name="PendingVersionAlreadyExists" xml:space="preserve">
+        <value>There is already a targets version waiting to be acknowledged.</value>
+    </data>
+    <data name="NoPendingTargetsVersion" xml:space="preserve">
+        <value>There are no new targets waiting to be acknowledged.</value>
+    </data>
+    <data name="AcknowledgedVersionNewerThanActive" xml:space="preserve">
+        <value>That targets version has not been published to you.</value>
+    </data>
+    <data name="ClinicalReasonRequired" xml:space="preserve">
+        <value>A clinical reason is required to discharge a patient.</value>
+    </data>
+    <data name="CareLinkAlreadyRevoked" xml:space="preserve">
+        <value>This care link has already been revoked.</value>
+    </data>
+    <data name="DischargedLinkCannotBeReactivated" xml:space="preserve">
+        <value>A discharged care link is never reactivated.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>An unexpected error occurred.</value>
+    </data>
+    <data name="AiConsentRequiredToEnableFeature" xml:space="preserve">
+        <value>To turn on AI features, first allow the use of AI with your data in your consent. Your plan and your records do not change.</value>
+    </data>
+</root>
