@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>No encontrado</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Solicitud no válida</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflicto</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>No autorizado</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Acción no permitida</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>No se puede procesar la solicitud</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Error inesperado del servidor</value>
+    </data>
+
+    <data name="PractitionerOnly" xml:space="preserve">
+        <value>Solo el profesional que forma parte de este vínculo de cuidado puede hacer esto.</value>
+    </data>
+    <data name="ExpirationDateRequired" xml:space="preserve">
+        <value>Una invitación necesita una fecha de expiración futura.</value>
+    </data>
+    <data name="InvitationNotFound" xml:space="preserve">
+        <value>No se encontró la invitación.</value>
+    </data>
+    <data name="InvitationExpired" xml:space="preserve">
+        <value>Esta invitación ya no es válida. Pídale una nueva a su profesional.</value>
+    </data>
+    <data name="InvitationAlreadyRedeemed" xml:space="preserve">
+        <value>Esta invitación ya fue usada. Cada una funciona una sola vez.</value>
+    </data>
+    <data name="InvitationNotValid" xml:space="preserve">
+        <value>El código de la invitación no se puede leer.</value>
+    </data>
+    <data name="RedeemedInvitationCannotExpire" xml:space="preserve">
+        <value>Una invitación que ya fue usada no puede expirar.</value>
+    </data>
+    <data name="PatientCannotSelfLink" xml:space="preserve">
+        <value>Una invitación no puede ser canjeada por quien la emitió.</value>
+    </data>
+    <data name="PatientAlreadyHasActiveLink" xml:space="preserve">
+        <value>Este paciente ya tiene un vínculo de cuidado abierto. Ciérrelo antes de abrir otro.</value>
+    </data>
+    <data name="AlreadyLinkedToThisPractitioner" xml:space="preserve">
+        <value>Ya estás vinculado con este nutricionista.</value>
+    </data>
+    <data name="CareLinkNotFound" xml:space="preserve">
+        <value>No se encontró el vínculo de cuidado.</value>
+    </data>
+    <data name="ConsentScopeRequired" xml:space="preserve">
+        <value>El consentimiento necesita un alcance registrado que indique qué se comparte.</value>
+    </data>
+    <data name="ConsentAlreadyGranted" xml:space="preserve">
+        <value>Ya se otorgó consentimiento para este vínculo de cuidado.</value>
+    </data>
+    <data name="NoActiveConsent" xml:space="preserve">
+        <value>No hay consentimiento vigente en este vínculo de cuidado.</value>
+    </data>
+    <data name="CareLinkNotActive" xml:space="preserve">
+        <value>Este vínculo de cuidado no está activo. No se comparte nada hasta otorgar el consentimiento.</value>
+    </data>
+    <data name="PendingVersionAlreadyExists" xml:space="preserve">
+        <value>Ya hay una versión de metas esperando acuse de recibo.</value>
+    </data>
+    <data name="NoPendingTargetsVersion" xml:space="preserve">
+        <value>No hay metas nuevas esperando acuse de recibo.</value>
+    </data>
+    <data name="AcknowledgedVersionNewerThanActive" xml:space="preserve">
+        <value>Esa versión de metas no fue publicada para usted.</value>
+    </data>
+    <data name="ClinicalReasonRequired" xml:space="preserve">
+        <value>Se requiere una razón clínica para dar de alta a un paciente.</value>
+    </data>
+    <data name="CareLinkAlreadyRevoked" xml:space="preserve">
+        <value>Este vínculo de cuidado ya fue revocado.</value>
+    </data>
+    <data name="DischargedLinkCannotBeReactivated" xml:space="preserve">
+        <value>Un vínculo de cuidado dado de alta nunca se reactiva.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>Ocurrió un error inesperado.</value>
+    </data>
+    <data name="AiConsentRequiredToEnableFeature" xml:space="preserve">
+        <value>Para activar las funciones con IA, primero permite el uso de IA con tus datos en tu consentimiento. Tu plan y tus registros no cambian.</value>
+    </data>
+</root>

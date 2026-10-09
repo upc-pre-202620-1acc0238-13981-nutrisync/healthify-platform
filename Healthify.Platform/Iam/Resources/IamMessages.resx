@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="NotFoundTitle" xml:space="preserve">
+        <value>Not found</value>
+    </data>
+    <data name="BadRequestTitle" xml:space="preserve">
+        <value>Invalid request</value>
+    </data>
+    <data name="ConflictTitle" xml:space="preserve">
+        <value>Conflict</value>
+    </data>
+    <data name="UnauthorizedTitle" xml:space="preserve">
+        <value>Unauthorized</value>
+    </data>
+    <data name="ForbiddenTitle" xml:space="preserve">
+        <value>Forbidden</value>
+    </data>
+    <data name="UnprocessableEntityTitle" xml:space="preserve">
+        <value>Request cannot be processed</value>
+    </data>
+    <data name="UnexpectedServerError" xml:space="preserve">
+        <value>Unexpected server error</value>
+    </data>
+
+    <data name="EmailAlreadyTaken" xml:space="preserve">
+        <value>An account already exists for this email address.</value>
+    </data>
+    <data name="InvalidEmail" xml:space="preserve">
+        <value>The email address is not valid.</value>
+    </data>
+    <data name="WeakPassword" xml:space="preserve">
+        <value>The password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a digit and a special character.</value>
+    </data>
+    <data name="RoleNotDeclared" xml:space="preserve">
+        <value>A role must be declared at registration.</value>
+    </data>
+    <data name="InvalidRole" xml:space="preserve">
+        <value>The role is not valid. Choose either Patient or Practitioner.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>No account was found.</value>
+    </data>
+    <data name="InvalidCredentials" xml:space="preserve">
+        <value>The email address or the password is not correct.</value>
+    </data>
+    <data name="AccountLocked" xml:space="preserve">
+        <value>Your account is temporarily locked for security. Please try again later.</value>
+    </data>
+    <data name="SessionNotFound" xml:space="preserve">
+        <value>No session was found.</value>
+    </data>
+    <data name="SessionAlreadyTerminated" xml:space="preserve">
+        <value>This session has already been terminated.</value>
+    </data>
+    <data name="ShellAlreadySelectedForSession" xml:space="preserve">
+        <value>This session already has a navigation shell. There is one shell per session.</value>
+    </data>
+    <data name="RoleChangeRequiresReAuthentication" xml:space="preserve">
+        <value>The role is fixed for the whole session. Sign in again to continue with a different role.</value>
+    </data>
+    <data name="RoleImmutablePerSession" xml:space="preserve">
+        <value>The role claim of a session cannot be changed.</value>
+    </data>
+    <data name="NameRequired" xml:space="preserve">
+        <value>Write your given names and family names.</value>
+    </data>
+    <data name="InvalidPreferredLanguage" xml:space="preserve">
+        <value>Choose Spanish (es) or English (en).</value>
+    </data>
+    <data name="RefreshTokenInvalid" xml:space="preserve">
+        <value>Your session has expired. Sign in again.</value>
+    </data>
+    <data name="UnexpectedError" xml:space="preserve">
+        <value>An unexpected error occurred.</value>
+    </data>
+</root>
