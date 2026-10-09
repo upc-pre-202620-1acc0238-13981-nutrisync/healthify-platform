@@ -1,0 +1,37 @@
+services:
+  healthify-mysql:
+    image: mysql:8.4
+    container_name: healthify-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD:-healthify}
+      MYSQL_DATABASE: ${DATABASE_SCHEMA:-healthify}
+    ports:
+      - "3307:3306"
+    volumes:
+      - healthify-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DATABASE_PASSWORD:-healthify}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  healthify-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthify-api
+    restart: unless-stopped
+    depends_on:
+      healthify-mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ConnectionStrings__DefaultConnection=server=${DATABASE_HOST:-healthify-mysql};port=3306;user=${DATABASE_USER:-root};password=${DATABASE_PASSWORD:-healthify};database=${DATABASE_SCHEMA:-healthify}
+      - TokenSettings__Secret=${JWT_SECRET}
+      - Usda__ApiKey=${USDA_API_KEY:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  healthify-mysql-data:
