@@ -465,8 +465,11 @@ builder.Services.AddHttpClient<IExternalFoodCatalogProvider, OpenFoodFactsProvid
 });
 builder.Services.AddHttpClient<IExternalFoodCatalogProvider, UsdaFoodDataProvider>("Usda", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Usda:BaseUrl"]
-                                 ?? "https://api.nal.usda.gov/fdc/v1");
+    // The trailing slash keeps the /fdc/v1 path when relative request paths are resolved against it.
+    var usdaBaseUrl = builder.Configuration["Usda:BaseUrl"] is { Length: > 0 } configured
+        ? configured
+        : "https://api.nal.usda.gov/fdc/v1";
+    client.BaseAddress = new Uri(usdaBaseUrl.TrimEnd('/') + "/");
     client.Timeout = externalProviderTimeout;
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthify-Platform/1.0");
 });

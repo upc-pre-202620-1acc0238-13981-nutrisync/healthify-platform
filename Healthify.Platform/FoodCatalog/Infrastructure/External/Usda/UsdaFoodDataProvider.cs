@@ -35,7 +35,7 @@ public class UsdaFoodDataProvider(
         if (string.IsNullOrWhiteSpace(apiKey))
             return Unavailable("The provider is not configured with a key.");
 
-        var url = "/foods/search"
+        var url = "foods/search"
                   + $"?api_key={Uri.EscapeDataString(apiKey)}"
                   + $"&query={Uri.EscapeDataString(term)}"
                   + $"&pageSize={Math.Clamp(max, 1, 100)}";
