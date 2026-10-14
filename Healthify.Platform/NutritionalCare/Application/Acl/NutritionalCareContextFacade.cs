@@ -61,6 +61,33 @@ public class NutritionalCareContextFacade(
         }
     }
 
+    public async Task<IReadOnlyList<PlanVersionHistoryItem>> GetPlanVersionHistory(int patientId,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var plans = await planQueryService.Handle(new GetPlansByPatientIdQuery(patientId), ct);
+
+            // Drafts never reached the patient. Only the code of the reason crosses: a Custom text is clinical.
+            return plans
+                .Where(p => p.IsPublished && p.PrescribedTargets is not null)
+                .OrderBy(p => p.Version)
+                .Select(p =>
+                {
+                    var targets = p.PrescribedTargets!;
+                    var reason = p.ChangeReason;
+                    return new PlanVersionHistoryItem(p.Version, p.PublishedAt!.Value, p.IsActive,
+                        targets.EnergyKcal, targets.ProteinG, targets.CarbG, targets.FatG, reason?.Code,
+                        reason?.Data?.Date, reason?.Data?.SignalType);
+                })
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
     public async Task<bool> HasConsistencyEscalation(int patientId, CancellationToken ct = default)
     {
         try
