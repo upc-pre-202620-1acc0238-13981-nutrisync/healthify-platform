@@ -12,4 +12,7 @@ public interface ICareLinkQueryService
 
     Task<IEnumerable<CareLink>> Handle(GetCareLinksByPractitionerIdQuery query,
         CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<CareLink>> Handle(GetCareLinksByPatientIdQuery query,
+        CancellationToken cancellationToken = default);
 }

@@ -41,6 +41,15 @@ public class CareLinkRepository(AppDbContext context) : BaseRepository<CareLink>
         return await Unclosed().AnyAsync(c => c.PatientId == patientId, cancellationToken);
     }
 
+    public async Task<IEnumerable<CareLink>> ListByPatientIdAsync(int patientId,
+        CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<CareLink>()
+            .Where(c => c.PatientId == patientId)
+            .OrderBy(c => c.EstablishedAt)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<CareLink>> ListByPractitionerIdAsync(int practitionerId,
         CancellationToken cancellationToken = default)
     {
