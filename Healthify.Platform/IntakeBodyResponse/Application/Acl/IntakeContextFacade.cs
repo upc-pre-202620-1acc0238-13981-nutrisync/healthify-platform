@@ -3,6 +3,8 @@ using Healthify.Platform.IntakeBodyResponse.Application.Internal;
 using Healthify.Platform.IntakeBodyResponse.Application.QueryServices;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Queries;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
+using Healthify.Platform.IntakeBodyResponse.Domain.Services;
 using Healthify.Platform.IntakeBodyResponse.Interfaces.Acl;
 
 namespace Healthify.Platform.IntakeBodyResponse.Application.Acl;
@@ -18,8 +20,12 @@ namespace Healthify.Platform.IntakeBodyResponse.Application.Acl;
 public class IntakeContextFacade(
     IDiaryEntryQueryService diaryEntryQueryService,
     IWeightTrendQueryService weightTrendQueryService,
-    IFoodCatalogContextFacade foodCatalogContextFacade) : IIntakeContextFacade
+    IFoodCatalogContextFacade foodCatalogContextFacade,
+    ISelfWeighInQueryService? selfWeighInQueryService = null,
+    ISelfWeighInProtocolProvider? protocolProvider = null) : IIntakeContextFacade
 {
+    private const decimal NutrientBasisGrams = 100m;
+
     public async Task<DailyIntakeSummaryItem?> GetDailyIntakeSummary(int patientId, DateOnly date,
         CancellationToken ct = default)
     {
@@ -176,6 +182,87 @@ public class IntakeContextFacade(
         {
             return [];
         }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    ///     The nutrients are computed like the day's totals (catalog per 100 g × portion), with every food of the
+    ///     diary read from the catalog in one batch. An entry the patient has not confirmed carries the proposal and
+    ///     says so (<c>IsConfirmed</c> false), so the copy is the whole diary without passing a guess for intake.
+    /// </remarks>
+    public async Task<IReadOnlyList<DiaryExportEntryItem>> GetDiaryExport(int patientId,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var entries = (await diaryEntryQueryService.Handle(
+                new GetDiaryEntriesByPatientIdQuery(patientId, null), ct)).ToList();
+
+            var foodIds = entries
+                .Select(e => e.ConfirmedReferenceFoodId ?? e.ProposedReferenceFoodId)
+                .OfType<int>()
+                .Distinct()
+                .ToList();
+            var foods = foodIds.Count == 0
+                ? new Dictionary<int, ReferenceFoodItem>()
+                : (await foodCatalogContextFacade.GetReferenceFoodsByIds(foodIds, ct))
+                .ToDictionary(f => f.ReferenceFoodId);
+
+            return entries
+                .OrderBy(e => e.LocalTimestamp)
+                .Select(e =>
+                {
+                    var foodId = e.ConfirmedReferenceFoodId ?? e.ProposedReferenceFoodId;
+                    var grams = e.HasConfirmedEstimate ? e.ConfirmedPortionGrams : e.ProposedPortionGrams;
+                    var food = foodId is not null && foods.TryGetValue(foodId.Value, out var f) ? f : null;
+                    decimal? factor = food is not null && grams is not null ? grams.Value / NutrientBasisGrams : null;
+
+                    return new DiaryExportEntryItem(
+                        e.DeclaredLocalTimestamp,
+                        food?.LocalName,
+                        grams,
+                        Portion(food?.EnergyKcalPer100g, factor),
+                        Portion(food?.ProteinGPer100g, factor),
+                        Portion(food?.CarbGPer100g, factor),
+                        Portion(food?.FatGPer100g, factor),
+                        e.HasConfirmedEstimate,
+                        e.PlanAdherence.Value,
+                        e.Provenance.Value,
+                        e.Origin?.Value);
+                })
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    public async Task<IReadOnlyList<SelfWeighInExportItem>> GetSelfWeighIns(int patientId,
+        CancellationToken ct = default)
+    {
+        if (selfWeighInQueryService is null) return [];
+
+        try
+        {
+            var protocol = protocolProvider?.Current ?? SelfWeighInProtocol.Default;
+            var weighIns = await selfWeighInQueryService.Handle(new GetSelfWeighInsByPatientIdQuery(patientId), ct);
+
+            return weighIns
+                .OrderBy(w => w.LocalTimestamp)
+                .Select(w => new SelfWeighInExportItem(w.DeclaredLocalTimestamp, w.ValueKg, w.ProtocolFastedState,
+                    w.FollowsProtocolUnder(protocol)))
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static decimal? Portion(decimal? per100g, decimal? factor)
+    {
+        return per100g is null || factor is null ? null : decimal.Round(per100g.Value * factor.Value, 2);
     }
 
     private static string? NameOf(int? referenceFoodId, IReadOnlyDictionary<int, string> names)
