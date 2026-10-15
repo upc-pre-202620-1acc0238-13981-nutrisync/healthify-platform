@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Profile_Name" xml:space="preserve">
+        <value>Nombre</value>
+    </data>
+    <data name="Profile_Email" xml:space="preserve">
+        <value>Correo electrónico</value>
+    </data>
+    <data name="Profile_Language" xml:space="preserve">
+        <value>Idioma</value>
+    </data>
+    <data name="Profile_RegisteredAt" xml:space="preserve">
+        <value>Fecha de alta</value>
+    </data>
+    <data name="Diary_LocalTimestamp" xml:space="preserve">
+        <value>Fecha y hora local</value>
+    </data>
+    <data name="Diary_Food" xml:space="preserve">
+        <value>Alimento</value>
+    </data>
+    <data name="Diary_Grams" xml:space="preserve">
+        <value>Gramos</value>
+    </data>
+    <data name="Diary_EnergyKcal" xml:space="preserve">
+        <value>Energía (kcal)</value>
+    </data>
+    <data name="Diary_ProteinG" xml:space="preserve">
+        <value>Proteínas (g)</value>
+    </data>
+    <data name="Diary_CarbG" xml:space="preserve">
+        <value>Carbohidratos (g)</value>
+    </data>
+    <data name="Diary_FatG" xml:space="preserve">
+        <value>Grasas (g)</value>
+    </data>
+    <data name="Diary_Confirmed" xml:space="preserve">
+        <value>Confirmado</value>
+    </data>
+    <data name="Diary_InPlan" xml:space="preserve">
+        <value>¿En el plan?</value>
+    </data>
+    <data name="Diary_Origin" xml:space="preserve">
+        <value>Origen</value>
+    </data>
+    <data name="WeighIn_LocalTimestamp" xml:space="preserve">
+        <value>Fecha y hora local</value>
+    </data>
+    <data name="WeighIn_WeightKg" xml:space="preserve">
+        <value>Peso (kg)</value>
+    </data>
+    <data name="WeighIn_Fasted" xml:space="preserve">
+        <value>¿En ayunas?</value>
+    </data>
+    <data name="WeighIn_FollowsProtocol" xml:space="preserve">
+        <value>¿Siguió el protocolo?</value>
+    </data>
+    <data name="Plan_Version" xml:space="preserve">
+        <value>Versión</value>
+    </data>
+    <data name="Plan_ValidFrom" xml:space="preserve">
+        <value>Vigente desde</value>
+    </data>
+    <data name="Plan_IsActive" xml:space="preserve">
+        <value>Vigente ahora</value>
+    </data>
+    <data name="Plan_EnergyKcal" xml:space="preserve">
+        <value>Energía (kcal/día)</value>
+    </data>
+    <data name="Plan_ProteinG" xml:space="preserve">
+        <value>Proteínas (g/día)</value>
+    </data>
+    <data name="Plan_CarbG" xml:space="preserve">
+        <value>Carbohidratos (g/día)</value>
+    </data>
+    <data name="Plan_FatG" xml:space="preserve">
+        <value>Grasas (g/día)</value>
+    </data>
+    <data name="Plan_ChangeReasonCode" xml:space="preserve">
+        <value>Código del motivo del cambio</value>
+    </data>
+    <data name="Plan_ChangeReason" xml:space="preserve">
+        <value>Motivo del cambio</value>
+    </data>
+    <data name="Consultation_ScheduledFor" xml:space="preserve">
+        <value>Fecha</value>
+    </data>
+    <data name="Consultation_Modality" xml:space="preserve">
+        <value>Modalidad</value>
+    </data>
+    <data name="Consultation_State" xml:space="preserve">
+        <value>Estado</value>
+    </data>
+    <data name="Consultation_Practitioner" xml:space="preserve">
+        <value>Nutricionista</value>
+    </data>
+    <data name="Consultation_CompletedAt" xml:space="preserve">
+        <value>Realizada el</value>
+    </data>
+    <data name="Consultation_PlanVersion" xml:space="preserve">
+        <value>Versión del plan</value>
+    </data>
+    <data name="Link_Practitioner" xml:space="preserve">
+        <value>Nutricionista</value>
+    </data>
+    <data name="Link_Status" xml:space="preserve">
+        <value>Estado</value>
+    </data>
+    <data name="Link_EstablishedAt" xml:space="preserve">
+        <value>Vinculado el</value>
+    </data>
+    <data name="Link_ConsentGrantedAt" xml:space="preserve">
+        <value>Consentimiento otorgado el</value>
+    </data>
+    <data name="Link_ConsentWithdrawnAt" xml:space="preserve">
+        <value>Consentimiento retirado el</value>
+    </data>
+    <data name="Link_AiProcessing" xml:space="preserve">
+        <value>Procesamiento con IA permitido</value>
+    </data>
+    <data name="Link_AiProcessingDecidedAt" xml:space="preserve">
+        <value>Procesamiento con IA decidido el</value>
+    </data>
+    <data name="Link_EndedAt" xml:space="preserve">
+        <value>Finalizado el</value>
+    </data>
+    <data name="Link_EndReason" xml:space="preserve">
+        <value>Motivo de finalización</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Sí</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="Value_es" xml:space="preserve">
+        <value>Español</value>
+    </data>
+    <data name="Value_en" xml:space="preserve">
+        <value>Inglés</value>
+    </data>
+    <data name="Value_InPlan" xml:space="preserve">
+        <value>Sí</value>
+    </data>
+    <data name="Value_OffPlan" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="Value_NotAnswered" xml:space="preserve">
+        <value>Sin responder</value>
+    </data>
+    <data name="Origin_Photo" xml:space="preserve">
+        <value>Foto</value>
+    </data>
+    <data name="Origin_Manual" xml:space="preserve">
+        <value>Manual</value>
+    </data>
+    <data name="Origin_MealIdea" xml:space="preserve">
+        <value>Idea de comida</value>
+    </data>
+    <data name="Value_InPerson" xml:space="preserve">
+        <value>Presencial</value>
+    </data>
+    <data name="Value_Remote" xml:space="preserve">
+        <value>Virtual</value>
+    </data>
+    <data name="Value_Scheduled" xml:space="preserve">
+        <value>Programada</value>
+    </data>
+    <data name="Value_Completed" xml:space="preserve">
+        <value>Realizada</value>
+    </data>
+    <data name="Value_Missed" xml:space="preserve">
+        <value>No asistida</value>
+    </data>
+    <data name="Value_Cancelled" xml:space="preserve">
+        <value>Cancelada</value>
+    </data>
+    <data name="Value_Active" xml:space="preserve">
+        <value>Activo</value>
+    </data>
+    <data name="Value_PendingConsent" xml:space="preserve">
+        <value>Esperando consentimiento</value>
+    </data>
+    <data name="Value_ConsentWithdrawn" xml:space="preserve">
+        <value>Consentimiento retirado</value>
+    </data>
+    <data name="Value_Revoked" xml:space="preserve">
+        <value>Finalizado</value>
+    </data>
+    <data name="Value_Discharged" xml:space="preserve">
+        <value>Alta</value>
+    </data>
+    <data name="Value_SwitchedPractitioner" xml:space="preserve">
+        <value>Cambiaste de nutricionista</value>
+    </data>
+    <data name="Value_SustainedDeviation" xml:space="preserve">
+        <value>desviación sostenida</value>
+    </data>
+    <data name="ChangeReason_NewConsultation" xml:space="preserve">
+        <value>Nueva consulta del {0}</value>
+    </data>
+    <data name="ChangeReason_SignalAdjustment" xml:space="preserve">
+        <value>Ajuste por señal: {1} del {0}</value>
+    </data>
+    <data name="ChangeReason_Custom" xml:space="preserve">
+        <value>Ajuste indicado por tu nutricionista</value>
+    </data>
+    <data name="Origin_OffPlan" xml:space="preserve">
+        <value>Registro rápido fuera del plan</value>
+    </data>
+</root>
