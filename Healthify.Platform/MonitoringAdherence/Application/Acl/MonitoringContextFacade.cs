@@ -204,4 +204,25 @@ public class MonitoringContextFacade(
             return null;
         }
     }
+
+    public async Task<IReadOnlyList<FollowUpHistoryItem>> GetFollowUpHistory(int patientId,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var entries = await scheduledFollowUpQueryService.Handle(new GetFollowUpsByPatientIdQuery(patientId), ct);
+
+            // No check in, no cancellation reason: the visit, its modality and what became of it.
+            return entries
+                .Select(e => e.FollowUp)
+                .OrderBy(f => f.ScheduledFor)
+                .Select(f => new FollowUpHistoryItem(f.PractitionerId, f.ScheduledFor, f.Modality.Value,
+                    f.State.Value, f.CompletedAt, f.CancelledAt, f.CompletedByConsultationId))
+                .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
 }
