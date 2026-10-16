@@ -448,6 +448,8 @@ builder.Services.AddScoped<PatientMonitoringPanelComposer>();
 builder.Services.AddScoped<PatientSummaryComposer>();
 builder.Services.AddScoped<PatientRosterComposer>();
 builder.Services.AddScoped<PatientConsultationsComposer>();
+builder.Services.AddScoped<PatientDataExportWriter>();
+builder.Services.AddScoped<PatientDataExportComposer>();
 
 // Typed HttpClients (FoodCatalog only). Both implementations are registered against the same
 // contract on purpose: Import Catalog Snapshot consults every provider it is handed, so adding a
