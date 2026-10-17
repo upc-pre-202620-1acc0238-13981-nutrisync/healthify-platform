@@ -8,6 +8,9 @@ public record GetActiveTargetsByPatientIdQuery(int PatientId);
 /// <summary>Read model Daily Diary. A null date means the whole diary, most recent first.</summary>
 public record GetDiaryEntriesByPatientIdQuery(int PatientId, DateOnly? Date);
 
+/// <summary>Read model Daily Diary over a range of declared local days, both inclusive, oldest first.</summary>
+public record GetDiaryEntriesByPatientIdBetweenQuery(int PatientId, DateOnly From, DateOnly To);
+
 /// <summary>Read model Daily Diary, one entry.</summary>
 public record GetDiaryEntryByIdQuery(int DiaryEntryId);
 

@@ -19,6 +19,9 @@ public interface IDiaryEntryQueryService
     Task<IEnumerable<DiaryEntry>> Handle(GetDiaryEntriesByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<DiaryEntry>> Handle(GetDiaryEntriesByPatientIdBetweenQuery query,
+        CancellationToken cancellationToken = default);
+
     Task<IEnumerable<DiaryEntry>> Handle(GetPendingSyncQueueByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 

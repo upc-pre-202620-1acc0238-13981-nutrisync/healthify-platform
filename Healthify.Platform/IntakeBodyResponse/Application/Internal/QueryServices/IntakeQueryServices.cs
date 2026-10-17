@@ -33,6 +33,14 @@ public class DiaryEntryQueryService(
         return await repository.ListByPatientIdAsync(query.PatientId, query.Date, cancellationToken);
     }
 
+    public async Task<IEnumerable<DiaryEntry>> Handle(GetDiaryEntriesByPatientIdBetweenQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        if (query.To < query.From) return [];
+        return await repository.ListByPatientIdBetweenAsync(query.PatientId, query.From, query.To,
+            cancellationToken);
+    }
+
     public async Task<IEnumerable<DiaryEntry>> Handle(GetPendingSyncQueueByPatientIdQuery query,
         CancellationToken cancellationToken = default)
     {

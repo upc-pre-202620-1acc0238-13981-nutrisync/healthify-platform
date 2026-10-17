@@ -167,12 +167,11 @@ public class IntakeContextFacade(
         try
         {
             if (to < from) return [];
-            var entries = await diaryEntryQueryService.Handle(new GetDiaryEntriesByPatientIdQuery(patientId, null),
-                ct);
+            var entries = await diaryEntryQueryService.Handle(
+                new GetDiaryEntriesByPatientIdBetweenQuery(patientId, from, to), ct);
 
             // Only when and whether it counted crosses: the food, the portion and the photo stay here.
             return entries
-                .Where(e => e.LocalDate >= from && e.LocalDate <= to)
                 .OrderBy(e => e.LocalTimestamp)
                 .Select(e => new DiaryEntryMomentItem(e.LocalDate, e.DeclaredLocalTimestamp, e.HasConfirmedEstimate,
                     e.PlanAdherence.Value))
