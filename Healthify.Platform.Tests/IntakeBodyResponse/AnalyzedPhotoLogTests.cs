@@ -306,6 +306,13 @@ public class AnalyzedPhotoLogTests
             return Task.FromResult<IEnumerable<DiaryEntry>>(_stored.Where(e => e.PatientId == patientId).ToList());
         }
 
+        public Task<IEnumerable<DiaryEntry>> ListByPatientIdBetweenAsync(int patientId, DateOnly from, DateOnly to,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<IEnumerable<DiaryEntry>>(_stored
+                .Where(e => e.PatientId == patientId && e.LocalDate >= from && e.LocalDate <= to).ToList());
+        }
+
         public Task<DiaryEntry?> FindByClientEntryIdAsync(Guid clientEntryId,
             CancellationToken cancellationToken = default)
         {
