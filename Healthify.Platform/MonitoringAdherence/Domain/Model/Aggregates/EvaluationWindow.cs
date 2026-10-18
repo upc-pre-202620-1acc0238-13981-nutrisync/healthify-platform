@@ -1,5 +1,6 @@
 using Healthify.Platform.MonitoringAdherence.Domain.Model.Commands;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
+using Healthify.Platform.MonitoringAdherence.Domain.Services;
 
 namespace Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 
@@ -161,10 +162,11 @@ public partial class EvaluationWindow
     ///     already come into force by then. A snapshot taken afterwards does not apply to it.
     /// </summary>
     /// <param name="date">The day being evaluated.</param>
-    public TargetsSnapshot? SnapshotInForceOn(DateOnly date)
+    /// <param name="calendar">The clinical calendar that turns the moment of each snapshot into a day.</param>
+    public TargetsSnapshot? SnapshotInForceOn(DateOnly date, IFollowUpCalendar calendar)
     {
         return _targetsSnapshots
-            .Where(s => s.EffectiveFrom <= date)
+            .Where(s => s.EffectiveFromIn(calendar) <= date)
             .OrderByDescending(s => s.TakenAt)
             .FirstOrDefault();
     }
@@ -247,20 +249,21 @@ public partial class EvaluationWindow
     ///     Source: event storming v3, section 5, Subflow 5.4.
     /// </remarks>
     /// <param name="date">The day about to be evaluated. Everything before it is filled in.</param>
+    /// <param name="calendar">The clinical calendar that turns the moment of each snapshot into a day.</param>
     /// <returns>The days that were just marked unlogged.</returns>
-    public IReadOnlyList<DailyCompliance> MarkUnloggedDaysBefore(DateOnly date)
+    public IReadOnlyList<DailyCompliance> MarkUnloggedDaysBefore(DateOnly date, IFollowUpCalendar calendar)
     {
         var added = new List<DailyCompliance>();
         if (_targetsSnapshots.Count == 0) return added;
 
-        var firstEvaluable = _targetsSnapshots.Min(s => s.EffectiveFrom);
+        var firstEvaluable = _targetsSnapshots.Min(s => s.EffectiveFromIn(calendar));
         var start = firstEvaluable < From ? From : firstEvaluable;
 
         for (var day = start; day < date; day = day.AddDays(1))
         {
             if (_dailyComplianceSeries.Any(d => d.Date == day)) continue;
 
-            var snapshot = SnapshotInForceOn(day);
+            var snapshot = SnapshotInForceOn(day, calendar);
             if (snapshot is null) continue;
 
             added.Add(DailyCompliance.Evaluate(day, false, 0, 0m, snapshot));

@@ -39,6 +39,13 @@ public interface IEvaluationWindowCommandService
     Task<Result<EvaluationWindow, MonitoringError>> Handle(MarkUnloggedDaysBeforeCommand command,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    ///     Subflow 5.5 - Re Evaluate Logged Days. Repair of the days evaluated against the UTC date; returns how
+    ///     many days changed.
+    /// </summary>
+    Task<Result<int, MonitoringError>> Handle(ReEvaluateLoggedDaysCommand command,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Subflow 5.9 - Flag Logging Gap. Never a deviation and never an escalation.</summary>
     Task<Result<EvaluationWindow, MonitoringError>> Handle(FlagLoggingGapCommand command,
         CancellationToken cancellationToken = default);
