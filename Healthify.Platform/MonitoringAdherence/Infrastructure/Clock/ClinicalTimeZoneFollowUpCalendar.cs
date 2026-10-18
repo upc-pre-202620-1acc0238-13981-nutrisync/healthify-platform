@@ -48,6 +48,11 @@ public class ClinicalTimeZoneFollowUpCalendar : IFollowUpCalendar
         return (start, end);
     }
 
+    public DateOnly LocalDateOf(DateTimeOffset moment)
+    {
+        return DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(moment, _timeZone).DateTime);
+    }
+
     private static TimeZoneInfo? Resolve(string id)
     {
         try
