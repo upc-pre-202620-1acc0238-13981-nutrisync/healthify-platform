@@ -488,6 +488,9 @@ builder.Services.AddHostedService<CatalogImportHostedService>();
 // Policy "When N Days Without Diary Entry" - MonitoringAdherence, Subflow 5.9
 builder.Services.AddHostedService<LoggingGapDetectionHostedService>();
 
+// Repair at start-up of the days evaluated against the UTC date - MonitoringAdherence, Subflow 5.5
+builder.Services.AddHostedService<ClinicalDayRepairHostedService>();
+
 // Policy "When Consistency Alert Sustained Three Weeks" - MonitoringAdherence, Subflow 5.8
 builder.Services.AddHostedService<ConsistencyEscalationHostedService>();
 
