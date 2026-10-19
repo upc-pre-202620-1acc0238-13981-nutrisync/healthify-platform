@@ -11,6 +11,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Commands;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.Errors;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 using Healthify.Platform.MonitoringAdherence.Domain.Repositories;
+using Healthify.Platform.MonitoringAdherence.Infrastructure.Clock;
 using Healthify.Platform.Shared.Application.Patterns;
 using Healthify.Platform.Shared.Domain.Repositories;
 using Healthify.Platform.Tests.TestSupport;
@@ -40,7 +41,8 @@ public class WindowHandoverOnSwitchTests
     {
         _commands = new EvaluationWindowCommandService(_repository, Substitute.For<IIntakeContextFacade>(),
             Substitute.For<IUnitOfWork>(), new ConfigurationBuilder().Build(),
-            NullLogger<EvaluationWindowCommandService>.Instance, Substitute.For<IMediator>());
+            NullLogger<EvaluationWindowCommandService>.Instance, Substitute.For<IMediator>(),
+            new ClinicalTimeZoneFollowUpCalendar(TimeZoneInfo.Utc));
         _queries = new EvaluationWindowQueryService(_repository);
     }
 
