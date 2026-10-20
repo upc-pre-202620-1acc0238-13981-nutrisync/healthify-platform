@@ -105,6 +105,99 @@ public class MealPhotoRecognitionTests
     }
 
     [Fact]
+    public async Task An_alternative_already_in_the_catalog_is_resolved_and_its_own_nutrients_are_not_used()
+    {
+        var arroz = _foods.Stored[1];
+        _model.Answers(AnswerWithAlternatives("Lomo saltado",
+            Alternative("Arroz blanco", 150m, kcal: 500m, protein: 10m, carb: 10m, fat: 1m)));
+
+        var view = Success(await Service().Handle(Analyze()));
+
+        var alternative = Assert.Single(view.Alternatives);
+        Assert.Equal(("Arroz blanco cocido", 150m, (int?)arroz.Id.Value),
+            (alternative.Name, alternative.Grams, alternative.ReferenceFoodId));
+        Assert.DoesNotContain(_foods.Stored, f => f.Source.IsAiEstimated);
+        await _provider.DidNotReceiveWithAnyArgs().FetchSnapshotAsync(default!, default, default);
+    }
+
+    [Fact]
+    public async Task A_new_alternative_is_created_from_its_own_nutrients_so_it_can_be_chosen_and_only_once()
+    {
+        _model.Answers(AnswerWithAlternatives("Lomo saltado",
+                Alternative("Tallarín saltado", 300m, kcal: 160m, protein: 8m, carb: 20m, fat: 5.5m)))
+            .Answers(AnswerWithAlternatives("Lomo saltado",
+                Alternative("tallarin  saltado", 250m, kcal: 160m, protein: 8m, carb: 20m, fat: 5.5m)));
+
+        var first = Success(await Service().Handle(Analyze()));
+        var second = Success(await Service().Handle(Analyze()));
+
+        var created = Assert.Single(_foods.Stored, f => f.Source.IsAiEstimated);
+        Assert.Equal(("Tallarín saltado", true, (int?)null, (long?)FirstGenerationId),
+            (created.LocalNameText, created.IsVerified, created.VerifiedBy, created.AiGenerationId));
+        Assert.Equal((160m, 8m, 20m, 5.5m),
+            (created.EnergyKcalPer100g, created.ProteinGPer100g, created.CarbGPer100g, created.FatGPer100g));
+        Assert.Equal(("Tallarín saltado", 300m, (int?)created.Id.Value),
+            (first.Alternatives[0].Name, first.Alternatives[0].Grams, first.Alternatives[0].ReferenceFoodId));
+        Assert.Equal(created.Id.Value, second.Alternatives[0].ReferenceFoodId);
+        // The stored analysis carries it, so photo-logs can take it.
+        Assert.Equal(created.Id.Value, _analyses.Stored[0].Alternatives[0].ReferenceFoodId);
+        // The main dish was in the catalog: no provider was asked, for it nor for the alternative.
+        await _provider.DidNotReceiveWithAnyArgs().FetchSnapshotAsync(default!, default, default);
+    }
+
+    [Fact]
+    public async Task An_alternative_with_invalid_nutrients_stays_without_a_food_and_the_analysis_still_succeeds()
+    {
+        // 500 kcal declared, 4·10 + 4·10 + 9·1 = 89 by Atwater; and 950 kcal, above what the catalog accepts. Neither
+        // is limited by the schema of v3: one alternative must never reject the whole analysis.
+        _model.Answers(AnswerWithAlternatives("Lomo saltado",
+            Alternative("Plato misterioso", 200m, kcal: 500m, protein: 10m, carb: 10m, fat: 1m),
+            Alternative("Fritura rara", 100m, kcal: 950m, protein: 0m, carb: 0m, fat: 100m),
+            Alternative("Ají de gallina", 250m, kcal: 150m, protein: 10m, carb: 12m, fat: 7m)));
+
+        var view = Success(await Service().Handle(Analyze()));
+
+        Assert.Equal(_lomo.Id.Value, view.ReferenceFoodId);
+        var aji = Assert.Single(_foods.Stored, f => f.Source.IsAiEstimated);
+        Assert.Equal("Ají de gallina", aji.LocalNameText);
+        Assert.Equal([("Plato misterioso", (int?)null), ("Fritura rara", null), ("Ají de gallina", aji.Id.Value)],
+            view.Alternatives.Select(a => (a.Name, a.ReferenceFoodId)));
+        Assert.Equal(AiGenerationStatus.Succeeded, Assert.Single(_log.Rows).Status);
+        Assert.Single(_analyses.Stored);
+    }
+
+    [Fact]
+    public async Task An_alternative_clearly_the_same_as_a_catalog_dish_reuses_it_and_the_main_dish_is_not_repeated()
+    {
+        _model.Answers(AnswerWithAlternatives("Arroz blanco cocido",
+            Alternative("Lomo saltado de res", 300m, kcal: 170m, protein: 12m, carb: 9m, fat: 9.5m),
+            Alternative("Arroz blanco", 200m, kcal: 130m, protein: 2.7m, carb: 28.2m, fat: 0.3m),
+            Alternative("Lomo saltado", 250m, kcal: 170m, protein: 12m, carb: 9m, fat: 9.5m)));
+
+        var view = Success(await Service().Handle(Analyze()));
+
+        // «Lomo saltado de res» is «Lomo saltado» (Similar Dish Reused); «Arroz blanco» is the main dish; the second
+        // «Lomo saltado» is the same food again.
+        Assert.Equal(_foods.Stored[1].Id.Value, view.ReferenceFoodId);
+        Assert.Equal([("Lomo saltado", 300m, (int?)_lomo.Id.Value)],
+            view.Alternatives.Select(a => (a.Name, a.Grams, a.ReferenceFoodId)));
+        Assert.DoesNotContain(_foods.Stored, f => f.Source.IsAiEstimated);
+    }
+
+    [Fact]
+    public void The_v3_output_still_reads_alternatives_shaped_as_v2()
+    {
+        var output = JsonSerializer.Deserialize<MealPhotoRecognitionOutput>(
+            Answer("Lomo saltado", alternatives: [("Arroz blanco", 150m)]),
+            new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+
+        var alternative = Assert.Single(output.Alternatives);
+        Assert.Equal(("Arroz blanco", 150m), (alternative.Name, alternative.Grams));
+        Assert.Null(alternative.NutrientsPer100g);
+        Assert.Empty(new MealPhotoRecognitionOutputValidator().Validate(output));
+    }
+
+    [Fact]
     public async Task A_dish_only_a_provider_carries_is_cached_through_search_and_resolved_without_ai_nutrients()
     {
         _provider.FetchSnapshotAsync("Pan con chicharrón", Arg.Any<int>(), Arg.Any<CancellationToken>())
@@ -168,7 +261,7 @@ public class MealPhotoRecognitionTests
         Assert.Equal(["Lomo saltado", "Arroz blanco cocido"],
             input.GetProperty("catalogDishNames").EnumerateArray().Select(e => e.GetString()));
         Assert.Contains("use **exactly** that name", request.SystemInstruction);
-        Assert.Equal("meal-photo-recognition@2", Assert.Single(_log.Rows).PromptVersion);
+        Assert.Equal("meal-photo-recognition@3", Assert.Single(_log.Rows).PromptVersion);
         // A statistic of the whole platform: the patient's own diary is never read for it.
         await _diary.DidNotReceiveWithAnyArgs().ListByPatientIdAsync(default, default, default);
         Assert.DoesNotContain(PatientId.ToString(), request.UserContent);
@@ -552,6 +645,25 @@ public class MealPhotoRecognitionTests
             alternatives = (alternatives ?? []).Select(a => new { name = a.Name, grams = a.Grams }).ToArray(),
             nutrientsPer100g = new { kcal, protein, carb, fat }
         });
+    }
+
+    /// <summary>An answer of <c>meal-photo-recognition@3</c>: each alternative with its own nutrients.</summary>
+    private static string AnswerWithAlternatives(string dish, params object[] alternatives)
+    {
+        return JsonSerializer.Serialize(new
+        {
+            dishName = dish,
+            estimatedGrams = 320m,
+            confidence = 0.82m,
+            alternatives,
+            nutrientsPer100g = new { kcal = 150m, protein = 10m, carb = 12m, fat = 7m }
+        });
+    }
+
+    private static object Alternative(string name, decimal grams, decimal kcal, decimal protein, decimal carb,
+        decimal fat)
+    {
+        return new { name, grams, nutrientsPer100g = new { kcal, protein, carb, fat } };
     }
 
     private static MealPhotoAnalysisView Success(Result<MealPhotoAnalysisView, IntakeAiFailure> result)
