@@ -12,7 +12,17 @@ public sealed record MealPhotoRecognitionOutput(
     MealPhotoNutrientsOutput NutrientsPer100g);
 
 /// <summary>IN-7. Another dish the photo could show, as the model wrote it.</summary>
-public sealed record MealPhotoAlternativeOutput(string Name, decimal Grams);
+/// <param name="Name">The dish, as the model named it.</param>
+/// <param name="Grams">Its own portion.</param>
+/// <param name="NutrientsPer100g">
+///     Since <c>meal-photo-recognition@3</c>: its own nutrients, used only when the dish has to be created. Optional,
+///     so an output shaped as v2 still reads (that alternative then stays without a food when the catalog lacks it).
+///     Not judged here: the catalog judges them, and an incoherent alternative never rejects the analysis.
+/// </param>
+public sealed record MealPhotoAlternativeOutput(
+    string Name,
+    decimal Grams,
+    MealPhotoNutrientsOutput? NutrientsPer100g = null);
 
 /// <summary>IN-7. The nutrients per 100 g the model estimated for the main dish.</summary>
 public sealed record MealPhotoNutrientsOutput(decimal Kcal, decimal Protein, decimal Carb, decimal Fat);
