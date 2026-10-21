@@ -93,6 +93,8 @@ public class AiEstimatedFoodTests
     [InlineData("Arroz con pollo", "Arroz blanco cocido", false)]
     [InlineData("Lomo saltado con papas fritas", "Lomo saltado", false)] // two words more: another dish
     [InlineData("Seco de cordero", "Seco de res", false)]
+    [InlineData("Papaya picada", "Papa picada", false)] // a word that only starts with another is another food
+    [InlineData("Papa picada", "Papaya picada", false)]
     public void A_similar_dish_is_matched_only_when_it_is_clearly_the_same(string name, string catalog, bool matches)
     {
         var food = Identity.Assign(new ReferenceFood(new LocalName(catalog), new NutrientsPer100g(150m, 10m, 12m, 7m),

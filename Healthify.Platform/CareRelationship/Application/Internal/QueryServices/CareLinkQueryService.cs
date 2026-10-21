@@ -24,4 +24,10 @@ public class CareLinkQueryService(ICareLinkRepository careLinkRepository) : ICar
     {
         return await careLinkRepository.ListByPractitionerIdAsync(query.PractitionerId, cancellationToken);
     }
+
+    public async Task<IEnumerable<CareLink>> Handle(GetCareLinksByPatientIdQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        return await careLinkRepository.ListByPatientIdAsync(query.PatientId, cancellationToken);
+    }
 }

@@ -80,6 +80,20 @@ public record ReEvaluateWindowCommand(int PatientId, DateOnly Date);
 /// <param name="Date">The most recent day of the batch. Only the days before it are considered.</param>
 public record MarkUnloggedDaysBeforeCommand(int PatientId, DateOnly Date);
 
+/// <summary>
+///     Re-evaluates, one at a time, the recent days of an open window in which the patient logged something.
+/// </summary>
+/// <remarks>
+///     Repairs the days left unevaluated, or filled in as unlogged, while the first day of a targets snapshot was
+///     taken as its UTC date: targets published in the evening in Lima were not in force on the patient's own day.
+///     Each day goes through the same single-day re-evaluation as a late entry (Subflow 5.5), so a day that is
+///     already right changes nothing and publishes nothing.
+/// </remarks>
+/// <param name="PatientId">Whose window it is.</param>
+/// <param name="From">The first day considered.</param>
+/// <param name="To">The last day considered, inclusive.</param>
+public record ReEvaluateLoggedDaysCommand(int PatientId, DateOnly From, DateOnly To);
+
 /// <summary>Subflow 5.6 - Detect Deviation. Issued by the internal policy that reacts to Day Evaluated.</summary>
 /// <param name="PatientId">Whose window is being read.</param>
 public record DetectDeviationCommand(int PatientId);

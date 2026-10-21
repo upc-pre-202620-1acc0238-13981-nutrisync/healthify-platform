@@ -448,6 +448,8 @@ builder.Services.AddScoped<PatientMonitoringPanelComposer>();
 builder.Services.AddScoped<PatientSummaryComposer>();
 builder.Services.AddScoped<PatientRosterComposer>();
 builder.Services.AddScoped<PatientConsultationsComposer>();
+builder.Services.AddScoped<PatientDataExportWriter>();
+builder.Services.AddScoped<PatientDataExportComposer>();
 
 // Typed HttpClients (FoodCatalog only). Both implementations are registered against the same
 // contract on purpose: Import Catalog Snapshot consults every provider it is handed, so adding a
@@ -485,6 +487,9 @@ builder.Services.AddHostedService<CatalogImportHostedService>();
 
 // Policy "When N Days Without Diary Entry" - MonitoringAdherence, Subflow 5.9
 builder.Services.AddHostedService<LoggingGapDetectionHostedService>();
+
+// Repair at start-up of the days evaluated against the UTC date - MonitoringAdherence, Subflow 5.5
+builder.Services.AddHostedService<ClinicalDayRepairHostedService>();
 
 // Policy "When Consistency Alert Sustained Three Weeks" - MonitoringAdherence, Subflow 5.8
 builder.Services.AddHostedService<ConsistencyEscalationHostedService>();

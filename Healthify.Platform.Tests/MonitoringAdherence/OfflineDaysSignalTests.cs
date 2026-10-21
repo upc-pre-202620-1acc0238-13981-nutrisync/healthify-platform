@@ -9,6 +9,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Commands;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.Events;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 using Healthify.Platform.MonitoringAdherence.Domain.Repositories;
+using Healthify.Platform.MonitoringAdherence.Infrastructure.Clock;
 using Healthify.Platform.Shared.Domain.Repositories;
 using Healthify.Platform.Tests.TestSupport;
 using Microsoft.Extensions.Configuration;
@@ -111,7 +112,8 @@ public class OfflineDaysSignalTests
 
         var mediator = Substitute.For<IMediator>();
         var windows = new EvaluationWindowCommandService(windowRepository, intake, Substitute.For<IUnitOfWork>(),
-            new ConfigurationBuilder().Build(), NullLogger<EvaluationWindowCommandService>.Instance, mediator);
+            new ConfigurationBuilder().Build(), NullLogger<EvaluationWindowCommandService>.Instance, mediator,
+            new ClinicalTimeZoneFollowUpCalendar(TimeZoneInfo.Utc));
 
         // Day 1, online.
         await windows.Handle(new EvaluateDayCommand(PatientId, day1));

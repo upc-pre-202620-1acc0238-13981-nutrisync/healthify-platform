@@ -63,6 +63,19 @@ public class DiaryEntryRepository(AppDbContext context)
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<DiaryEntry>> ListByPatientIdBetweenAsync(int patientId, DateOnly from,
+        DateOnly to, CancellationToken cancellationToken = default)
+    {
+        // The same wall-clock filter as a single day, over a range, so only those days leave the database.
+        var start = from.ToDateTime(TimeOnly.MinValue);
+        var end = to.AddDays(1).ToDateTime(TimeOnly.MinValue);
+
+        return await Context.Set<DiaryEntry>()
+            .Where(e => e.PatientId == patientId && e.LocalTimestamp >= start && e.LocalTimestamp < end)
+            .OrderBy(e => e.LocalTimestamp)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<DiaryEntry?> FindByClientEntryIdAsync(Guid clientEntryId,
         CancellationToken cancellationToken = default)
     {

@@ -101,6 +101,44 @@ public record DiaryEntryMomentItem(
     string PlanAdherence);
 
 /// <summary>
+///     Data export. One diary entry as its owner downloads it. Primitives only: no photo reference, no confidence,
+///     no AI generation and no internal identifiers.
+/// </summary>
+/// <param name="LocalTimestamp">The moment declared, on the device clock and offset.</param>
+/// <param name="FoodName">The confirmed food, or the proposed one while the entry waits; null when unresolved.</param>
+/// <param name="PortionGrams">The confirmed portion, or the proposed one while the entry waits.</param>
+/// <param name="EnergyKcal">Energy of that portion; null when the food or the portion is unknown.</param>
+/// <param name="ProteinG">Protein of that portion, or null.</param>
+/// <param name="CarbG">Carbohydrates of that portion, or null.</param>
+/// <param name="FatG">Fat of that portion, or null.</param>
+/// <param name="IsConfirmed">Whether the patient confirmed it (only a confirmed entry is intake).</param>
+/// <param name="PlanAdherence">InPlan, OffPlan or NotAnswered.</param>
+/// <param name="Provenance">Photo or Manual; OffPlan only on legacy entries (IN-1).</param>
+/// <param name="Origin">MealIdea for an entry logged from a meal idea (IN-6), otherwise null.</param>
+public record DiaryExportEntryItem(
+    DateTimeOffset LocalTimestamp,
+    string? FoodName,
+    decimal? PortionGrams,
+    decimal? EnergyKcal,
+    decimal? ProteinG,
+    decimal? CarbG,
+    decimal? FatG,
+    bool IsConfirmed,
+    string PlanAdherence,
+    string Provenance,
+    string? Origin);
+
+/// <summary>
+///     Data export. One home weigh in as its owner downloads it. Primitives only. A reading here is what the patient
+///     typed, kept apart from the trend and from any clinical measurement.
+/// </summary>
+/// <param name="LocalTimestamp">The moment declared, on the device clock and offset.</param>
+/// <param name="ValueKg">The reading in kilograms.</param>
+/// <param name="Fasted">Whether the patient said they were fasting.</param>
+/// <param name="FollowsProtocol">Whether it follows the protocol in force (IN-3), so it smooths the trend.</param>
+public record SelfWeighInExportItem(DateTimeOffset LocalTimestamp, decimal ValueKg, bool Fasted, bool FollowsProtocol);
+
+/// <summary>
 ///     Public ACL contract of the Intake and Body Response bounded context.
 /// </summary>
 /// <remarks>
@@ -169,4 +207,16 @@ public interface IIntakeContextFacade
     /// </summary>
     Task<IReadOnlyList<DiaryEntryMomentItem>> GetDiaryEntryMoments(int patientId, DateOnly from, DateOnly to,
         CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. The whole diary of the patient, oldest first, with the nutrients of each portion, from one read
+    ///     of the diary and one of the catalog. An empty list when there are none or the lookup fails.
+    /// </summary>
+    Task<IReadOnlyList<DiaryExportEntryItem>> GetDiaryExport(int patientId, CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. Every home weigh in of the patient, oldest first, including the ones the trend leaves out. An
+    ///     empty list when there are none or the lookup fails.
+    /// </summary>
+    Task<IReadOnlyList<SelfWeighInExportItem>> GetSelfWeighIns(int patientId, CancellationToken ct = default);
 }

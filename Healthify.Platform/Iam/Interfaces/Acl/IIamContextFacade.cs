@@ -20,6 +20,28 @@ public record UserIdentityItem(
 }
 
 /// <summary>
+///     Data export. The account as its owner downloads it: name, email, language and when it was created.
+///     Primitives only; no role, lockout counters, session or password data.
+/// </summary>
+/// <param name="UserId">The account.</param>
+/// <param name="Email">Sign-in email.</param>
+/// <param name="GivenNames">Given names (IAM-1).</param>
+/// <param name="FamilyNames">Family names (IAM-1).</param>
+/// <param name="PreferredLanguage">es or en (IAM-3).</param>
+/// <param name="RegisteredAt">When the account was created; null when it was not recorded.</param>
+public record AccountProfileItem(
+    int UserId,
+    string Email,
+    string GivenNames,
+    string FamilyNames,
+    string PreferredLanguage,
+    DateTimeOffset? RegisteredAt)
+{
+    /// <summary>"Ana Flores".</summary>
+    public string FullName => $"{GivenNames} {FamilyNames}".Trim();
+}
+
+/// <summary>
 ///     Public ACL contract of the Iam bounded context. Other contexts consume identity data through
 ///     this facade without coupling to the domain model: every parameter and return value is a
 ///     primitive or a primitives-only DTO declared here, never a command, aggregate or entity.
@@ -47,6 +69,11 @@ public interface IIamContextFacade
     ///     function of the owning context writes to that person. Null when the account does not exist or the lookup fails.
     /// </summary>
     Task<string?> GetPreferredLanguage(int userId, CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. The account as its owner downloads it, or null when it does not exist or the lookup fails.
+    /// </summary>
+    Task<AccountProfileItem?> GetAccountProfile(int userId, CancellationToken ct = default);
 
     /// <summary>Returns false when the account does not exist or the lookup fails.</summary>
     Task<bool> IsPractitioner(int userId, CancellationToken ct = default);

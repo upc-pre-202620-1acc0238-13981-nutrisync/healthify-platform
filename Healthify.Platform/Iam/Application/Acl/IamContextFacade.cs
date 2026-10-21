@@ -52,6 +52,22 @@ public class IamContextFacade(IUserQueryService userQueryService) : IIamContextF
         }
     }
 
+    public async Task<AccountProfileItem?> GetAccountProfile(int userId, CancellationToken ct = default)
+    {
+        try
+        {
+            var user = await userQueryService.Handle(new GetUserByIdQuery(userId), ct);
+            return user is null
+                ? null
+                : new AccountProfileItem(user.Id.Value, user.Email.Value, user.GivenNames, user.FamilyNames,
+                    user.PreferredLanguage.Value, user.CreatedAt);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public async Task<bool> IsPractitioner(int userId, CancellationToken ct = default)
     {
         try

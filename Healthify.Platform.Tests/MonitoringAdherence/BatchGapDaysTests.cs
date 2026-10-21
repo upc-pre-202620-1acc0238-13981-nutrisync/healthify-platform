@@ -9,6 +9,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Commands;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.Events;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 using Healthify.Platform.MonitoringAdherence.Domain.Repositories;
+using Healthify.Platform.MonitoringAdherence.Infrastructure.Clock;
 using Healthify.Platform.Shared.Domain.Repositories;
 using Healthify.Platform.Tests.TestSupport;
 using Microsoft.Extensions.Configuration;
@@ -57,7 +58,8 @@ public class BatchGapDaysTests
             });
 
         _windows = new EvaluationWindowCommandService(repository, intake, Substitute.For<IUnitOfWork>(),
-            new ConfigurationBuilder().Build(), NullLogger<EvaluationWindowCommandService>.Instance, _mediator);
+            new ConfigurationBuilder().Build(), NullLogger<EvaluationWindowCommandService>.Instance, _mediator,
+            new ClinicalTimeZoneFollowUpCalendar(TimeZoneInfo.Utc));
     }
 
     [Fact]

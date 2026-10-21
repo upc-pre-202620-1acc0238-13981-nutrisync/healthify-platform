@@ -55,6 +55,55 @@ public class ResolveByNamesTests
         Assert.Null(FoodNameMatcher.BestMatch(name, Catalog));
     }
 
+    [Theory]
+    [InlineData("Papa", 21)] // the identical name, not the one with no extra words that only starts with it
+    [InlineData("papas", 21)]
+    [InlineData("Papaya", 22)]
+    [InlineData("Papa sancochada", 23)]
+    public void A_word_matches_whole_words_only_and_an_identical_name_wins(string name, int expectedId)
+    {
+        List<ReferenceFood> catalog =
+        [
+            Food(22, "Papaya", 39m, 0.6m, 9.8m, 0.1m),
+            Food(23, "Papa blanca sancochada", 87m, 1.9m, 20.1m, 0.1m),
+            Food(21, "Papa", 79m, 2m, 18m, 0.1m)
+        ];
+
+        Assert.Equal(expectedId, FoodNameMatcher.BestMatch(name, catalog)?.Id.Value);
+    }
+
+    [Theory]
+    [InlineData("Papa", 23)] // never the fruit: «Papa» is not a word of «Papaya»
+    [InlineData("Papas", 23)]
+    [InlineData("Papaya", 22)]
+    public void Without_an_identical_entry_a_name_resolves_to_the_entry_that_has_the_word(string name, int expectedId)
+    {
+        List<ReferenceFood> catalog =
+        [
+            Food(22, "Papaya", 39m, 0.6m, 9.8m, 0.1m),
+            Food(23, "Papa blanca sancochada", 87m, 1.9m, 20.1m, 0.1m)
+        ];
+
+        Assert.Equal(expectedId, FoodNameMatcher.BestMatch(name, catalog)?.Id.Value);
+    }
+
+    [Theory]
+    [InlineData("Frijoles", 31)] // Spanish plural in -es
+    [InlineData("frijol", 31)]
+    [InlineData("Limones", 32)]
+    [InlineData("Tomates", 33)]
+    public void A_plural_still_matches_its_singular(string name, int expectedId)
+    {
+        List<ReferenceFood> catalog =
+        [
+            Food(31, "Frijol canario cocido", 120m, 8m, 21m, 0.5m),
+            Food(32, "Limón", 29m, 1.1m, 9.3m, 0.3m),
+            Food(33, "Tomate", 18m, 0.9m, 3.9m, 0.2m)
+        ];
+
+        Assert.Equal(expectedId, FoodNameMatcher.BestMatch(name, catalog)?.Id.Value);
+    }
+
     [Fact]
     public void A_local_override_wins_between_two_otherwise_equal_entries()
     {

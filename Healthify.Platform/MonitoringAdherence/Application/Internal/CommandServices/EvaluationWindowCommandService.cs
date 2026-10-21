@@ -7,6 +7,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Errors;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.Events;
 using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 using Healthify.Platform.MonitoringAdherence.Domain.Repositories;
+using Healthify.Platform.MonitoringAdherence.Domain.Services;
 using Healthify.Platform.Shared.Application.Patterns;
 using Healthify.Platform.Shared.Domain.Repositories;
 
@@ -31,7 +32,8 @@ public class EvaluationWindowCommandService(
     IUnitOfWork unitOfWork,
     IConfiguration configuration,
     ILogger<EvaluationWindowCommandService> logger,
-    IMediator mediator) : IEvaluationWindowCommandService
+    IMediator mediator,
+    IFollowUpCalendar calendar) : IEvaluationWindowCommandService
 {
     /// <summary>Subflow 5.1 - Open Evaluation Window.</summary>
     public async Task<Result<EvaluationWindow, MonitoringError>> Handle(
@@ -58,10 +60,12 @@ public class EvaluationWindowCommandService(
 
             // TODO: ambiguity - the event that opens a window carries no timestamp of its own, and
             // this context only ever learns a patient's local calendar from the timestamps declared
-            // on their diary entries. Interpretation assumed: the window starts on the server's
-            // current UTC date, while every day inside it is the local day the patient declared.
+            // on their diary entries. Interpretation assumed: the window starts on the current day of
+            // the clinical calendar (MonitoringAdherence:ClinicalTimeZone), not the UTC date, so a
+            // link established at 20:00 in Lima starts counting that evening; every day inside it is
+            // the local day the patient declared.
             // Source: event storming v3, section 5, Subflow 5.1.
-            var from = DateOnly.FromDateTime(DateTime.UtcNow);
+            var from = calendar.LocalDateOf(DateTimeOffset.UtcNow);
 
             var window = new EvaluationWindow(command, windowDays, from);
 
@@ -208,7 +212,8 @@ public class EvaluationWindowCommandService(
             if (window is null) return Failure(MonitoringError.EvaluationWindowNotFound);
 
             // Business rule: Day Without Entries Marked Unlogged Not Non Compliant (Subflow 5.4)
-            var unlogged = window.MarkUnloggedDaysBefore(command.Date);
+            var patientCalendar = await PatientCalendarOn(command.PatientId, command.Date, cancellationToken);
+            var unlogged = window.MarkUnloggedDaysBefore(command.Date, patientCalendar);
             if (unlogged.Count == 0) return Success(window);
 
             evaluationWindowRepository.Update(window);
@@ -228,6 +233,55 @@ public class EvaluationWindowCommandService(
             logger.LogError(ex, "Could not mark unlogged days before {Date} for patient {PatientId}",
                 command.Date, command.PatientId);
             return Failure(MonitoringError.UnexpectedError);
+        }
+    }
+
+    /// <summary>Subflow 5.5 - Re Evaluate Logged Days.</summary>
+    /// <remarks>
+    ///     Business rule: Day Without Entries Marked Unlogged Not Non Compliant (Subflow 5.4). Only the days in
+    ///     which the diary holds something are re-evaluated: a quiet day is left to the usual filling in, and today
+    ///     is never marked unlogged ahead of time.
+    /// </remarks>
+    public async Task<Result<int, MonitoringError>> Handle(ReEvaluateLoggedDaysCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        if (command.To < command.From)
+            return new Result<int, MonitoringError>.Failure(MonitoringError.InvalidComplianceRange);
+
+        try
+        {
+            // Business rule: Closed Windows Never Reopened (Subflow 5.5). Only an open window is repaired.
+            var window = await evaluationWindowRepository.FindOpenByPatientIdAsync(command.PatientId,
+                cancellationToken);
+            if (window is null)
+                return new Result<int, MonitoringError>.Failure(MonitoringError.EvaluationWindowNotFound);
+            if (window.TargetsSnapshots.Count == 0) return new Result<int, MonitoringError>.Success(0);
+
+            // Days before the first targets were never evaluable. A day of margin on both bounds: each patient
+            // reads the snapshot on their own clock, which can be a day either side of the clinical one, and
+            // windows opened before the clinical calendar started on the next UTC date. Each day then checks
+            // its own snapshot on the patient's clock.
+            var firstEvaluable = window.TargetsSnapshots.Min(s => s.EffectiveFromIn(calendar)).AddDays(-1);
+            var start = new[] { command.From, firstEvaluable, window.From.AddDays(-1) }.Max();
+
+            var changed = 0;
+            for (var day = start; day <= command.To; day = day.AddDays(1))
+            {
+                var summary = await intakeContextFacade.GetDailyIntakeSummary(command.PatientId, day,
+                    cancellationToken);
+                if (summary is null || !summary.HasAnyEntry) continue;
+
+                // A failure here is DayAlreadyEvaluated (the day was right) or is logged by the evaluation itself.
+                var result = await EvaluateSingleDay(command.PatientId, day, true, cancellationToken);
+                if (result.IsSuccess) changed++;
+            }
+
+            return new Result<int, MonitoringError>.Success(changed);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Could not re-evaluate the logged days of patient {PatientId}", command.PatientId);
+            return new Result<int, MonitoringError>.Failure(MonitoringError.UnexpectedError);
         }
     }
 
@@ -380,9 +434,17 @@ public class EvaluationWindowCommandService(
             // Business rule: Compared Against That Day Snapshot (Monitoring and Adherence, Subflow
             // 5.4). The targets used are the ones that were in force on the day being evaluated, not
             // the ones in force now. That is what stops a plan adjusted on Thursday from turning
-            // Monday into a bad day.
-            var snapshot = window.SnapshotInForceOn(date);
-            if (snapshot is null) return Failure(MonitoringError.TargetsSnapshotMissing);
+            // Monday into a bad day. The day a snapshot comes into force is read on the patient's clock,
+            // the same one their entries declared, so it holds in any country.
+            var patientCalendar = await PatientCalendarOn(patientId, date, cancellationToken);
+            var snapshot = window.SnapshotInForceOn(date, patientCalendar);
+            if (snapshot is null)
+            {
+                // Not routine like an already evaluated day: the patient logged and nothing will show it.
+                logger.LogWarning("Day {Date} of patient {PatientId} has no targets in force and was not evaluated",
+                    date, patientId);
+                return Failure(MonitoringError.TargetsSnapshotMissing);
+            }
 
             var summary = await intakeContextFacade.GetDailyIntakeSummary(patientId, date,
                 cancellationToken);
@@ -399,7 +461,7 @@ public class EvaluationWindowCommandService(
             // Adherence, Subflow 5.4). The days between the last one that was evaluated and this one
             // are marked as unlogged, so the series shows the silence instead of skipping it. Not on
             // the re-evaluation path: a late entry re-evaluates its own day and nothing else.
-            var unlogged = isReEvaluation ? [] : window.MarkUnloggedDaysBefore(date);
+            var unlogged = isReEvaluation ? [] : window.MarkUnloggedDaysBefore(date, patientCalendar);
 
             var changed = window.RecordDayEvaluation(day);
 
@@ -436,6 +498,26 @@ public class EvaluationWindowCommandService(
         {
             logger.LogError(ex, "Could not evaluate {Date} for patient {PatientId}", date, patientId);
             return Failure(MonitoringError.UnexpectedError);
+        }
+    }
+
+    /// <summary>
+    ///     The patient's clock on <paramref name="date" />: the offset their device declared on the latest entry
+    ///     of that day. The clinical calendar when the day holds no entry or the diary cannot be read.
+    /// </summary>
+    private async Task<IFollowUpCalendar> PatientCalendarOn(int patientId, DateOnly date,
+        CancellationToken cancellationToken)
+    {
+        var moments = await intakeContextFacade.GetDiaryEntryMoments(patientId, date, date, cancellationToken);
+        if (moments is not { Count: > 0 }) return calendar;
+
+        try
+        {
+            return new DeclaredOffsetCalendar(moments[^1].LocalTimestamp.Offset);
+        }
+        catch (ArgumentException)
+        {
+            return calendar;
         }
     }
 

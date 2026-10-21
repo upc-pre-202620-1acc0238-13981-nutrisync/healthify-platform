@@ -8,4 +8,7 @@ public interface IFollowUpCalendar
 {
     /// <summary>The start (inclusive) and end (exclusive) of the local day of <paramref name="moment" />.</summary>
     (DateTimeOffset Start, DateTimeOffset End) LocalDayOf(DateTimeOffset moment);
+
+    /// <summary>The calendar date of the practice that <paramref name="moment" /> falls on.</summary>
+    DateOnly LocalDateOf(DateTimeOffset moment);
 }

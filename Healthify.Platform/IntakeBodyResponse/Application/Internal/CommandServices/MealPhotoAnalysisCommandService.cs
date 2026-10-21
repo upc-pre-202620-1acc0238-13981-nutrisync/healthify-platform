@@ -28,8 +28,9 @@ namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServ
 ///     output is <see cref="IntakeError.PhotoNotRecognized" /> (422, PT7.3 → log it by hand);
 ///     5. the dish resolved, in this order: the local catalog (FC-2), the external providers (Search Food, idempotent
 ///     by source hash), and last a food created from the AI's nutrients, which the catalog refuses when they are
-///     incoherent (then <see cref="IntakeError.PhotoNotRecognized" />). The alternatives are resolved against the
-///     local catalog only;
+///     incoherent (then <see cref="IntakeError.PhotoNotRecognized" />). The alternatives follow the same path without
+///     the providers: the local catalog, then a food created from their own nutrients (or the similar entry); one
+///     the catalog refuses stays without a food and never fails the analysis;
 ///     6. the analysis stored without any image, with its lifetime.
 ///     It creates no diary entry: logging is <c>photo-logs</c> with the <c>analysisId</c>.
 ///     Business rule: Photo Never Stored (IN-7). The bytes live in this method and in the request to the provider;
@@ -136,7 +137,8 @@ public class MealPhotoAnalysisCommandService(
                 return Failure(IntakeError.PhotoNotRecognized);
             }
 
-            var alternatives = await ResolveAlternativesAsync(output, dish.Value.ReferenceFoodId, cancellationToken);
+            var alternatives = await ResolveAlternativesAsync(output, dish.Value.ReferenceFoodId,
+                outcome.GenerationId, cancellationToken);
 
             // 6. The analysis, without the image.
             var analysis = new MealPhotoAnalysis(command.PatientId, dish.Value.ReferenceFoodId,
@@ -214,59 +216,14 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     IN-7. Up to <c>FoodCatalog:PromptCatalogNamesCount</c> (100) names of the catalog the model uses verbatim when
-    ///     one of them is the dish, so a known dish is not named differently and created twice.
+    ///     IN-7. The catalog names the model uses verbatim when one of them is the dish, so a known dish is not named
+    ///     differently and created twice (see <see cref="CatalogNameHintsReader" />).
     /// </summary>
-    /// <remarks>
-    ///     DECISIÓN IN-7: first the most logged foods of the whole platform (among those logged by at least
-    ///     <see cref="MinimumPatientsPerHint" /> patients), then, until the count is reached, verified foods of the
-    ///     catalog (local overrides first, then by name). Never the patient's own dishes: they would be data of their
-    ///     diary sent to the AI, which IN-7 forbids («la IA recibe la imagen sin ningún dato del paciente»).
-    ///     The list names nobody, so it is cached for the whole platform for
-    ///     <c>FoodCatalog:PromptCatalogNamesCacheMinutes</c> (60) instead of aggregating <c>diary_entries</c> on every
-    ///     analysis. A failure only leaves the list empty, and an empty list is not cached.
-    /// </remarks>
-    private async Task<IReadOnlyList<string>> CatalogNameHintsAsync(CancellationToken cancellationToken)
+    private Task<IReadOnlyList<string>> CatalogNameHintsAsync(CancellationToken cancellationToken)
     {
-        if (catalogNameHintsCache.TryGet(out var cached)) return cached;
-
-        try
-        {
-            var count = HintsCount;
-            if (count == 0) return [];
-
-            var ids = await diaryEntryRepository.ListMostLoggedReferenceFoodIdsAsync(MinimumPatientsPerHint, count,
-                cancellationToken);
-            var popular = ids.Count == 0 ? [] : await foodCatalogContextFacade.GetReferenceFoodsByIds(ids, cancellationToken);
-            var byId = popular.ToDictionary(f => f.ReferenceFoodId, f => f.LocalName);
-            var names = ids.Where(byId.ContainsKey).Select(id => byId[id]).ToList();
-
-            if (names.Count < count)
-            {
-                var verified = await foodCatalogContextFacade.ListVerifiedFoods(count, byId.Keys.ToList(),
-                    cancellationToken);
-                names.AddRange(verified.Select(f => f.LocalName));
-            }
-
-            var hints = names.Distinct(StringComparer.OrdinalIgnoreCase).Take(count).ToList();
-            if (hints.Count > 0) catalogNameHintsCache.Set(hints, HintsLifetime);
-            return hints;
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            logger.LogWarning(ex, "Could not read the catalog name hints for a meal photo; none are sent");
-            return [];
-        }
+        return new CatalogNameHintsReader(diaryEntryRepository, foodCatalogContextFacade, catalogNameHintsCache,
+            configuration, logger).ReadAsync(cancellationToken);
     }
-
-    private int HintsCount => configuration.GetValue<int?>("FoodCatalog:PromptCatalogNamesCount") is >= 0 and var count
-        ? Math.Min(count, 1000)
-        : DefaultCatalogNameHints;
-
-    private TimeSpan HintsLifetime => TimeSpan.FromMinutes(
-        configuration.GetValue<int?>("FoodCatalog:PromptCatalogNamesCacheMinutes") is > 0 and var minutes
-            ? minutes
-            : DefaultCatalogNameHintsCacheMinutes);
 
     /// <summary>IN-7, step 4: local catalog → external providers → created from the estimate.</summary>
     private async Task<(int ReferenceFoodId, string Name)?> ResolveDishAsync(MealPhotoRecognitionOutput output,
@@ -289,11 +246,19 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     DECISIÓN IN-7: the alternatives are resolved against the local catalog only (FC-2): no provider is waited
-    ///     for and nothing is created for a dish the photo probably is not. The main dish is not repeated.
+    ///     IN-7: each alternative follows the main dish's path, so the patient can choose it: the local catalog (FC-2),
+    ///     then a food created from the alternative's own nutrients (<c>meal-photo-recognition@3</c>), which the catalog
+    ///     resolves to a clearly similar entry (Similar Dish Reused, Not Duplicated) or creates, idempotent by source
+    ///     hash. The main dish is not repeated, nor one food twice.
     /// </summary>
+    /// <remarks>
+    ///     DECISIÓN IN-7: no external provider is waited for an alternative (the patient is waiting for the analysis);
+    ///     the AI's nutrients stand in for it. An alternative without nutrients (an output shaped as v2) or with
+    ///     nutrients the catalog refuses (AI Estimated Nutrients Coherent) stays without a food, as before: it is
+    ///     shown but cannot be chosen, and the analysis never fails because of it.
+    /// </remarks>
     private async Task<IReadOnlyList<MealPhotoAlternative>> ResolveAlternativesAsync(MealPhotoRecognitionOutput output,
-        int dishFoodId, CancellationToken cancellationToken)
+        int dishFoodId, long generationId, CancellationToken cancellationToken)
     {
         var proposed = (output.Alternatives ?? []).Take(MealPhotoAnalysis.MaximumAlternatives).ToList();
         if (proposed.Count == 0) return [];
@@ -304,13 +269,37 @@ public class MealPhotoAnalysisCommandService(
         var alternatives = new List<MealPhotoAlternative>();
         for (var i = 0; i < proposed.Count; i++)
         {
+            var name = proposed[i].Name.Trim();
             var match = i < resolved.Count && resolved[i].IsResolved ? resolved[i] : null;
-            if (match?.ReferenceFoodId == dishFoodId) continue;
-            alternatives.Add(new MealPhotoAlternative(match?.LocalName ?? proposed[i].Name, proposed[i].Grams,
-                match?.ReferenceFoodId));
+            var (foodId, foodName) = match is not null
+                ? (match.ReferenceFoodId, match.LocalName ?? name)
+                : await CreateAlternativeAsync(proposed[i], name, generationId, cancellationToken);
+
+            if (foodId == dishFoodId) continue;
+            if (foodId is not null && alternatives.Any(a => a.ReferenceFoodId == foodId)) continue;
+            alternatives.Add(new MealPhotoAlternative(foodName, proposed[i].Grams, foodId));
         }
 
         return alternatives;
+    }
+
+    /// <summary>
+    ///     IN-7. The food of an alternative the local catalog lacks, from its own nutrients; (null, its name) when it
+    ///     brings none or the catalog refuses them.
+    /// </summary>
+    private async Task<(int? ReferenceFoodId, string Name)> CreateAlternativeAsync(MealPhotoAlternativeOutput alternative,
+        string name, long generationId, CancellationToken cancellationToken)
+    {
+        if (alternative.NutrientsPer100g is not { } nutrients) return (null, name);
+
+        var created = await foodCatalogContextFacade.CreateAiEstimatedFood(name,
+            new FoodNutrientsItem(nutrients.Kcal, nutrients.Protein, nutrients.Carb, nutrients.Fat), generationId,
+            cancellationToken);
+        if (created is not null) return (created.ReferenceFoodId, created.LocalName);
+
+        logger.LogInformation("Meal photo of generation {GenerationId}: an alternative could not be resolved nor " +
+                              "created; it stays without a food", generationId);
+        return (null, name);
     }
 
     private int MaxBytes => configuration.GetValue<int?>("Intake:MealPhoto:MaxBytes") is > 0 and var configured

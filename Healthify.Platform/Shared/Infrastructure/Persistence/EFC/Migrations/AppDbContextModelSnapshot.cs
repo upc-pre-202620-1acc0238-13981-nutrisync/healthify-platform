@@ -622,6 +622,9 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("PatientId")
                         .HasDatabaseName("ix_diary_entries_patient_id");
 
+                    b.HasIndex("PatientId", "LocalTimestamp")
+                        .HasDatabaseName("ix_diary_entries_patient_id_local_timestamp");
+
                     b.ToTable("diary_entries", (string)null);
                 });
 

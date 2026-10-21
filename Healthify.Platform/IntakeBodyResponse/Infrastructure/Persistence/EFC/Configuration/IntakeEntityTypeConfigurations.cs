@@ -129,6 +129,9 @@ public class DiaryEntryEntityTypeConfiguration : IEntityTypeConfiguration<DiaryE
         builder.Property(e => e.LocalUtcOffsetMinutes)
             .HasColumnName("local_utc_offset_minutes").IsRequired();
         builder.HasIndex(e => e.LocalTimestamp).HasDatabaseName("ix_diary_entries_local_timestamp");
+        // One patient's diary over a range of days (the day evaluation reads it on every meal).
+        builder.HasIndex(e => new { e.PatientId, e.LocalTimestamp })
+            .HasDatabaseName("ix_diary_entries_patient_id_local_timestamp");
 
         builder.Property(e => e.Provenance)
             .HasConversion(p => p.Value, value => new Provenance(value))
