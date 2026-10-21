@@ -24,4 +24,7 @@ public interface ICareLinkRepository : IBaseRepository<CareLink>
 
     Task<IEnumerable<CareLink>> ListByPractitionerIdAsync(int practitionerId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Data export. Every link of a patient, whatever its state, oldest first.</summary>
+    Task<IEnumerable<CareLink>> ListByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
 }

@@ -1,3 +1,5 @@
+using Healthify.Platform.MonitoringAdherence.Domain.Services;
+
 namespace Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 
 /// <summary>
@@ -54,5 +56,15 @@ public sealed record TargetsSnapshot(
     public DateTimeOffset TakenAt { get; init; } = TakenAt;
 
     /// <summary>The first calendar day these targets can be used to evaluate.</summary>
-    public DateOnly EffectiveFrom => DateOnly.FromDateTime(TakenAt.Date);
+    /// <remarks>
+    ///     The day of the practice, not the UTC date: targets published at 20:00 in Lima are already
+    ///     past midnight in UTC, and taking that date would leave the patient's own evening without
+    ///     targets in force, so the day would never be evaluated.
+    /// </remarks>
+    /// <param name="calendar">The clinical calendar the days of the window are counted in.</param>
+    public DateOnly EffectiveFromIn(IFollowUpCalendar calendar)
+    {
+        ArgumentNullException.ThrowIfNull(calendar);
+        return calendar.LocalDateOf(TakenAt);
+    }
 }

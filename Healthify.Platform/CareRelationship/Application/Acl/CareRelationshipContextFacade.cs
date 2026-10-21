@@ -1,4 +1,5 @@
 using Healthify.Platform.CareRelationship.Application.QueryServices;
+using Healthify.Platform.CareRelationship.Domain.Model.Aggregates;
 using Healthify.Platform.CareRelationship.Domain.Model.Queries;
 using Healthify.Platform.CareRelationship.Interfaces.Acl;
 
@@ -35,6 +36,26 @@ public class CareRelationshipContextFacade(ICareLinkQueryService queryService)
         catch
         {
             return false; // graceful degradation: no answer means no processing
+        }
+    }
+
+    public async Task<IReadOnlyList<CareLinkHistoryItem>> GetCareLinkHistoryByPatientId(int patientId,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var links = await queryService.Handle(new GetCareLinksByPatientIdQuery(patientId), ct);
+
+            return links
+                .OrderBy(l => l.EstablishedAt)
+                .Select(l => new CareLinkHistoryItem(l.PractitionerId, StatusOf(l), l.EstablishedAt,
+                    l.ConsentGrantedAt, l.ConsentWithdrawnAt, l.ConsentAiProcessingGranted,
+                    l.ConsentAiProcessingDecidedAt, l.DischargedAt ?? l.RevokedAt, l.RevocationReason?.Value))
+                .ToList();
+        }
+        catch
+        {
+            return [];
         }
     }
 
@@ -80,5 +101,13 @@ public class CareRelationshipContextFacade(ICareLinkQueryService queryService)
         {
             return null;
         }
+    }
+
+    private static string StatusOf(CareLink link)
+    {
+        if (link.IsDischarged) return "Discharged";
+        if (link.IsRevoked) return "Revoked";
+        if (link.IsActive) return "Active";
+        return link.IsPendingConsent ? "PendingConsent" : "ConsentWithdrawn";
     }
 }

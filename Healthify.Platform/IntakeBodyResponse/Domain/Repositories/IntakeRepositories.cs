@@ -24,6 +24,13 @@ public interface IDiaryEntryRepository : IBaseRepository<DiaryEntry>
     Task<IEnumerable<DiaryEntry>> ListByPatientIdAsync(int patientId, DateOnly? date,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    ///     Read model Daily Diary over the declared local days from <paramref name="from" /> to
+    ///     <paramref name="to" />, both inclusive, oldest first. Filtered in the database, not in memory.
+    /// </summary>
+    Task<IEnumerable<DiaryEntry>> ListByPatientIdBetweenAsync(int patientId, DateOnly from, DateOnly to,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Rule: Idempotency By Aggregate Id (Subflow 4.6).</summary>
     Task<DiaryEntry?> FindByClientEntryIdAsync(Guid clientEntryId,
         CancellationToken cancellationToken = default);

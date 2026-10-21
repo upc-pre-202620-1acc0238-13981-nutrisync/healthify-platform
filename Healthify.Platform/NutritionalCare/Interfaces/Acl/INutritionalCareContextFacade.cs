@@ -131,6 +131,36 @@ public record ClinicalEvaluationItem(
 public record ActiveDiagnosisItem(int DiagnosisId, string? Code, string Statement, DateTimeOffset IssuedAt);
 
 /// <summary>
+///     Data export. One published version of the plan as the patient downloads it (PT4 history). Primitives only.
+/// </summary>
+/// <remarks>
+///     Business rule: Diagnosis And Basis Never Leave The Context (Subflow 3.5). No diagnosis, rationale, calculation
+///     basis or BMI. The change reason crosses only as its X-2 code and parameters, which the reader words in their
+///     language: a <c>Custom</c> reason is the practitioner's clinical text and stays here (only the code crosses).
+/// </remarks>
+/// <param name="Version">Version number.</param>
+/// <param name="PublishedAt">When it was published: the version is in force from then.</param>
+/// <param name="IsActive">The version in force now.</param>
+/// <param name="EnergyKcal">Daily energy target.</param>
+/// <param name="ProteinG">Daily protein target.</param>
+/// <param name="CarbG">Daily carbohydrate target.</param>
+/// <param name="FatG">Daily fat target.</param>
+/// <param name="ChangeReasonCode">NewConsultation, SignalAdjustment or Custom; null for the first version.</param>
+/// <param name="ChangeReasonDate">The date parameter of the code, or null.</param>
+/// <param name="ChangeReasonSignalType">The signal type of SignalAdjustment, or null.</param>
+public record PlanVersionHistoryItem(
+    int Version,
+    DateTimeOffset PublishedAt,
+    bool IsActive,
+    decimal EnergyKcal,
+    decimal ProteinG,
+    decimal CarbG,
+    decimal FatG,
+    string? ChangeReasonCode,
+    DateOnly? ChangeReasonDate,
+    string? ChangeReasonSignalType);
+
+/// <summary>
 ///     Public ACL contract of the Nutritional Care bounded context.
 /// </summary>
 /// <remarks>
@@ -200,4 +230,10 @@ public interface INutritionalCareContextFacade
     ///     practitioner already heard about the consistency index. False when there is none or the lookup fails.
     /// </summary>
     Task<bool> HasConsistencyEscalation(int patientId, CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. The published versions of the patient's plan, oldest first, without anything clinical. Empty
+    ///     when there are none or the lookup fails.
+    /// </summary>
+    Task<IReadOnlyList<PlanVersionHistoryItem>> GetPlanVersionHistory(int patientId, CancellationToken ct = default);
 }

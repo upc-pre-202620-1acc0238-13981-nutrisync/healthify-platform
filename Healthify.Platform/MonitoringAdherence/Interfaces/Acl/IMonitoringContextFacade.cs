@@ -144,6 +144,26 @@ public record PreVisitCheckInItem(
     bool IsLocked);
 
 /// <summary>
+///     Data export. One visit on the calendar of a patient as the patient downloads it. Primitives only: no check in,
+///     no cancellation reason (free text of the practitioner) and no preparation notes.
+/// </summary>
+/// <param name="PractitionerId">Whose agenda it is on.</param>
+/// <param name="ScheduledFor">When it is (or was).</param>
+/// <param name="Modality">InPerson or Remote.</param>
+/// <param name="State">Scheduled, Completed, Missed or Cancelled.</param>
+/// <param name="CompletedAt">When it was completed, or null.</param>
+/// <param name="CancelledAt">When it was cancelled, or null.</param>
+/// <param name="CompletedByConsultationId">The consultation that completed it, or null.</param>
+public record FollowUpHistoryItem(
+    int PractitionerId,
+    DateTimeOffset ScheduledFor,
+    string Modality,
+    string State,
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset? CancelledAt,
+    int? CompletedByConsultationId);
+
+/// <summary>
 ///     Public ACL contract of the Monitoring and Adherence bounded context.
 /// </summary>
 /// <remarks>
@@ -245,4 +265,10 @@ public interface IMonitoringContextFacade
     /// <param name="ct">Cancellation.</param>
     Task<PreVisitCheckInItem?> GetLatestCheckInForPatient(int patientId, int practitionerId,
         CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. Every visit of the patient, whatever its state, oldest first. Empty when there are none or the
+    ///     lookup fails.
+    /// </summary>
+    Task<IReadOnlyList<FollowUpHistoryItem>> GetFollowUpHistory(int patientId, CancellationToken ct = default);
 }

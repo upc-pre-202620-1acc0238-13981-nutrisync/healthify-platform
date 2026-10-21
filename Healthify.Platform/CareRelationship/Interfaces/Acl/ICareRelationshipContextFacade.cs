@@ -25,6 +25,30 @@ public record CareLinkStatusItem(
 public record RosterCareLinkItem(int CareLinkId, int PatientId, string LinkStatus, DateTimeOffset LinkedSince);
 
 /// <summary>
+///     Data export. One care link of a patient as the patient downloads it, primitives only: who, its state and the
+///     dates of the consent. No discharge reason (clinical text of the practitioner) and no consent scope wording.
+/// </summary>
+/// <param name="PractitionerId">The practitioner at the other end.</param>
+/// <param name="Status">Active, PendingConsent, ConsentWithdrawn, Revoked or Discharged.</param>
+/// <param name="EstablishedAt">When the invitation was redeemed.</param>
+/// <param name="ConsentGrantedAt">When the patient granted consent, or null.</param>
+/// <param name="ConsentWithdrawnAt">When the patient withdrew it, or null.</param>
+/// <param name="AiProcessingGranted">CR-2. Whether the consent includes AI processing.</param>
+/// <param name="AiProcessingDecidedAt">CR-2. When the patient decided about AI processing, or null.</param>
+/// <param name="EndedAt">When the link was revoked or the patient discharged, or null while it is open.</param>
+/// <param name="RevocationReason">ConsentWithdrawn or SwitchedPractitioner for a revoked link, otherwise null.</param>
+public record CareLinkHistoryItem(
+    int PractitionerId,
+    string Status,
+    DateTimeOffset EstablishedAt,
+    DateTimeOffset? ConsentGrantedAt,
+    DateTimeOffset? ConsentWithdrawnAt,
+    bool AiProcessingGranted,
+    DateTimeOffset? AiProcessingDecidedAt,
+    DateTimeOffset? EndedAt,
+    string? RevocationReason);
+
+/// <summary>
 ///     Public ACL contract of the Care Relationship bounded context, and the Open Host Service the
 ///     other five contexts consume. It publishes essentially one question, "is this link active",
 ///     and everyone else is a Conformist to the answer. This is where the asymmetry principle is
@@ -58,4 +82,11 @@ public interface ICareRelationshipContextFacade
     ///     includes AI processing. Asked on every generation (IA-0, guard 2). False when the lookup fails.
     /// </summary>
     Task<bool> HasAiProcessingConsent(int patientId, CancellationToken ct = default);
+
+    /// <summary>
+    ///     Data export. Every link of the patient, whatever its state, oldest first. Empty when there are none or the
+    ///     lookup fails.
+    /// </summary>
+    Task<IReadOnlyList<CareLinkHistoryItem>> GetCareLinkHistoryByPatientId(int patientId,
+        CancellationToken ct = default);
 }

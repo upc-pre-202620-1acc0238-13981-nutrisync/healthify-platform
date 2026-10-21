@@ -23,7 +23,11 @@ namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServ
 ///     3. what is left today, computed here without AI: the published targets (<see cref="ActiveTargetsCache" />)
 ///     minus the confirmed entries of the day; Ideas Need Room For A Meal (more than 150 kcal);
 ///     4. the cache: two hours per day, 50 kcal bucket, restrictions, plan version, language and ideas already seen;
-///     5. the generation through the shared pipeline, validated by <see cref="MealIdeasOutputValidator" />;
+///     5. the generation through the shared pipeline, validated by <see cref="MealIdeasOutputValidator" />. Since
+///     <c>meal-ideas@2</c> the input carries the catalog names (<see cref="CatalogNameHintsReader" />) the model must
+///     use for every ingredient that brings energy: before it, the model named ingredients the local catalog does not
+///     carry («Pan integral», «Avena», «Pechuga de pollo a la plancha»), step 6 discarded every idea and the answer was
+///     <see cref="AiError.AiOutputRejected" /> (502);
 ///     6. the hard validation of each idea with the catalog (FC-2): ingredients resolved (an idea whose unresolved
 ///     ingredients bring more than 15 % of its energy is discarded; a minor one, a condiment, stays marked
 ///     unresolved), figures recalculated (the catalog's when they differ by more than 15 %), «cabe en lo que te queda» and the restrictions checked
@@ -44,7 +48,9 @@ public class MealIdeasCommandService(
     IRestrictionLexicon lexicon,
     IMealIdeasCache cache,
     TimeProvider timeProvider,
-    ILogger<MealIdeasCommandService> logger) : IMealIdeasCommandService
+    ILogger<MealIdeasCommandService> logger,
+    ICatalogNameHintsCache? catalogNameHintsCache = null,
+    IConfiguration? configuration = null) : IMealIdeasCommandService
 {
     /// <summary>IA-3: «Caché … durante 2 h».</summary>
     public static readonly TimeSpan CacheLifetime = TimeSpan.FromHours(2);
@@ -103,7 +109,8 @@ public class MealIdeasCommandService(
                 return new Result<MealIdeasView, IntakeAiFailure>.Success(cached);
 
             var avoid = cache.FindIdeaNames(command.PatientId, excludedIds);
-            var input = InputOf(localDate, targets, remaining, restrictions, avoid);
+            var catalogNames = await CatalogIngredientNamesAsync(cancellationToken);
+            var input = InputOf(localDate, targets, remaining, restrictions, avoid, catalogNames);
 
             // 5 and 6. The generation and the hard validation, retried once.
             for (var attempt = 1; attempt <= MaximumAttempts; attempt++)
@@ -239,11 +246,25 @@ public class MealIdeasCommandService(
     }
 
     /// <summary>
+    ///     IA-3. The catalog names the ingredients must take (the platform list of IN-7, never the patient's own
+    ///     foods). Empty when the list cannot be read: the ideas are then validated as before.
+    /// </summary>
+    private Task<IReadOnlyList<string>> CatalogIngredientNamesAsync(CancellationToken cancellationToken)
+    {
+        if (catalogNameHintsCache is null || configuration is null)
+            return Task.FromResult<IReadOnlyList<string>>([]);
+        return new CatalogNameHintsReader(diaryEntryRepository, foodCatalogContextFacade, catalogNameHintsCache,
+            configuration, logger).ReadAsync(cancellationToken);
+    }
+
+    /// <summary>
     ///     What leaves for the model: today's targets and what is left of them, the restriction codes, the guideline
-    ///     codes of the plan and the ideas already seen. No identifier, no name, no diary entry, no diagnosis.
+    ///     codes of the plan, the ideas already seen and the catalog names for the ingredients. No identifier, no
+    ///     name of a person, no diary entry, no diagnosis.
     /// </summary>
     internal static object InputOf(DateOnly localDate, ActiveTargetsCache targets, RemainingTargets remaining,
-        IReadOnlyList<string> restrictions, IReadOnlyList<string> avoid)
+        IReadOnlyList<string> restrictions, IReadOnlyList<string> avoid,
+        IReadOnlyList<string>? catalogIngredientNames = null)
     {
         return new
         {
@@ -261,7 +282,8 @@ public class MealIdeasCommandService(
             },
             restrictions,
             planGuidelines = targets.GuidelineItems.Where(g => g.Code is not null).Select(g => g.Code).ToList(),
-            avoidIdeas = avoid
+            avoidIdeas = avoid,
+            catalogIngredientNames = catalogIngredientNames ?? []
         };
     }
 
