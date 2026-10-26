@@ -49,6 +49,7 @@ public class GeminiLanguageModelClientTests
         Assert.Equal("application/json", body["generationConfig"]!["responseMimeType"]!.GetValue<string>());
         Assert.Equal("object", body["generationConfig"]!["responseJsonSchema"]!["type"]!.GetValue<string>());
         Assert.Equal(512, body["generationConfig"]!["maxOutputTokens"]!.GetValue<int>());
+        Assert.Null(body["generationConfig"]!["thinkingConfig"]);
         Assert.Equal(Request.SystemInstruction,
             body["systemInstruction"]!["parts"]![0]!["text"]!.GetValue<string>());
         Assert.Equal(Request.UserContent, body["contents"]![0]!["parts"]![0]!["text"]!.GetValue<string>());
@@ -56,6 +57,29 @@ public class GeminiLanguageModelClientTests
         Assert.Equal("""{"headline":"Bien"}""", response.OutputText); // thoughts skipped, parts joined
         Assert.Equal("gemini-3.5-flash", response.Model);
         Assert.Equal((321, 50), (response.InputTokens, response.OutputTokens));
+    }
+
+    [Fact]
+    public async Task A_configured_thinking_level_bounds_the_thoughts()
+    {
+        var handler = new StubHandler(_ => Ok(Answer));
+
+        await Client(handler, new() { ["Ai:Gemini:ThinkingLevel"] = "low" }).GenerateStructuredAsync(Request);
+
+        var body = JsonNode.Parse(Assert.Single(handler.Requests).Body)!;
+        Assert.Equal("low",
+            body["generationConfig"]!["thinkingConfig"]!["thinkingLevel"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task An_empty_thinking_level_sends_no_thinking_config()
+    {
+        var handler = new StubHandler(_ => Ok(Answer));
+
+        await Client(handler, new() { ["Ai:Gemini:ThinkingLevel"] = "" }).GenerateStructuredAsync(Request);
+
+        var body = JsonNode.Parse(Assert.Single(handler.Requests).Body)!;
+        Assert.Null(body["generationConfig"]!["thinkingConfig"]);
     }
 
     [Fact]
