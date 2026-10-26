@@ -42,7 +42,7 @@ public class GeminiLanguageModelClient(
             ? configured
             : ConfiguredAiSettings.DefaultModel;
         var endpoint = await ResolveEndpointAsync(model, cancellationToken);
-        var body = BuildBody(request);
+        var body = BuildBody(request, configuration["Ai:Gemini:ThinkingLevel"]);
 
         for (var attempt = 1;; attempt++)
         {
@@ -156,7 +156,12 @@ public class GeminiLanguageModelClient(
             message => message.Headers.Add("x-goog-api-key", apiKey));
     }
 
-    private static string BuildBody(LanguageModelRequest request)
+    /// <remarks>
+    ///     The thoughts of a thinking model count against <c>maxOutputTokens</c>: unbounded, they can use it all up
+    ///     and the JSON is cut short (<c>MAX_TOKENS</c>). <c>Ai:Gemini:ThinkingLevel</c> bounds them; empty sends no
+    ///     <c>thinkingConfig</c> and leaves the model's default.
+    /// </remarks>
+    private static string BuildBody(LanguageModelRequest request, string? thinkingLevel)
     {
         JsonNode schema;
         try
@@ -198,6 +203,8 @@ public class GeminiLanguageModelClient(
                 ["maxOutputTokens"] = request.MaxOutputTokens
             }
         };
+        if (!string.IsNullOrWhiteSpace(thinkingLevel))
+            body["generationConfig"]!["thinkingConfig"] = new JsonObject { ["thinkingLevel"] = thinkingLevel.Trim() };
         return body.ToJsonString();
     }
 
