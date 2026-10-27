@@ -83,6 +83,9 @@
     <data name="RefreshTokenInvalid" xml:space="preserve">
         <value>Tu sesión expiró. Vuelve a iniciar sesión.</value>
     </data>
+    <data name="PasswordResetCodeInvalid" xml:space="preserve">
+        <value>El código no es correcto o ya venció. Pide uno nuevo.</value>
+    </data>
     <data name="UnexpectedError" xml:space="preserve">
         <value>Ocurrió un error inesperado.</value>
     </data>
