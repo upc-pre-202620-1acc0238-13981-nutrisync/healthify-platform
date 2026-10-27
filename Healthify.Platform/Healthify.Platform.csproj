@@ -18,6 +18,8 @@
              on the first Vertex call; the Gemini API mode does not use it. -->
         <PackageReference Include="Google.Apis.Auth" Version="1.77.0" />
         <PackageReference Include="Humanizer" Version="3.0.10" />
+        <!-- IAM-2. SMTP client for the password reset email (SmtpEmailService). -->
+        <PackageReference Include="MailKit" Version="4.18.2" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
         <!-- TODO: package not listed in the prompt's stack table (section 3). Required by the
