@@ -50,5 +50,11 @@ public enum IamError
     /// </summary>
     RefreshTokenInvalid,
 
+    /// <summary>
+    ///     IAM-2. The reset code is wrong, expired, already used or out of attempts, or the email has no account. One
+    ///     value for all of them, so the endpoint does not say which.
+    /// </summary>
+    PasswordResetCodeInvalid,
+
     UnexpectedError
 }
