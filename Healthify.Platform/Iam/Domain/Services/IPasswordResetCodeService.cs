@@ -7,9 +7,15 @@ namespace Healthify.Platform.Iam.Domain.Services;
 /// <param name="ExpiresAt">When it stops being accepted.</param>
 public record IssuedPasswordResetCode(string Code, string Hash, DateTimeOffset IssuedAt, DateTimeOffset ExpiresAt);
 
+/// <summary>IAM-2. A reset token as issued: the value for the client and what the server keeps of it.</summary>
+/// <param name="Token">The opaque value handed to the client once. Never stored, never logged.</param>
+/// <param name="Hash">SHA-256 (hex, 64 chars) of <paramref name="Token" />: the only thing persisted.</param>
+/// <param name="ExpiresAt">When it stops being accepted.</param>
+public record IssuedPasswordResetToken(string Token, string Hash, DateTimeOffset ExpiresAt);
+
 /// <summary>
-///     IAM-2. Issues and hashes password reset codes. The lifetime is <c>Iam:PasswordResetCodeMinutes</c> (15 by
-///     default).
+///     IAM-2. Issues and hashes password reset codes and the reset tokens their verification hands out. Lifetimes:
+///     <c>Iam:PasswordResetCodeMinutes</c> (15 by default) and <c>Iam:PasswordResetTokenMinutes</c> (10 by default).
 /// </summary>
 public interface IPasswordResetCodeService
 {
@@ -21,6 +27,12 @@ public interface IPasswordResetCodeService
     ///     <paramref name="userId" />. Constant time.
     /// </summary>
     bool Matches(int userId, string presentedCode, string codeHash);
+
+    /// <summary>A new random reset token, its hash and its expiry. Used when a code is verified.</summary>
+    IssuedPasswordResetToken IssueResetToken();
+
+    /// <summary>The hash a presented reset token is looked up by.</summary>
+    string HashResetToken(string token);
 
     /// <summary>
     ///     How long an account waits before a new code is emailed: <c>Iam:PasswordResetResendSeconds</c> (60 by
