@@ -19,6 +19,14 @@ public class PasswordResetCodeRepository(AppDbContext context)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<PasswordResetCode?> FindByResetTokenHashAsync(string tokenHash,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(tokenHash)) return null;
+        return await Context.Set<PasswordResetCode>()
+            .FirstOrDefaultAsync(c => c.ResetTokenHash == tokenHash, cancellationToken);
+    }
+
     public async Task RemoveByUserIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         var codes = await Context.Set<PasswordResetCode>()

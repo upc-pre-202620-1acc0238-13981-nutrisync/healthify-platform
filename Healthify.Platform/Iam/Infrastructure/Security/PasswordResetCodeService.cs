@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Healthify.Platform.Iam.Domain.Services;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Healthify.Platform.Iam.Infrastructure.Security;
 
@@ -12,8 +13,10 @@ namespace Healthify.Platform.Iam.Infrastructure.Security;
 ///     A plain SHA-256 would not do here, unlike refresh tokens: there are only a million codes, so a leaked table
 ///     could be reversed in a moment. Keyed with the server secret, the hash is useless without it; the user id in
 ///     the input keeps two accounts with the same digits from sharing a hash.
-///     Lifetime: <c>Iam:PasswordResetCodeMinutes</c>, 15 by default. Resend cooldown:
-///     <c>Iam:PasswordResetResendSeconds</c>, 60 by default.
+///     Reset tokens are 32 random bytes (base64url) stored as their plain SHA-256, like refresh tokens: random and
+///     long, there is nothing to brute force.
+///     Lifetimes: <c>Iam:PasswordResetCodeMinutes</c>, 15 by default; <c>Iam:PasswordResetTokenMinutes</c>, 10 by
+///     default. Resend cooldown: <c>Iam:PasswordResetResendSeconds</c>, 60 by default.
 /// </remarks>
 public class PasswordResetCodeService(IConfiguration configuration, TimeProvider timeProvider)
     : IPasswordResetCodeService
@@ -21,6 +24,8 @@ public class PasswordResetCodeService(IConfiguration configuration, TimeProvider
     private const int DefaultCodeMinutes = 15;
     private const int DefaultResendSeconds = 60;
     private const int CodeDigits = 6;
+    private const int DefaultTokenMinutes = 10;
+    private const int ResetTokenBytes = 32;
 
     public IssuedPasswordResetCode Issue(int userId)
     {
@@ -35,6 +40,18 @@ public class PasswordResetCodeService(IConfiguration configuration, TimeProvider
         return CryptographicOperations.FixedTimeEquals(
             Encoding.ASCII.GetBytes(Hash(userId, presentedCode)),
             Encoding.ASCII.GetBytes(codeHash));
+    }
+
+    public IssuedPasswordResetToken IssueResetToken()
+    {
+        var token = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(ResetTokenBytes));
+        var minutes = configuration.GetValue<int?>("Iam:PasswordResetTokenMinutes") ?? DefaultTokenMinutes;
+        return new IssuedPasswordResetToken(token, HashResetToken(token), Now().AddMinutes(Math.Max(1, minutes)));
+    }
+
+    public string HashResetToken(string token)
+    {
+        return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
     }
 
     public TimeSpan ResendCooldown()
