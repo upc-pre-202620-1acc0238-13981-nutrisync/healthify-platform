@@ -1,3 +1,4 @@
+using Healthify.Platform.Iam.Application.Internal;
 using Healthify.Platform.Iam.Domain.Model.Commands;
 using Healthify.Platform.Iam.Domain.Model.Errors;
 using Healthify.Platform.Shared.Application.Patterns;
@@ -13,7 +14,11 @@ public interface IPasswordResetCommandService
     Task<Result<bool, IamError>> Handle(RequestPasswordResetCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IAM-2 - Reset Password.</summary>
+    /// <summary>IAM-2 - Verify Password Reset Code. A right code is exchanged for a reset token.</summary>
+    Task<Result<PasswordResetVerification, IamError>> Handle(VerifyPasswordResetCodeCommand command,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>IAM-2 - Reset Password, with the reset token.</summary>
     Task<Result<bool, IamError>> Handle(ResetPasswordCommand command,
         CancellationToken cancellationToken = default);
 }
