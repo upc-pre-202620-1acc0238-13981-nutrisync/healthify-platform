@@ -273,7 +273,7 @@ public class RateLimitingTests
         Assert.Equal(
             ["AuthenticationController.RefreshToken", "AuthenticationController.RequestPasswordReset",
                 "AuthenticationController.ResetPassword", "AuthenticationController.SignIn",
-                "AuthenticationController.SignUp"],
+                "AuthenticationController.SignUp", "AuthenticationController.VerifyPasswordResetCode"],
             marked.Where(a => a.Policy == RateLimitingPolicies.Auth).Select(a => a.Action).Order(StringComparer.Ordinal));
         Assert.Equal(
             ["ConsultationsController.SuggestDiagnosis", "ConsultationsController.SuggestGuidelines",

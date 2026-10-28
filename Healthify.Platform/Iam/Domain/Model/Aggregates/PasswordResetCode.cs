@@ -6,8 +6,10 @@ namespace Healthify.Platform.Iam.Domain.Model.Aggregates;
 /// </summary>
 /// <remarks>
 ///     An account holds at most one code at a time; asking for a new one removes the previous one. A code stops
-///     working when it expires, when it is used, or after <see cref="MaxFailedAttempts" /> wrong guesses: six digits
+///     working when it expires, when it is verified, or after <see cref="MaxFailedAttempts" /> wrong guesses: six digits
 ///     are easy to guess, so the attempts are what protects them.
+///     Verifying the code issues a reset token: random and long, short-lived and single-use. Only the token sets the
+///     password, so the code is checked once and the password can be retried without spending attempts.
 /// </remarks>
 public partial class PasswordResetCode
 {
@@ -45,12 +47,26 @@ public partial class PasswordResetCode
     public DateTimeOffset IssuedAt { get; private set; }
     public DateTimeOffset ExpiresAt { get; private set; }
     public int FailedAttempts { get; private set; }
+
+    /// <summary>When the password was set with this code. Null while it has not been.</summary>
     public DateTimeOffset? UsedAt { get; private set; }
 
-    /// <summary>Not used, not expired and with attempts left at <paramref name="now" />.</summary>
+    /// <summary>When the code was verified and the reset token issued. Null while it has not been.</summary>
+    public DateTimeOffset? VerifiedAt { get; private set; }
+
+    /// <summary>
+    ///     SHA-256 (hex, 64 chars) of the reset token. The token itself is never stored. Null before the code is
+    ///     verified and after the token is used.
+    /// </summary>
+    public string? ResetTokenHash { get; private set; }
+
+    /// <summary>When the reset token stops being accepted.</summary>
+    public DateTimeOffset? ResetTokenExpiresAt { get; private set; }
+
+    /// <summary>The code can still be verified at <paramref name="now" />: not verified, not expired, attempts left.</summary>
     public bool IsUsableAt(DateTimeOffset now)
     {
-        return UsedAt is null && now < ExpiresAt && FailedAttempts < MaxFailedAttempts;
+        return UsedAt is null && VerifiedAt is null && now < ExpiresAt && FailedAttempts < MaxFailedAttempts;
     }
 
     /// <summary>Records a wrong code. The last allowed failure leaves the code unusable.</summary>
@@ -59,10 +75,35 @@ public partial class PasswordResetCode
         if (FailedAttempts < MaxFailedAttempts) FailedAttempts++;
     }
 
-    /// <summary>Consumes the code: it cannot set a password twice.</summary>
+    /// <summary>
+    ///     Business rule: A Reset Code Is Verified Once (IAM-2). Accepts the code and keeps the hash of the reset
+    ///     token that will set the password.
+    /// </summary>
+    public void Verify(DateTimeOffset now, string resetTokenHash, DateTimeOffset resetTokenExpiresAt)
+    {
+        if (!IsUsableAt(now)) throw new InvalidOperationException("This reset code can no longer be verified.");
+        if (string.IsNullOrWhiteSpace(resetTokenHash))
+            throw new InvalidOperationException("Verifying a reset code requires the hash of the reset token.");
+        if (resetTokenExpiresAt <= now)
+            throw new InvalidOperationException("A reset token must expire after it is issued.");
+
+        VerifiedAt = now;
+        ResetTokenHash = resetTokenHash;
+        ResetTokenExpiresAt = resetTokenExpiresAt;
+    }
+
+    /// <summary>The reset token is current at <paramref name="now" />: issued, not expired and not used.</summary>
+    public bool AcceptsResetTokenAt(DateTimeOffset now)
+    {
+        return UsedAt is null && ResetTokenHash is not null && ResetTokenExpiresAt is { } expiresAt && now < expiresAt;
+    }
+
+    /// <summary>Consumes the code and its reset token: they cannot set a password twice.</summary>
     public void MarkAsUsed(DateTimeOffset now)
     {
-        if (!IsUsableAt(now)) throw new InvalidOperationException("This reset code can no longer be used.");
+        if (!AcceptsResetTokenAt(now)) throw new InvalidOperationException("This reset token can no longer be used.");
         UsedAt = now;
+        ResetTokenHash = null;
+        ResetTokenExpiresAt = null;
     }
 }

@@ -51,10 +51,19 @@ public enum IamError
     RefreshTokenInvalid,
 
     /// <summary>
-    ///     IAM-2. The reset code is wrong, expired, already used or out of attempts, or the email has no account. One
-    ///     value for all of them, so the endpoint does not say which.
+    ///     IAM-2. The reset code is wrong, expired, already verified or out of attempts, or the email has no account.
+    ///     One value for all of them, so the endpoint does not say which.
     /// </summary>
     PasswordResetCodeInvalid,
+
+    /// <summary>
+    ///     IAM-2. The reset token is unknown, expired or already used. One value for all of them, so the endpoint does
+    ///     not say which.
+    /// </summary>
+    PasswordResetTokenInvalid,
+
+    /// <summary>Rule: New Password Differs From The Current One (IAM-2).</summary>
+    PasswordReuseNotAllowed,
 
     UnexpectedError
 }

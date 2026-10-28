@@ -86,6 +86,12 @@
     <data name="PasswordResetCodeInvalid" xml:space="preserve">
         <value>The code is wrong or has expired. Ask for a new one.</value>
     </data>
+    <data name="PasswordResetTokenInvalid" xml:space="preserve">
+        <value>The time to change your password ran out. Ask for a new code.</value>
+    </data>
+    <data name="PasswordReuseNotAllowed" xml:space="preserve">
+        <value>Use a password different from your current one.</value>
+    </data>
     <data name="UnexpectedError" xml:space="preserve">
         <value>An unexpected error occurred.</value>
     </data>

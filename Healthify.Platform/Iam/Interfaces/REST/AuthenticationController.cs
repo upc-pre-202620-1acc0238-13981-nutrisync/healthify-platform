@@ -121,19 +121,45 @@ public class AuthenticationController(
         return IamActionResultAssembler.ToPasswordResetRequestResult(result, localizer);
     }
 
+    [HttpPost("password-reset-verifications")]
+    [EnableRateLimiting(RateLimitingPolicies.Auth)]
+    [AllowAnonymous]
+    [SwaggerOperation(
+        Summary = "Verify the emailed code",
+        Description =
+            "Checks the six-digit code that was emailed. A right code is exchanged for a reset token that sets the " +
+            "new password once, within a few minutes; the code itself cannot be verified again. Five wrong codes " +
+            "leave it unusable, and a new one has to be asked for.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The code is right; the reset token and its expiry.",
+        typeof(PasswordResetVerificationResponseResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest,
+        "The code is wrong, expired, already verified or out of attempts, or the email has no account " +
+        "(PasswordResetCodeInvalid).", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status429TooManyRequests,
+        "Too many requests from this network in a short time; wait the Retry-After seconds.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.",
+        typeof(ProblemDetails))]
+    public async Task<IActionResult> VerifyPasswordResetCode([FromBody] PasswordResetVerificationResource resource)
+    {
+        var command = PasswordResetCommandAssembler.ToCommand(resource);
+        var result = await passwordResetCommandService.Handle(command, HttpContext.RequestAborted);
+        return IamActionResultAssembler.ToPasswordResetVerificationResult(result, localizer);
+    }
+
     [HttpPost("password-resets")]
     [EnableRateLimiting(RateLimitingPolicies.Auth)]
     [AllowAnonymous]
     [SwaggerOperation(
-        Summary = "Set a new password with the emailed code",
+        Summary = "Set a new password with the reset token",
         Description =
-            "Sets a new password with the code that was emailed. The code works once, for a limited time and for a " +
-            "few attempts. On success every open session of the account ends and the lockout, if any, is cleared; " +
-            "the user signs in again with the new password.")]
+            "Sets a new password with the reset token returned when the code was verified. The password follows the " +
+            "registration rules and must differ from the current one; a refused password does not use up the token. " +
+            "On success every open session of the account ends and the lockout, if any, is cleared; the user signs " +
+            "in again with the new password.")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "The password was changed.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest,
-        "The code is wrong, expired, used or out of attempts (PasswordResetCodeInvalid), or the new password is " +
-        "too weak (WeakPassword).", typeof(ProblemDetails))]
+        "The reset token is unknown, expired or used (PasswordResetTokenInvalid), the new password is too weak " +
+        "(WeakPassword), or it is the current one (PasswordReuseNotAllowed).", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status429TooManyRequests,
         "Too many requests from this network in a short time; wait the Retry-After seconds.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.",

@@ -98,6 +98,20 @@ public static class IamActionResultAssembler
         };
     }
 
+    /// <summary>IAM-2 - Verify Password Reset Code. Success carries the reset token.</summary>
+    public static IActionResult ToPasswordResetVerificationResult(
+        Result<PasswordResetVerification, IamError> result,
+        IStringLocalizer<IamMessages> localizer)
+    {
+        return result switch
+        {
+            Result<PasswordResetVerification, IamError>.Success s =>
+                new OkObjectResult(PasswordResetCommandAssembler.ToResource(s.Value)),
+            Result<PasswordResetVerification, IamError>.Failure f => FailureResult(f.Error, localizer),
+            _ => FailureResult(IamError.UnexpectedError, localizer)
+        };
+    }
+
     /// <summary>IAM-2 - Reset Password. Success carries no body.</summary>
     public static IActionResult ToPasswordResetResult(
         Result<bool, IamError> result,
@@ -158,6 +172,10 @@ public static class IamActionResultAssembler
                 localizer["BadRequestTitle"].Value, localizer["InvalidPreferredLanguage"].Value),
             IamError.PasswordResetCodeInvalid => Problem(StatusCodes.Status400BadRequest,
                 localizer["BadRequestTitle"].Value, localizer["PasswordResetCodeInvalid"].Value),
+            IamError.PasswordResetTokenInvalid => Problem(StatusCodes.Status400BadRequest,
+                localizer["BadRequestTitle"].Value, localizer["PasswordResetTokenInvalid"].Value),
+            IamError.PasswordReuseNotAllowed => Problem(StatusCodes.Status400BadRequest,
+                localizer["BadRequestTitle"].Value, localizer["PasswordReuseNotAllowed"].Value),
 
             // Business rules that are not input validation.
             IamError.RoleChangeRequiresReAuthentication => Problem(StatusCodes.Status422UnprocessableEntity,

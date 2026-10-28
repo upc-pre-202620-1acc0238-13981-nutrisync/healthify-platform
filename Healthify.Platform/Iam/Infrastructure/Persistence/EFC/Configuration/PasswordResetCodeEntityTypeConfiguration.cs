@@ -26,6 +26,15 @@ public class PasswordResetCodeEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(c => c.FailedAttempts).HasColumnName("failed_attempts").IsRequired();
         builder.Property(c => c.UsedAt).HasColumnName("used_at");
 
+        // IAM-2. Verification. Only the hash of the reset token is stored; it is unique because a reset looks the
+        // code up by it.
+        builder.Property(c => c.VerifiedAt).HasColumnName("verified_at");
+        builder.Property(c => c.ResetTokenHash)
+            .HasColumnName("reset_token_hash").HasColumnType("char(64)").IsRequired(false);
+        builder.HasIndex(c => c.ResetTokenHash).IsUnique()
+            .HasDatabaseName("ix_password_reset_codes_reset_token_hash");
+        builder.Property(c => c.ResetTokenExpiresAt).HasColumnName("reset_token_expires_at");
+
         builder.Property(c => c.CreatedAt).HasColumnName("created_at");
         builder.Property(c => c.UpdatedAt).HasColumnName("updated_at");
     }
