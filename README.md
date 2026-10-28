@@ -47,6 +47,7 @@ on `3307`). Migrations are applied at startup.
 | `ConnectionStrings__DefaultConnection` | Overrides the connection string |
 | `Usda__ApiKey` | USDA FoodData Central key; empty disables that provider |
 | `Ai__Enabled`, `Ai__Gemini__ApiKey` | Turn AI on and give it its key |
+| `Smtp__Host`, `Smtp__Username`, `Smtp__Password`, `Smtp__From` | SMTP for the password reset email; without a host nothing is sent (in Development the code goes to the log) |
 
 Secrets are never committed: `appsettings.Development.json` is git-ignored. Run the tests with
 `dotnet test healthify-platform.sln`; the MySQL integration tests run only when `HEALTHIFY_IT_MYSQL` points to a

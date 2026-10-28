@@ -13,7 +13,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace Healthify.Platform.Iam.Interfaces.REST;
 
-/// <summary>Subflows 1.1, 1.2 and 1.3 of the Iam bounded context.</summary>
+/// <summary>Subflows 1.1, 1.2 and 1.3 of the Iam bounded context, and password recovery (IAM-2).</summary>
 [ApiController]
 [Route("api/v1/authentication")]
 [Authorize]
@@ -23,6 +23,7 @@ namespace Healthify.Platform.Iam.Interfaces.REST;
 public class AuthenticationController(
     IUserCommandService userCommandService,
     IUserSessionCommandService sessionCommandService,
+    IPasswordResetCommandService passwordResetCommandService,
     IStringLocalizer<IamMessages> localizer) : ControllerBase
 {
     [HttpPost("sign-up")]
@@ -98,6 +99,50 @@ public class AuthenticationController(
         var command = RefreshSessionCommandAssembler.ToCommand(resource);
         var result = await sessionCommandService.Handle(command, HttpContext.RequestAborted);
         return IamActionResultAssembler.ToTokenRefreshResult(result, localizer);
+    }
+
+    [HttpPost("password-reset-requests")]
+    [EnableRateLimiting(RateLimitingPolicies.Auth)]
+    [AllowAnonymous]
+    [SwaggerOperation(
+        Summary = "Ask for a password reset code",
+        Description =
+            "Emails a six-digit code to the account, in its language. The answer is always the same, whether the " +
+            "email has an account or not, so it cannot be used to find out who is registered. Asking again within " +
+            "a minute does not send another email; a new code replaces the previous one.")]
+    [SwaggerResponse(StatusCodes.Status202Accepted,
+        "Accepted. If the email has an account, a code is on its way.")]
+    [SwaggerResponse(StatusCodes.Status429TooManyRequests,
+        "Too many requests from this network in a short time; wait the Retry-After seconds.", typeof(ProblemDetails))]
+    public async Task<IActionResult> RequestPasswordReset([FromBody] PasswordResetRequestResource resource)
+    {
+        var command = PasswordResetCommandAssembler.ToCommand(resource);
+        var result = await passwordResetCommandService.Handle(command, HttpContext.RequestAborted);
+        return IamActionResultAssembler.ToPasswordResetRequestResult(result, localizer);
+    }
+
+    [HttpPost("password-resets")]
+    [EnableRateLimiting(RateLimitingPolicies.Auth)]
+    [AllowAnonymous]
+    [SwaggerOperation(
+        Summary = "Set a new password with the emailed code",
+        Description =
+            "Sets a new password with the code that was emailed. The code works once, for a limited time and for a " +
+            "few attempts. On success every open session of the account ends and the lockout, if any, is cleared; " +
+            "the user signs in again with the new password.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "The password was changed.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest,
+        "The code is wrong, expired, used or out of attempts (PasswordResetCodeInvalid), or the new password is " +
+        "too weak (WeakPassword).", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status429TooManyRequests,
+        "Too many requests from this network in a short time; wait the Retry-After seconds.", typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.",
+        typeof(ProblemDetails))]
+    public async Task<IActionResult> ResetPassword([FromBody] PasswordResetResource resource)
+    {
+        var command = PasswordResetCommandAssembler.ToCommand(resource);
+        var result = await passwordResetCommandService.Handle(command, HttpContext.RequestAborted);
+        return IamActionResultAssembler.ToPasswordResetResult(result, localizer);
     }
 
     [HttpPost("sign-out")]
