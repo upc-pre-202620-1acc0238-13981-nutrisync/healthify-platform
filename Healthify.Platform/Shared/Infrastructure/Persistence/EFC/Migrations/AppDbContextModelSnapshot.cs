@@ -310,6 +310,14 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("issued_at");
 
+                    b.Property<DateTimeOffset?>("ResetTokenExpiresAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("reset_token_expires_at");
+
+                    b.Property<string>("ResetTokenHash")
+                        .HasColumnType("char(64)")
+                        .HasColumnName("reset_token_hash");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
@@ -322,8 +330,16 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
+                    b.Property<DateTimeOffset?>("VerifiedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("verified_at");
+
                     b.HasKey("Id")
                         .HasName("p_k_password_reset_codes");
+
+                    b.HasIndex("ResetTokenHash")
+                        .IsUnique()
+                        .HasDatabaseName("ix_password_reset_codes_reset_token_hash");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_password_reset_codes_user_id");
