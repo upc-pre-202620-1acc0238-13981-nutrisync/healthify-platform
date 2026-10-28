@@ -121,6 +121,20 @@ public partial class User
         LockedOutAt = null;
     }
 
+    /// <summary>
+    ///     IAM-2. Sets the password chosen with a reset code. A lockout is cleared too: proving access to the email
+    ///     is a stronger check than the password that was failing.
+    /// </summary>
+    public void ResetPassword(string passwordHash)
+    {
+        if (string.IsNullOrWhiteSpace(passwordHash))
+            throw new InvalidOperationException("A password hash is required to reset the password.");
+
+        PasswordHash = passwordHash;
+        FailedSignInAttempts = 0;
+        LockedOutAt = null;
+    }
+
     /// <summary>Opens a session carrying this account immutable role claim.</summary>
     public UserSession StartSession()
     {

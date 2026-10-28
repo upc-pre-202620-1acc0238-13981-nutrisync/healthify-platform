@@ -30,6 +30,10 @@ services:
       - ConnectionStrings__DefaultConnection=server=${DATABASE_HOST:-healthify-mysql};port=3306;user=${DATABASE_USER:-root};password=${DATABASE_PASSWORD:-healthify};database=${DATABASE_SCHEMA:-healthify}
       - TokenSettings__Secret=${JWT_SECRET}
       - Usda__ApiKey=${USDA_API_KEY:-}
+      - Smtp__Host=${SMTP_HOST:-}
+      - Smtp__Username=${SMTP_USERNAME:-}
+      - Smtp__Password=${SMTP_PASSWORD:-}
+      - Smtp__From=${SMTP_FROM:-}
     ports:
       - "8080:8080"
 

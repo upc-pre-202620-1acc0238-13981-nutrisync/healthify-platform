@@ -282,6 +282,55 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.ToTable("reference_foods", (string)null);
                 });
 
+            modelBuilder.Entity("Healthify.Platform.Iam.Domain.Model.Aggregates.PasswordResetCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasColumnType("char(64)")
+                        .HasColumnName("code_hash");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("expires_at");
+
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("int")
+                        .HasColumnName("failed_attempts");
+
+                    b.Property<DateTimeOffset>("IssuedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("issued_at");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("used_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_password_reset_codes");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_password_reset_codes_user_id");
+
+                    b.ToTable("password_reset_codes", (string)null);
+                });
+
             modelBuilder.Entity("Healthify.Platform.Iam.Domain.Model.Aggregates.User", b =>
                 {
                     b.Property<int>("Id")
