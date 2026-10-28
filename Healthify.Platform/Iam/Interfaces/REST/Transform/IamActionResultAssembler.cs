@@ -85,6 +85,32 @@ public static class IamActionResultAssembler
         };
     }
 
+    /// <summary>IAM-2 - Request Password Reset. Always accepted; no body.</summary>
+    public static IActionResult ToPasswordResetRequestResult(
+        Result<bool, IamError> result,
+        IStringLocalizer<IamMessages> localizer)
+    {
+        return result switch
+        {
+            Result<bool, IamError>.Success => new StatusCodeResult(StatusCodes.Status202Accepted),
+            Result<bool, IamError>.Failure f => FailureResult(f.Error, localizer),
+            _ => FailureResult(IamError.UnexpectedError, localizer)
+        };
+    }
+
+    /// <summary>IAM-2 - Reset Password. Success carries no body.</summary>
+    public static IActionResult ToPasswordResetResult(
+        Result<bool, IamError> result,
+        IStringLocalizer<IamMessages> localizer)
+    {
+        return result switch
+        {
+            Result<bool, IamError>.Success => new StatusCodeResult(StatusCodes.Status204NoContent),
+            Result<bool, IamError>.Failure f => FailureResult(f.Error, localizer),
+            _ => FailureResult(IamError.UnexpectedError, localizer)
+        };
+    }
+
     /// <summary>
     ///     Not-found response for the read endpoints. Query services return null rather than a
     ///     <see cref="Result{TValue,TError}" />, so this keeps their 404 on the same mapping as every
@@ -130,6 +156,8 @@ public static class IamActionResultAssembler
                 localizer["BadRequestTitle"].Value, localizer["NameRequired"].Value),
             IamError.InvalidPreferredLanguage => Problem(StatusCodes.Status400BadRequest,
                 localizer["BadRequestTitle"].Value, localizer["InvalidPreferredLanguage"].Value),
+            IamError.PasswordResetCodeInvalid => Problem(StatusCodes.Status400BadRequest,
+                localizer["BadRequestTitle"].Value, localizer["PasswordResetCodeInvalid"].Value),
 
             // Business rules that are not input validation.
             IamError.RoleChangeRequiresReAuthentication => Problem(StatusCodes.Status422UnprocessableEntity,
