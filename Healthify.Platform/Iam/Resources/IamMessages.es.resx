@@ -86,6 +86,12 @@
     <data name="PasswordResetCodeInvalid" xml:space="preserve">
         <value>El código no es correcto o ya venció. Pide uno nuevo.</value>
     </data>
+    <data name="PasswordResetTokenInvalid" xml:space="preserve">
+        <value>Se acabó el tiempo para cambiar tu contraseña. Pide un código nuevo.</value>
+    </data>
+    <data name="PasswordReuseNotAllowed" xml:space="preserve">
+        <value>Usa una contraseña distinta a la actual.</value>
+    </data>
     <data name="UnexpectedError" xml:space="preserve">
         <value>Ocurrió un error inesperado.</value>
     </data>
