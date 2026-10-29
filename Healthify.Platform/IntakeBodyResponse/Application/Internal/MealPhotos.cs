@@ -75,6 +75,11 @@ public sealed class MealPhotoRecognitionOutputValidator : IAiOutputValidator<Mea
 /// <param name="Confidence">How sure the AI was, from 0 to 1.</param>
 /// <param name="Alternatives">Up to three, resolved to the local catalog when it carries them.</param>
 /// <param name="ExpiresAt">After this instant the analysis can no longer be logged.</param>
+/// <param name="PlanFit">IN-8. The suggestion for «¿Estaba en tu plan?» of the dish, or null when there is none.</param>
+/// <param name="AlternativePlanFits">
+///     IN-8. The same for each alternative, in the order of <paramref name="Alternatives" />; null for one the catalog
+///     does not carry. Null when there is no suggestion at all.
+/// </param>
 public sealed record MealPhotoAnalysisView(
     Guid AnalysisId,
     int ReferenceFoodId,
@@ -82,4 +87,6 @@ public sealed record MealPhotoAnalysisView(
     decimal EstimatedGrams,
     decimal Confidence,
     IReadOnlyList<MealPhotoAlternative> Alternatives,
-    DateTimeOffset ExpiresAt);
+    DateTimeOffset ExpiresAt,
+    PlanFit? PlanFit = null,
+    IReadOnlyList<PlanFit?>? AlternativePlanFits = null);
