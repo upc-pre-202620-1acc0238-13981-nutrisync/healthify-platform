@@ -11,36 +11,6 @@ namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Transform;
 // Resource to Command
 // ---------------------------------------------------------------------------------------------
 
-public static class RecordAssessmentCommandAssembler
-{
-    public static RecordAssessmentCommand ToCommand(int practitionerId, RecordAssessmentResource resource)
-    {
-        return new RecordAssessmentCommand(
-            resource.PatientId, practitionerId, resource.Habits, resource.MedicalHistory,
-            resource.PhysicalActivity, resource.Biochemistry, resource.AgeYears, resource.BiologicalSex,
-            resource.SupersedesAssessmentId, resource.ActivityLevel,
-            resource.EatingHabits is null
-                ? null
-                : new EatingHabitsDto(resource.EatingHabits.MealsPerDay, resource.EatingHabits.WaterLitersPerDay,
-                    resource.EatingHabits.MealsOutPerWeek),
-            resource.BiochemistryPanel is null
-                ? null
-                : new BiochemistryDto(resource.BiochemistryPanel.FastingGlucoseMgDl,
-                    resource.BiochemistryPanel.TotalCholesterolMgDl, resource.BiochemistryPanel.TriglyceridesMgDl));
-    }
-}
-
-public static class TakeClinicalMeasurementCommandAssembler
-{
-    public static TakeClinicalMeasurementCommand ToCommand(int assessmentId, int practitionerId,
-        TakeClinicalMeasurementResource resource)
-    {
-        return new TakeClinicalMeasurementCommand(assessmentId, practitionerId, resource.WeightKg,
-            resource.HeightCm, resource.Protocol, resource.BodyFatPercentage,
-            resource.WaistCircumferenceCm, resource.ProtocolChecks);
-    }
-}
-
 public static class RecordPatientBaselineCommandAssembler
 {
     public static RecordPatientBaselineCommand ToCommand(int patientId, int practitionerId,
@@ -58,54 +28,6 @@ public static class UpdatePatientBaselineCommandAssembler
     {
         return new UpdatePatientBaselineCommand(patientId, practitionerId, resource.BirthDate,
             resource.BiologicalSex, resource.HeightCm, resource.Conditions ?? []);
-    }
-}
-
-public static class CloseAssessmentCommandAssembler
-{
-    public static CloseAssessmentCommand ToCommand(int assessmentId, int practitionerId)
-    {
-        return new CloseAssessmentCommand(assessmentId, practitionerId);
-    }
-}
-
-public static class IssueDiagnosisCommandAssembler
-{
-    public static IssueDiagnosisCommand ToCommand(int practitionerId, IssueDiagnosisResource resource)
-    {
-        return new IssueDiagnosisCommand(resource.PatientId, practitionerId, resource.AssessmentId,
-            resource.Statement, resource.Rationale, resource.Code);
-    }
-}
-
-public static class ProposeTargetsCommandAssembler
-{
-    public static ProposeTargetsCommand ToCommand(int practitionerId, ProposeTargetsResource resource)
-    {
-        return new ProposeTargetsCommand(
-            resource.PatientId, practitionerId, resource.Equation, resource.ReferenceWeightKind,
-            resource.ReferenceWeightKg, resource.ActivityFactor, resource.DeficitKind,
-            resource.DeficitValue, resource.ProteinGramsPerKg, resource.FatPercentOfEnergy);
-    }
-}
-
-public static class PrescribeTargetsCommandAssembler
-{
-    public static PrescribeTargetsCommand ToCommand(int planId, int practitionerId,
-        PrescribeTargetsResource resource)
-    {
-        return new PrescribeTargetsCommand(planId, practitionerId, resource.Outcome, resource.EnergyKcal,
-            resource.ProteinG, resource.CarbG, resource.FatG, resource.OverrideReason);
-    }
-}
-
-public static class PublishNutritionPlanCommandAssembler
-{
-    public static PublishNutritionPlanCommand ToCommand(int planId, int practitionerId,
-        PublishNutritionPlanResource resource)
-    {
-        return new PublishNutritionPlanCommand(planId, practitionerId, resource.Guidelines ?? [],
-            resource.Restrictions ?? [], resource.CustomGuidelines, resource.PatientMessage);
     }
 }
 
@@ -253,7 +175,7 @@ public static class NutritionPlanResourceAssembler
 
 public static class AcceptPlanProposalCommandAssembler
 {
-    /// <summary>NC-10. As is, or with the edits of PR14.IA-A (missing numbers read as 0 and fail the bounds).</summary>
+    /// <summary>As is, or with the practitioner's edits (missing numbers read as 0 and fail the bounds).</summary>
     public static AcceptPlanProposalCommand ToCommand(int reviewItemId, int practitionerId,
         AcceptPlanProposalResource resource)
     {
@@ -270,7 +192,7 @@ public static class AcceptPlanProposalCommandAssembler
 
 public static class PlanAdjustmentProposalResourceAssembler
 {
-    /// <summary>NC-10. The proposal of the lookup, or null when the item has none.</summary>
+    /// <summary>The proposal of the lookup, or null when the item has none.</summary>
     public static PlanAdjustmentProposalResource? ToResource(PlanProposalLookup lookup)
     {
         var proposal = lookup.ReviewItem.Proposal;
@@ -282,7 +204,7 @@ public static class PlanAdjustmentProposalResourceAssembler
             proposal.AssignedPlanVersion, proposal.PractitionerLanguage, proposal.PatientLanguage);
     }
 
-    /// <summary>NC-10/NC-11. The item with the patient's name when <paramref name="entry" /> is the same item.</summary>
+    /// <summary>The item with the patient's name when <paramref name="entry" /> is the same item.</summary>
     public static PlanProposalAcceptanceResource ToResource(PlanProposalAcceptanceOutcome outcome,
         ReviewInboxEntry? entry = null)
     {
@@ -295,7 +217,7 @@ public static class PlanAdjustmentProposalResourceAssembler
 
 public static class ReviewItemQueryAssembler
 {
-    /// <summary>NC-11. The <c>?state=</c> filter: Open when absent (the inbox as it always was), false when invalid.</summary>
+    /// <summary>The <c>?state=</c> filter: Open when absent (the inbox as it always was), false when invalid.</summary>
     public static bool TryToQuery(int practitionerId, string? state, out GetReviewItemsByPractitionerIdQuery query)
     {
         query = new GetReviewItemsByPractitionerIdQuery(practitionerId, new ReviewItemState(ReviewItemState.Open));
@@ -319,7 +241,7 @@ public static class ReviewItemResourceAssembler
         return ToResource(reviewItem, null);
     }
 
-    /// <summary>NC-11. One line of the inbox, with the patient's name.</summary>
+    /// <summary>One line of the inbox, with the patient's name.</summary>
     public static ReviewItemResource ToResource(ReviewInboxEntry entry)
     {
         return ToResource(entry.ReviewItem, entry.PatientFullName);
