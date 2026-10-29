@@ -54,13 +54,13 @@ public partial class ReferenceFood
     }
 
     /// <summary>
-    ///     IN-7 - Create AI Estimated Food. A dish that neither the local catalog nor the external providers carry
+    ///     Create AI Estimated Food. A dish that neither the local catalog nor the external providers carry
     ///     enters the catalog with the nutrients the AI estimated for it.
     /// </summary>
     /// <remarks>
-    ///     Business rule: AI Estimated Nutrients Coherent (IN-7), asserted here by <see cref="NutrientCoherence" />:
+    ///     Business rule: AI Estimated Nutrients Coherent, asserted here by <see cref="NutrientCoherence" />:
     ///     an estimate that could not describe real food never becomes a food.
-    ///     DECISIÓN IN-7: verified automatically (<see cref="IsVerified" /> true, <see cref="VerifiedBy" /> null), as
+    ///     Verified automatically (<see cref="IsVerified" /> true, <see cref="VerifiedBy" /> null), as
     ///     the change of design states. The source, the verification and the generation are stored for traceability
     ///     and never shown: for the patient and the practitioner it is a food like any other.
     /// </remarks>
@@ -114,20 +114,20 @@ public partial class ReferenceFood
     /// <summary>Business rule: Item Flagged As Local Override (Subflow 6.4).</summary>
     public bool IsLocalOverride { get; private set; }
 
-    /// <summary>IN-7. Where the food came from. Stored for traceability, never exposed.</summary>
+    /// <summary>Where the food came from. Stored for traceability, never exposed.</summary>
     public FoodSource Source { get; private set; } = new(FoodSource.Imported);
 
-    /// <summary>IN-7. Whether the nutrients are verified. True for every food; never exposed.</summary>
+    /// <summary>Whether the nutrients are verified. True for every food; never exposed.</summary>
     public bool IsVerified { get; private set; } = true;
 
-    /// <summary>IN-7. Who verified the food, when a person did; null when it was verified automatically. Never exposed.</summary>
+    /// <summary>Who verified the food, when a person did; null when it was verified automatically. Never exposed.</summary>
     public int? VerifiedBy { get; private set; }
 
-    /// <summary>IN-7. The <c>ai_generations</c> row that estimated an <c>AiEstimated</c> food; null otherwise.</summary>
+    /// <summary>The <c>ai_generations</c> row that estimated an <c>AiEstimated</c> food; null otherwise.</summary>
     public long? AiGenerationId { get; private set; }
 
     /// <summary>
-    ///     IN-7. A food an import never overwrites: a local override (Subflow 6.4) or an AI-estimated food, which has
+    ///     A food an import never overwrites: a local override (Subflow 6.4) or an AI-estimated food, which has
     ///     no upstream record to follow.
     /// </summary>
     public bool IsProtectedFromImport => IsLocalOverride || Source.IsAiEstimated;
@@ -151,7 +151,7 @@ public partial class ReferenceFood
     {
         if (IsLocalOverride)
             throw new InvalidOperationException("A local override is never overwritten by an import.");
-        // IN-7: nor an AI-estimated food, which has no upstream record to follow.
+        // Nor an AI-estimated food, which has no upstream record to follow.
         if (Source.IsAiEstimated)
             throw new InvalidOperationException("An AI estimated food is never overwritten by an import.");
 

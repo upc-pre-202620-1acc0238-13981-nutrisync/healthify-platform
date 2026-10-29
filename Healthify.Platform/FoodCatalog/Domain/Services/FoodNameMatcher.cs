@@ -5,12 +5,12 @@ using Healthify.Platform.FoodCatalog.Domain.Model.Aggregates;
 namespace Healthify.Platform.FoodCatalog.Domain.Services;
 
 /// <summary>
-///     FC-2. Decides which entry of the local catalog a free name ("Pechuga de pollo", "camote") stands for. Pure
+///     Decides which entry of the local catalog a free name ("Pechuga de pollo", "camote") stands for. Pure
 ///     and deterministic: the same name and candidates always give the same answer, so an idea resolved twice
 ///     resolves to the same food.
 /// </summary>
 /// <remarks>
-///     Business rule: Ingredient Resolved Only When Every Word Matches (FC-2). A candidate matches when each
+///     Business rule: Ingredient Resolved Only When Every Word Matches. A candidate matches when each
 ///     significant word of the name (connectors such as "de", "con" or "y" do not count) is a whole word of the
 ///     candidate, ignoring case, accents, punctuation and a final plural "s" or "es": "pechuga de pollo" matches
 ///     "Pechuga de pollo sin piel cocida", "camotes" matches "Camote amarillo sancochado", "frijoles" matches
@@ -64,14 +64,14 @@ public static class FoodNameMatcher
             .FirstOrDefault();
     }
 
-    /// <summary>IN-7. A clear similar match shares at least this many significant words with the name.</summary>
+    /// <summary>A clear similar match shares at least this many significant words with the name.</summary>
     public const int MinimumSharedWords = 2;
 
-    /// <summary>IN-7. … and the longer of the two has at most this many significant words more.</summary>
+    /// <summary>… and the longer of the two has at most this many significant words more.</summary>
     public const int MaximumExtraWords = 1;
 
     /// <summary>
-    ///     IN-7. What narrows the catalog when looking for a dish similar to <paramref name="name" />: the start of
+    ///     What narrows the catalog when looking for a dish similar to <paramref name="name" />: the start of
     ///     each of its longest significant words (a similar entry may lack any one of them).
     /// </summary>
     public static IReadOnlyList<string> SearchTermsOf(string name, int max)
@@ -84,11 +84,11 @@ public static class FoodNameMatcher
     }
 
     /// <summary>
-    ///     IN-7. The catalog entry that is clearly the same dish as <paramref name="name" />, or null.
+    ///     The catalog entry that is clearly the same dish as <paramref name="name" />, or null.
     /// </summary>
     /// <remarks>
-    ///     Business rule: Similar Dish Reused, Not Duplicated (IN-7). Same words as FC-2 (significant words, no accents,
-    ///     no final plural), but in both directions: «Lomo saltado de res» is clearly «Lomo saltado», and «Lomo saltado»
+    ///     Business rule: Similar Dish Reused, Not Duplicated. Same words as ingredient matching (significant words, no
+    ///     accents, no final plural), but in both directions: «Lomo saltado de res» is clearly «Lomo saltado», and «Lomo saltado»
     ///     clearly «Lomo saltado de res». It is clear only when every significant word of the shorter one is in the
     ///     longer, the shorter has at least <see cref="MinimumSharedWords" /> of them (one word, such as «Pollo», is
     ///     not enough to say «Pollo a la brasa»), the longer adds at most <see cref="MaximumExtraWords" />, and no other

@@ -41,7 +41,7 @@ public class ReferenceFoodEntityTypeConfiguration : IEntityTypeConfiguration<Ref
 
         builder.Property(f => f.IsLocalOverride).HasColumnName("is_local_override").IsRequired();
 
-        // IN-7. Traceability, stored and never published. Rows from before IN-7 are Imported or LocalOverride
+        // Traceability, stored and never published. Rows that predate AI estimated foods are Imported or LocalOverride
         // (backfilled from is_local_override) and verified.
         builder.Property(f => f.Source)
             .HasConversion(s => s.Value, value => new FoodSource(value))

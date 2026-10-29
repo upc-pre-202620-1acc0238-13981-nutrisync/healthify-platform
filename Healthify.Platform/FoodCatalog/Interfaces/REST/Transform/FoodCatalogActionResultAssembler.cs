@@ -83,7 +83,7 @@ public static class FoodCatalogActionResultAssembler
                 localizer["BadRequestTitle"].Value, localizer["SourceHashRequired"].Value),
             FoodCatalogError.ExternalIdNotAllowed => Problem(StatusCodes.Status400BadRequest,
                 localizer["BadRequestTitle"].Value, localizer["ExternalIdNotAllowed"].Value),
-            // IN-7. Reached through the ACL only (Intake maps it to PhotoNotRecognized); mapped for completeness.
+            // Reached through the ACL only (Intake maps it to PhotoNotRecognized); mapped for completeness.
             FoodCatalogError.InconsistentNutrients => Problem(StatusCodes.Status400BadRequest,
                 localizer["BadRequestTitle"].Value, localizer["InconsistentNutrients"].Value),
             FoodCatalogError.AiGenerationRequired => Problem(StatusCodes.Status400BadRequest,

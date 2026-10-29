@@ -1,7 +1,7 @@
 namespace Healthify.Platform.FoodCatalog.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IN-7. Where a reference food came from: translated from an external provider or seeded (<c>Imported</c>),
+///     Where a reference food came from: translated from an external provider or seeded (<c>Imported</c>),
 ///     added by a practitioner (<c>LocalOverride</c>), or created from the nutrients the AI estimated for a dish
 ///     nothing else carried (<c>AiEstimated</c>).
 /// </summary>

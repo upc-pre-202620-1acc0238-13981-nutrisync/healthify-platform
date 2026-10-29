@@ -24,11 +24,11 @@ public interface IReferenceFoodRepository : IBaseRepository<ReferenceFood>
 
     Task<int> CountAsync(CancellationToken cancellationToken = default);
 
-    /// <summary>IN-7. Verified entries but the excluded ones, local overrides first, then by name, in one query.</summary>
+    /// <summary>Verified entries but the excluded ones, local overrides first, then by name, in one query.</summary>
     Task<IReadOnlyList<ReferenceFood>> ListVerifiedAsync(int max, IReadOnlyCollection<int> excludedIds,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IN-7. The entries among these identifiers, in one query.</summary>
+    /// <summary>The entries among these identifiers, in one query.</summary>
     Task<IReadOnlyList<ReferenceFood>> FindByIdsAsync(IReadOnlyCollection<int> ids,
         CancellationToken cancellationToken = default);
 }
