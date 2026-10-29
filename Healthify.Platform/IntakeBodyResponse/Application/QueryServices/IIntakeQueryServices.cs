@@ -48,6 +48,18 @@ public interface IPlanFitQueryService
         CancellationToken cancellationToken = default);
 }
 
+/// <summary>IN-9. What the patient logged today and what is left of their targets.</summary>
+public interface IDailyIntakeQueryService
+{
+    /// <summary>
+    ///     The day's intake. Fails with <see cref="IntakeError.ActiveTargetsCacheNotFound" /> when no plan was
+    ///     published and with <see cref="IntakeError.InvalidLocalDate" /> when the day is not today on the patient's
+    ///     device.
+    /// </summary>
+    Task<Result<DailyIntake, IntakeError>> Handle(GetDailyIntakeQuery query,
+        CancellationToken cancellationToken = default);
+}
+
 /// <summary>Every reading, including the ones excluded from the trend.</summary>
 public interface ISelfWeighInQueryService
 {
