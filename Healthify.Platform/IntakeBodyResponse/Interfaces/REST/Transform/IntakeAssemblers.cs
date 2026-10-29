@@ -256,6 +256,18 @@ public static class MealPhotoAnalysisResourceAssembler
     }
 }
 
+/// <summary>IN-9.</summary>
+public static class DailyIntakeResourceAssembler
+{
+    public static DailyIntakeResource ToResource(DailyIntake intake)
+    {
+        return new DailyIntakeResource(intake.Date, intake.EnergyKcal, intake.ProteinG, intake.CarbG, intake.FatG,
+            intake.EntryCount, intake.PlanVersion, intake.TargetEnergyKcal, intake.TargetProteinG,
+            intake.TargetCarbG, intake.TargetFatG, intake.Remaining.EnergyKcal, intake.Remaining.ProteinG,
+            intake.Remaining.CarbG, intake.Remaining.FatG);
+    }
+}
+
 /// <summary>IN-8.</summary>
 public static class PlanFitResourceAssembler
 {

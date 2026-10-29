@@ -36,6 +36,7 @@ public class PatientIntakeController(
     IDiaryEntryQueryService diaryEntryQueryService,
     IWeightTrendQueryService weightTrendQueryService,
     IPlanFitQueryService planFitQueryService,
+    IDailyIntakeQueryService dailyIntakeQueryService,
     IStringLocalizer<IntakeMessages> localizer) : ControllerBase
 {
     [HttpGet("{patientId:int}/active-targets")]
@@ -136,6 +137,37 @@ public class PatientIntakeController(
             new GetPendingSyncQueueByPatientIdQuery(patientId), HttpContext.RequestAborted)).ToList();
 
         return Ok(DiaryEntryResourceAssembler.ToResources(entries, await FoodNamesOf(entries)));
+    }
+
+    [HttpGet("{patientId:int}/daily-intake")]
+    [SwaggerOperation(
+        Summary = "Get what the patient logged today",
+        Description =
+            "Returns the energy and macronutrients the patient logged on their day, the published targets and what " +
+            "is left of each (never below zero), for the home gauge. Only confirmed entries count. It only " +
+            "describes the day: it never rates it.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The day's intake.", typeof(DailyIntakeResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "The date is not today on the patient's device.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "The intake of another patient cannot be read.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "No targets have been published yet.",
+        typeof(ProblemDetails))]
+    public async Task<IActionResult> GetDailyIntake(int patientId, [FromQuery] DateOnly date)
+    {
+        if (!IsSelf(patientId)) return NotThisPatient();
+
+        var result = await dailyIntakeQueryService.Handle(new GetDailyIntakeQuery(patientId, date),
+            HttpContext.RequestAborted);
+
+        return result switch
+        {
+            Result<DailyIntake, IntakeError>.Success s => Ok(DailyIntakeResourceAssembler.ToResource(s.Value)),
+            Result<DailyIntake, IntakeError>.Failure f =>
+                IntakeActionResultAssembler.ToNotFoundResult(f.Error, localizer),
+            _ => IntakeActionResultAssembler.ToNotFoundResult(IntakeError.UnexpectedError, localizer)
+        };
     }
 
     [HttpGet("{patientId:int}/plan-fit")]

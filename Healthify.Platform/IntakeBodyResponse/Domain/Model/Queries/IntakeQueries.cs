@@ -53,6 +53,13 @@ public record GetFoodNamesQuery(IReadOnlyCollection<int> ReferenceFoodIds);
 /// <param name="Candidates">The foods about to be logged.</param>
 public record GetPlanFitsQuery(int PatientId, DateOnly? LocalDate, IReadOnlyList<PlanFitCandidate> Candidates);
 
+/// <summary>
+///     IN-9. What the patient logged on one of their days, next to the published targets (PT3 «Medidor del día»).
+/// </summary>
+/// <param name="PatientId">From the token: the patient.</param>
+/// <param name="LocalDate">The patient's day: today on their device.</param>
+public record GetDailyIntakeQuery(int PatientId, DateOnly LocalDate);
+
 /// <summary>Every reading of one patient. Input to the trend recalculation.</summary>
 public record GetSelfWeighInsByPatientIdQuery(int PatientId);
 
