@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0. The versioned prompts. Each one is a <c>&lt;feature&gt;@&lt;n&gt;.md</c> file that declares the role,
+///     The versioned prompts. Each one is a <c>&lt;feature&gt;@&lt;n&gt;.md</c> file that declares the role,
 ///     the ethical rules, the language and the output schema.
 /// </summary>
 public interface IPromptCatalog

@@ -21,7 +21,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.Ai;
 
 /// <summary>
-///     IA-0. Every guard of the pipeline, in its order. The kill switch, the feature flag and consent stop before
+///     Every guard of the pipeline, in its order. The kill switch, the feature flag and consent stop before
 ///     any patient data is processed: no audit row, only an Information log without the patient. From
 ///     pseudonymization on, every outcome leaves its row, failures included. The language model is the fake: no
 ///     test reaches Google.

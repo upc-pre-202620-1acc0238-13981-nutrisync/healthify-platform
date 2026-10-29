@@ -15,11 +15,11 @@ public class AiGenerationEntityTypeConfiguration : IEntityTypeConfiguration<AiGe
         // Cross-context references: plain ints, no navigation, no foreign key constraint.
         builder.Property(g => g.SubjectPatientId).HasColumnName("subject_patient_id").IsRequired();
         builder.Property(g => g.RequestedByUserId).HasColumnName("requested_by_user_id");
-        // NOTE: technical field. The MD sizes it at 20, which "practitioner-monitoring-summary@1" already exceeds.
+        // NOTE: technical field. The spec sizes it at 20, which "practitioner-monitoring-summary@1" already exceeds.
         builder.Property(g => g.PromptVersion).HasColumnName("prompt_version").HasMaxLength(60);
         builder.Property(g => g.Model).HasColumnName("model").HasMaxLength(60);
         builder.Property(g => g.InputHash).HasColumnName("input_hash").HasColumnType("char(64)");
-        // IN-7: the digest of the photo, the only trace of it the platform keeps.
+        // The digest of the photo, the only trace of it the platform keeps.
         builder.Property(g => g.InputImageHash).HasColumnName("input_image_hash").HasColumnType("char(64)");
         builder.Property(g => g.OutputJson).HasColumnName("output_json").HasColumnType("json");
         builder.Property(g => g.Status).HasColumnName("status").HasMaxLength(20).IsRequired();

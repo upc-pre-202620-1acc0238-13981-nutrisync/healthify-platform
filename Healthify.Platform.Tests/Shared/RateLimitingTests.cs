@@ -65,7 +65,7 @@ public class RateLimitingTests
     [Fact]
     public async Task A_few_legitimate_refresh_retries_in_a_row_are_not_rejected_with_the_default_limits()
     {
-        // IAM-4: within the 30 s grace the app may repeat the same refresh (lost connection); the limit must not get
+        // Within the 30 s grace the app may repeat the same refresh (lost connection); the limit must not get
         // in the way of sign-in followed by those retries.
         var limiter = Pipeline();
 

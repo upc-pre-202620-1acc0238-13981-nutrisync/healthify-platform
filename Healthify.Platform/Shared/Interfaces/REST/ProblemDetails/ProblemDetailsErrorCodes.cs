@@ -5,7 +5,7 @@ using AspNetProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.Shared.Interfaces.REST.ProblemDetails;
 
 /// <summary>
-///     X-3. Machine-readable error code of every problem response, in <c>extensions.code</c>. Additive only: status,
+///     Machine-readable error code of every problem response, in <c>extensions.code</c>. Additive only: status,
 ///     title, detail, type and every other member of the problem stay exactly as they were.
 /// </summary>
 /// <remarks>
@@ -33,7 +33,7 @@ public static class ProblemDetailsErrorCodes
     public const string AccessNotAllowed = "AccessNotAllowed";
 
     /// <summary>
-    ///     D-RL. The request rate limiter refused the request (429, with <c>Retry-After</c>). Not the AI daily quota,
+    ///     The request rate limiter refused the request (429, with <c>Retry-After</c>). Not the AI daily quota,
     ///     which keeps its own code (<c>AiRateLimited</c>).
     /// </summary>
     public const string TooManyRequests = "TooManyRequests";
@@ -44,7 +44,7 @@ public static class ProblemDetailsErrorCodes
     ///     The code of a domain or technical error: the enum value name, except <c>UnexpectedError</c>, which every
     ///     context maps to 500 and is reported as <see cref="InternalError" />.
     /// </summary>
-    /// <remarks>DECISIÓN X-3: a 500 has one code for every context, as an unhandled exception does.</remarks>
+    /// <remarks>A 500 has one code for every context, as an unhandled exception does.</remarks>
     public static string For<TError>(TError error) where TError : struct, Enum
     {
         var name = error.ToString();

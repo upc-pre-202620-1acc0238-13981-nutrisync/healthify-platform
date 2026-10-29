@@ -17,7 +17,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Ai;
 
 /// <summary>
-///     IN-7, Shared module: images travel to the model as inline parts, the audit keeps only their SHA-256, and
+///     Shared module: images travel to the model as inline parts, the audit keeps only their SHA-256, and
 ///     neither the audit nor any log line ever holds the bytes (raw, base64 or hexadecimal).
 /// </summary>
 public class AiImageInputTests

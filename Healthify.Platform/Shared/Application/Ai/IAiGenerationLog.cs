@@ -20,7 +20,7 @@ public enum AiGenerationStatus
 }
 
 /// <summary>One row of the technical audit (<c>ai_generations</c>). Never holds the input itself, only its hash.</summary>
-/// <remarks>IN-7: <c>InputImageHash</c> is the SHA-256 of the images sent (<see cref="AiImagePart.CombinedHash" />), never the bytes.</remarks>
+/// <remarks><c>InputImageHash</c> is the SHA-256 of the images sent (<see cref="AiImagePart.CombinedHash" />), never the bytes.</remarks>
 public record AiGenerationRecord(
     string Feature,
     int SubjectPatientId,
@@ -39,7 +39,7 @@ public record AiGenerationRecord(
     string? InputImageHash = null);
 
 /// <summary>
-///     IA-0, guard 7. The audit of every generation that processed patient data, also the failed ones: "the AI
+///     Guard 7. The audit of every generation that processed patient data, also the failed ones: "the AI
 ///     wrote this", and what it cost.
 ///     Writes in a unit of work of its own, so recording a generation never commits the caller's pending changes.
 /// </summary>
@@ -55,7 +55,7 @@ public interface IAiGenerationLog
     Task<int> CountSinceAsync(AiFeature feature, int subjectPatientId, int? requestedByUserId, DateTimeOffset since,
         CancellationToken cancellationToken = default);
 
-    /// <summary>§12-#14. Deletes every generation about the patient, or only those of one feature.</summary>
+    /// <summary>Deletes every generation about the patient, or only those of one feature.</summary>
     /// <returns>Rows deleted.</returns>
     Task<int> PurgeForPatientAsync(int subjectPatientId, AiFeature? feature = null,
         CancellationToken cancellationToken = default);

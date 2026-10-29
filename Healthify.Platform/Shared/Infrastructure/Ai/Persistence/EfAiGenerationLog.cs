@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Persistence;
 
 /// <summary>
-///     IA-0. <see cref="IAiGenerationLog" /> over <c>ai_generations</c>. Every call opens a scope, and so a
+///     <see cref="IAiGenerationLog" /> over <c>ai_generations</c>. Every call opens a scope, and so a
 ///     DbContext, of its own: auditing a generation in the middle of a command must not commit the command's
 ///     pending changes, nor be rolled back with them.
 /// </summary>

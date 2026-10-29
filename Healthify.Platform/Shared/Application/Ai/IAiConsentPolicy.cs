@@ -1,8 +1,8 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0, guard 2: "does this patient allow function X?". Shared only asks; it does not know where consent lives
-///     and does not implement this interface. The context that owns consent (CareRelationship, CR-2 and IA-1)
+///     Guard 2: "does this patient allow function X?". Shared only asks; it does not know where consent lives
+///     and does not implement this interface. The context that owns consent (CareRelationship)
 ///     implements it: dependency inversion, so the technical module references no context.
 /// </summary>
 public interface IAiConsentPolicy

@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0. Port to the language model provider. One structured call: the provider is asked to answer JSON that
+///     Port to the language model provider. One structured call: the provider is asked to answer JSON that
 ///     follows <see cref="LanguageModelRequest.OutputSchemaJson" /> (native structured output). The answer is still
 ///     untrusted text: the pipeline validates it before anyone reads it.
 /// </summary>
@@ -18,7 +18,7 @@ public interface ILanguageModelClient
 /// <param name="MaxOutputTokens">Ceiling of the answer.</param>
 /// <param name="Timeout">Bound of each attempt (<c>Ai:TimeoutSeconds</c>).</param>
 /// <param name="Images">
-///     IN-7. Images sent with the text (inline), already stripped of metadata by the caller. Null or empty for a
+///     Images sent with the text (inline), already stripped of metadata by the caller. Null or empty for a
 ///     text-only request. Never logged.
 /// </param>
 public record LanguageModelRequest(

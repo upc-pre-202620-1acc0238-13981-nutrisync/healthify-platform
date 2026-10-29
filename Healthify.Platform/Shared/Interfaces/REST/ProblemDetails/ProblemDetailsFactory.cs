@@ -10,7 +10,7 @@ public static class ProblemDetailsFactory
     /// <param name="title">Localized short title.</param>
     /// <param name="detail">Localized explanation.</param>
     /// <param name="instance">Request path, when known.</param>
-    /// <param name="code">X-3: machine-readable error code written to <c>extensions.code</c> (see <see cref="ProblemDetailsErrorCodes" />).</param>
+    /// <param name="code">Machine-readable error code written to <c>extensions.code</c> (see <see cref="ProblemDetailsErrorCodes" />).</param>
     public static AspNetProblemDetails Create(int status, string title, string detail, string? instance = null,
         string? code = null)
     {
