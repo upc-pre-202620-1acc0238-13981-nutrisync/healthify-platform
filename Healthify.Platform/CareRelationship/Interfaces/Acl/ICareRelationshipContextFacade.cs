@@ -2,7 +2,8 @@ namespace Healthify.Platform.CareRelationship.Interfaces.Acl;
 
 /// <summary>Flat DTO exposed to other bounded contexts - primitives only.</summary>
 /// <remarks>
-///     RM-2 appends <c>EstablishedAt</c>, for "vinculada desde 12 mar. 2026"; CR-3 appends <c>LastAcknowledgedAt</c>.
+///     <c>EstablishedAt</c> (for "linked since 12 Mar 2026") and <c>LastAcknowledgedAt</c> are last so older
+///     callers still compile.
 /// </remarks>
 public record CareLinkStatusItem(
     int CareLinkId,
@@ -15,7 +16,7 @@ public record CareLinkStatusItem(
     DateTimeOffset? LastAcknowledgedAt = null);
 
 /// <summary>
-///     RM-1. One row of a practitioner's roster, primitives only. Only Active and PendingConsent links are
+///     One row of a practitioner's roster, primitives only. Only Active and PendingConsent links are
 ///     listed; revoked, discharged and withdrawn ones are history and stay out of the roster.
 /// </summary>
 /// <param name="CareLinkId">Identifier of the link.</param>
@@ -33,8 +34,8 @@ public record RosterCareLinkItem(int CareLinkId, int PatientId, string LinkStatu
 /// <param name="EstablishedAt">When the invitation was redeemed.</param>
 /// <param name="ConsentGrantedAt">When the patient granted consent, or null.</param>
 /// <param name="ConsentWithdrawnAt">When the patient withdrew it, or null.</param>
-/// <param name="AiProcessingGranted">CR-2. Whether the consent includes AI processing.</param>
-/// <param name="AiProcessingDecidedAt">CR-2. When the patient decided about AI processing, or null.</param>
+/// <param name="AiProcessingGranted">Whether the consent includes AI processing.</param>
+/// <param name="AiProcessingDecidedAt">When the patient decided about AI processing, or null.</param>
 /// <param name="EndedAt">When the link was revoked or the patient discharged, or null while it is open.</param>
 /// <param name="RevocationReason">ConsentWithdrawn or SwitchedPractitioner for a revoked link, otherwise null.</param>
 public record CareLinkHistoryItem(
@@ -72,14 +73,14 @@ public interface ICareRelationshipContextFacade
     Task<CareLinkStatusItem?> GetActiveCareLinkByPatientId(int patientId, CancellationToken ct = default);
 
     /// <summary>
-    ///     RM-1. The Active and PendingConsent links of a practitioner, oldest first. Empty when there are none
+    ///     The Active and PendingConsent links of a practitioner, oldest first. Empty when there are none
     ///     or the lookup fails.
     /// </summary>
     Task<IReadOnlyList<RosterCareLinkItem>> GetRosterCareLinks(int practitionerId, CancellationToken ct = default);
 
     /// <summary>
-    ///     CR-2. Whether the patient allows the AI functions to process their data now: an active link whose consent
-    ///     includes AI processing. Asked on every generation (IA-0, guard 2). False when the lookup fails.
+    ///     Whether the patient allows the AI functions to process their data now: an active link whose consent
+    ///     includes AI processing. Asked on every generation (guard 2). False when the lookup fails.
     /// </summary>
     Task<bool> HasAiProcessingConsent(int patientId, CancellationToken ct = default);
 

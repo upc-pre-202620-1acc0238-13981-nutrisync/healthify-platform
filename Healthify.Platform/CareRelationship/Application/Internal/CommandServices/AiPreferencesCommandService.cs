@@ -18,13 +18,13 @@ public class AiPreferencesCommandService(
     ILogger<AiPreferencesCommandService> logger,
     IMediator mediator) : IAiPreferencesCommandService
 {
-    /// <summary>IA-1 - Update AI Preferences (PT21.IA).</summary>
+    /// <summary>Update AI Preferences.</summary>
     public async Task<Result<AiPreferencesStatus, CareRelationshipError>> Handle(UpdateAiPreferencesCommand command,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            // Business rule: AI Preferences Require Consent (IA-1). Checked against the active link, which only
+            // Business rule: AI Preferences Require Consent. Checked against the active link, which only
             // the database knows; the aggregate reasserts it.
             // TODO: hotspot. The consent can be withdrawn between this read and the commit. The window closes by
             // policy: the withdrawal publishes AI Processing Consent Changed, which turns every function off after
@@ -41,7 +41,7 @@ public class AiPreferencesCommandService(
             var isNew = preferences is null;
             preferences ??= new AiPreferences(command.PatientId);
 
-            // DECISIÓN IN-7: a PUT without mealPhotoRecognitionEnabled (a client older than IN-7) keeps it as stored.
+            // A PUT without mealPhotoRecognitionEnabled (a client that predates the switch) keeps it as stored.
             var changed = preferences.Change(command.WeeklySummaryEnabled, command.MealIdeasEnabled,
                 command.SuggestedQuestionsEnabled, consented, command.MealPhotoRecognitionEnabled);
 
@@ -64,7 +64,7 @@ public class AiPreferencesCommandService(
     }
 
     /// <summary>
-    ///     IA-1 - Policy "When AI Processing Consent Changed". Granted: the preferences are created or reactivated
+    ///     Policy "When AI Processing Consent Changed". Granted: the preferences are created or reactivated
     ///     with the three functions on. Withdrawn: all three go off. Idempotent: no change, no event.
     /// </summary>
     public async Task<Result<AiPreferencesStatus, CareRelationshipError>> Handle(

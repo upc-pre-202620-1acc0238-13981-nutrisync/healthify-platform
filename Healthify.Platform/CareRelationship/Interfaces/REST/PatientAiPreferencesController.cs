@@ -14,8 +14,8 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.CareRelationship.Interfaces.REST;
 
 /// <summary>
-///     IA-1. The patient's choice of AI functions (PT21 "Funciones con IA", PT21.IA). Only the patient reads or
-///     changes their own; it is coherent with the consent to AI processing of their care link (CR-2).
+///     The patient's choice of AI functions. Only the patient reads or
+///     changes their own; it is coherent with the consent to AI processing of their care link.
 /// </summary>
 [ApiController]
 [Route("api/v1/patients/{patientId:int}/ai-preferences")]

@@ -17,7 +17,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.CareRelationship;
 
 /// <summary>
-///     CR-2, rule "AI Processing Ends With The Link". Revoking a link (any reason, a switch of practitioner included)
+///     Rule "AI Processing Ends With The Link". Revoking a link (any reason, a switch of practitioner included)
 ///     or discharging the patient turns off the AI consent of that link in the same commit and publishes AI
 ///     Processing Consent Changed (false): the preferences go off and the AI audit of the patient is purged. Granting
 ///     AI consent on the new link turns the preferences on again.

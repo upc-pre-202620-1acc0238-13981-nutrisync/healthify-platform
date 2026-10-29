@@ -5,8 +5,8 @@ using Healthify.Platform.Shared.Application.Internal.EventHandlers;
 namespace Healthify.Platform.CareRelationship.Application.Internal.EventHandlers;
 
 /// <summary>
-///     IA-1. A patient function that is off no longer uses the diary ("dejamos de usar tu diario para estas
-///     funciones"): the technical audit rows of each function that is off are purged. Idempotent; the contexts of
+///     A patient function that is off no longer uses the diary (as the app promises the patient): the
+///     technical audit rows of each function that is off are purged. Idempotent; the contexts of
 ///     the functions purge their own content with their handlers of the same event.
 /// </summary>
 public class OnAiPreferencesChangedHandler(

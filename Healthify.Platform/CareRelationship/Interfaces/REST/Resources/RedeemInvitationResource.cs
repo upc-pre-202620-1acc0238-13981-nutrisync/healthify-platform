@@ -10,7 +10,7 @@ public record RedeemInvitationResource(string Token, bool ReplaceActiveLink = fa
     public string Token { get; init; } = Token;
 
     /// <summary>
-    ///     True only when the patient confirmed switching practitioners (CR-1). The current care link
+    ///     True only when the patient confirmed switching practitioners. The current care link
     ///     is then revoked automatically when this invitation is redeemed. Defaults to false, which
     ///     keeps the conflict answer when a care link already exists.
     /// </summary>

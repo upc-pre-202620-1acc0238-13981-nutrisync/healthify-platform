@@ -10,7 +10,7 @@ public record GrantConsentResource(string Scope, bool AiProcessingGranted = fals
     public string Scope { get; init; } = Scope;
 
     /// <summary>
-    ///     CR-2. The separate consent to AI processing (PT2 "Usar funciones con IA"). Optional; false when absent, so
+    ///     The separate consent to AI processing (the "Use AI functions" switch). Optional; false when absent, so
     ///     a client that does not know the switch never turns AI on.
     /// </summary>
     public bool AiProcessingGranted { get; init; } = AiProcessingGranted;

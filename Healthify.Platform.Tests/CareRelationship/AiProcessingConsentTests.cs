@@ -22,7 +22,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.CareRelationship;
 
 /// <summary>
-///     CR-2. The consent to AI processing lives inside the consent, is off unless the patient turns it on, can be
+///     The consent to AI processing lives inside the consent, is off unless the patient turns it on, can be
 ///     changed on its own, and goes off with the whole consent.
 /// </summary>
 public class AiProcessingConsentTests

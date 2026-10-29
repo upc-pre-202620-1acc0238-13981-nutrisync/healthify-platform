@@ -1,6 +1,6 @@
 namespace Healthify.Platform.CareRelationship.Interfaces.REST.Resources;
 
-/// <summary>Payload of CR-2 - Change AI Processing Consent.</summary>
+/// <summary>Payload of Change AI Processing Consent.</summary>
 public record ChangeAiProcessingConsentResource(bool Granted)
 {
     /// <summary>

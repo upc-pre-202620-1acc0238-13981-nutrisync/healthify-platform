@@ -11,7 +11,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.CareRelationship;
 
 /// <summary>
-///     CR-3. The acknowledgement of the targets records when it was given (PAC-4 "Ana las vio el mismo día"), and
+///     The acknowledgement of the targets records when it was given (the practitioner sees the day the patient saw them), and
 ///     the moment reaches the read status and the facade.
 /// </summary>
 public class AcknowledgedAtTests
