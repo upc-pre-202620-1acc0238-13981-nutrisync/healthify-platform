@@ -7,7 +7,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     IA-2/IA-4/IA-5, guard 6. The validators of this context reject a text whose numbers are not the facts of its
+///     Guard 6. The validators of this context reject a text whose numbers are not the facts of its
 ///     period (The AI Does Not Count), a text that accuses (Invitation Tone Never Accusation, lexicon es/en of the
 ///     context), a patient text that mentions a diagnosis, BMI or calculation basis, and a practitioner text that
 ///     mentions the consistency index before an escalation (Patient Shown First).

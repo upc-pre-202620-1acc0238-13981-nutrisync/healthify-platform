@@ -22,8 +22,8 @@ namespace Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 /// <param name="PlanVersion">Version of the contract the day was evaluated against.</param>
 /// <param name="EntryCount">How many entries the diary held that day.</param>
 /// <param name="EvaluatedAt">When this evaluation was made.</param>
-/// <param name="OffPlanEntryCount">MA-1. How many of the day's entries the patient answered as off the plan.</param>
-/// <param name="OffPlanEnergyKcal">MA-1. The part of the observed energy those entries confirmed.</param>
+/// <param name="OffPlanEntryCount">How many of the day's entries the patient answered as off the plan.</param>
+/// <param name="OffPlanEnergyKcal">The part of the observed energy those entries confirmed.</param>
 public sealed record DailyCompliance(
     DateOnly Date,
     string Outcome,
@@ -83,13 +83,13 @@ public sealed record DailyCompliance(
     public DateTimeOffset EvaluatedAt { get; init; } = EvaluatedAt;
 
     /// <summary>
-    ///     MA-1. Descriptive only: helps the practitioner understand the week. It plays no part in the
+    ///     Descriptive only: helps the practitioner understand the week. It plays no part in the
     ///     outcome, which is decided on the total confirmed energy, and nothing computes a deviation
-    ///     from it. Zero on days evaluated before MA-1 and on unlogged days.
+    ///     from it. Zero on days evaluated before off-plan entries were counted and on unlogged days.
     /// </summary>
     public int OffPlanEntryCount { get; init; } = OffPlanEntryCount;
 
-    /// <summary>MA-1. Descriptive only, like <see cref="OffPlanEntryCount" />.</summary>
+    /// <summary>Descriptive only, like <see cref="OffPlanEntryCount" />.</summary>
     public decimal OffPlanEnergyKcal { get; init; } = decimal.Round(OffPlanEnergyKcal, 2);
 
     /// <summary>A day the patient wrote something in. The one that counts towards a deviation.</summary>
@@ -126,8 +126,8 @@ public sealed record DailyCompliance(
     /// <param name="entryCount">How many entries the diary held.</param>
     /// <param name="observedEnergyKcal">What the confirmed entries added up to.</param>
     /// <param name="snapshot">The targets in force that day.</param>
-    /// <param name="offPlanEntryCount">MA-1. Descriptive; does not move the outcome.</param>
-    /// <param name="offPlanEnergyKcal">MA-1. Descriptive; does not move the outcome.</param>
+    /// <param name="offPlanEntryCount">Descriptive; does not move the outcome.</param>
+    /// <param name="offPlanEnergyKcal">Descriptive; does not move the outcome.</param>
     public static DailyCompliance Evaluate(
         DateOnly date,
         bool hasAnyEntry,
@@ -152,7 +152,7 @@ public sealed record DailyCompliance(
                 ? Short
                 : Met;
 
-        // MA-1: the off-plan figures ride along as description. They are deliberately absent from the
+        // The off-plan figures ride along as description. They are deliberately absent from the
         // decision above: eating off the plan is told to the practitioner, never scored.
         return new DailyCompliance(date, outcome, observedEnergyKcal, snapshot.EnergyKcal,
             snapshot.PlanVersion, entryCount, DateTimeOffset.UtcNow, offPlanEntryCount, offPlanEnergyKcal);
@@ -173,28 +173,28 @@ public sealed record DailyCompliance(
 }
 
 /// <summary>
-///     RM-2 ("Cumplimiento 5 de 7 días"). The evaluated days of a range counted by outcome.
+///     Compliance "5 of 7 days". The evaluated days of a range counted by outcome.
 /// </summary>
 /// <remarks>
 ///     Business rule: Unlogged Is Not Non Compliant. The denominator is the calendar days of the range, and a
 ///     day with no evaluation at all counts as Unlogged, never as Short: an absence of data is not a bad day.
-///     DECISIÓN §12-#7: denominator of calendar days, with a separate "Sin registro" state.
-///     MA-6: the range endpoint returns this summary next to the day by day list of <see cref="DaysOf" />.
+///     The denominator is the calendar days, with a separate Unlogged state.
+///     The range endpoint returns this summary next to the day by day list of <see cref="DaysOf" />.
 /// </remarks>
 public sealed record ComplianceSummary(int Met, int Exceeded, int Short, int Unlogged, int TotalDays)
 {
-    /// <summary>MA-6. The longest range read at once: a month.</summary>
+    /// <summary>The longest range read at once: a month.</summary>
     public const int MaximumRangeDays = 31;
 
-    /// <summary>MA-6. Whether <paramref name="from" />..<paramref name="to" /> is a range that can be read.</summary>
+    /// <summary>Whether <paramref name="from" />..<paramref name="to" /> is a range that can be read.</summary>
     public static bool IsValidRange(DateOnly from, DateOnly to)
     {
         return to >= from && to.DayNumber - from.DayNumber + 1 <= MaximumRangeDays;
     }
 
     /// <summary>
-    ///     MA-6. Every calendar day of the range, oldest first, with the outcome of its last evaluation. A day never
-    ///     evaluated is Unlogged (PAC-2 paints it grey, "Sin registro"), never Short.
+    ///     Every calendar day of the range, oldest first, with the outcome of its last evaluation. A day never
+    ///     evaluated is Unlogged (shown grey as "no log"), never Short.
     /// </summary>
     public static IReadOnlyList<ComplianceDay> DaysOf(IEnumerable<DailyCompliance> days, DateOnly from, DateOnly to)
     {
@@ -236,7 +236,7 @@ public sealed record ComplianceSummary(int Met, int Exceeded, int Short, int Unl
     }
 }
 
-/// <summary>MA-6. One calendar day of a range: the pair { Date, Outcome } this context publishes.</summary>
+/// <summary>One calendar day of a range: the pair { Date, Outcome } this context publishes.</summary>
 /// <param name="Date">The calendar day the patient was living.</param>
 /// <param name="Outcome">Met, Exceeded, Short or Unlogged (also for a day never evaluated).</param>
 public sealed record ComplianceDay(DateOnly Date, string Outcome);

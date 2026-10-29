@@ -26,7 +26,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     IA-2/IA-4/IA-5 (§12-#14). Withdrawing the AI consent purges every weekly summary and cache entry of the
+///     Withdrawing the AI consent purges every weekly summary and cache entry of the
 ///     patient; turning a function off purges what that function generated, and only that.
 /// </summary>
 public class MonitoringAiPurgeTests : IAsyncLifetime
@@ -114,7 +114,7 @@ public class MonitoringAiPurgeTests : IAsyncLifetime
 
         Assert.Single(_scenario.Summaries.Rows);
         Assert.False(Cached(AiFeature.SuggestedQuestions, MonitoringAiScenario.PatientId, "follow-up:5"));
-        // IA-5 is the practitioner's: it depends on the consent, not on the patient's preferences.
+        // The monitoring summary is the practitioner's: it depends on the consent, not on the patient's preferences.
         Assert.True(Cached(AiFeature.PractitionerMonitoringSummary, MonitoringAiScenario.PatientId, "range"));
     }
 
@@ -133,7 +133,7 @@ public class MonitoringAiPurgeTests : IAsyncLifetime
 }
 
 /// <summary>
-///     IA-2. The schedule (cron on the clinical clock, Mondays 06:00 Lima by default), the week each run summarizes,
+///     The schedule (cron on the clinical clock, Mondays 06:00 Lima by default), the week each run summarizes,
 ///     a run that generates nothing while the preference is off, and the GET of the latest summary.
 /// </summary>
 public class WeeklySummaryScheduleTests

@@ -4,21 +4,22 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 namespace Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 
 /// <summary>
-///     IA-2. The weekly summary the patient reads (PT13 "Resumen con IA · Tu semana", PT13.2): a headline, what went
+///     The weekly summary the patient reads ("Your week", with AI): a headline, what went
 ///     well and what to look at, written by the AI from facts computed without it.
 /// </summary>
 /// <remarks>
-///     Business rule: One Summary Per Patient And Week (IA-2), backed by a unique index on (patient_id, week_start).
-///     Business rule: The AI Does Not Count (IA-2). <see cref="ComplianceFacts" /> holds the figures the texts were
-///     checked against (MA-6, IN-5); the texts never carry a number that is not there.
-///     Business rule: Summary Needs Three Logged Days (IA-2). With fewer, nothing is generated and the patient sees
-///     "aún sin resumen" (PT13.2.V).
-///     Only the patient reads it; the practitioner has IA-5. It is generated content: withdrawing the AI consent or
-///     turning the function off deletes it (§12-#14), and it expires with the retention of the AI audit.
+///     Business rule: One Summary Per Patient And Week, backed by a unique index on (patient_id, week_start).
+///     Business rule: The AI Does Not Count. <see cref="ComplianceFacts" /> holds the figures the texts were
+///     checked against; the texts never carry a number that is not there.
+///     Business rule: Summary Needs Three Logged Days. With fewer, nothing is generated and the patient sees
+///     that there is no summary yet.
+///     Only the patient reads it; the practitioner has the monitoring summary. It is generated content:
+///     withdrawing the AI consent or turning the function off deletes it, and it expires with the retention of
+///     the AI audit.
 /// </remarks>
 public partial class WeeklySummary
 {
-    /// <summary>Rule: Summary Needs Three Logged Days (IA-2).</summary>
+    /// <summary>Rule: Summary Needs Three Logged Days.</summary>
     public const int MinimumLoggedDays = 3;
 
     public const int HeadlineMaximumLength = 200;
@@ -39,7 +40,7 @@ public partial class WeeklySummary
     {
     }
 
-    /// <summary>IA-2 - Generate Weekly Summary, once the output was validated and audited.</summary>
+    /// <summary>Generate Weekly Summary, once the output was validated and audited.</summary>
     /// <exception cref="ArgumentException">When the week, the facts or the texts break a rule of the summary.</exception>
     public WeeklySummary(int patientId, MonitoringPeriodFacts facts, string headline, IEnumerable<string> wentWell,
         IEnumerable<string>? watchOut, long aiGenerationId, string language, DateTimeOffset generatedAt)
@@ -48,7 +49,7 @@ public partial class WeeklySummary
         if (patientId <= 0) throw new ArgumentException("A summary belongs to a patient.", nameof(patientId));
         if (!IsWeekStart(facts.From) || facts.To != facts.From.AddDays(6))
             throw new ArgumentException("A weekly summary covers one week, Monday to Sunday.", nameof(facts));
-        // Business rule: Summary Needs Three Logged Days (IA-2).
+        // Business rule: Summary Needs Three Logged Days.
         if (facts.LoggedDays < MinimumLoggedDays)
             throw new ArgumentException(
                 $"A weekly summary needs at least {MinimumLoggedDays} logged days.", nameof(facts));
@@ -85,7 +86,7 @@ public partial class WeeklySummary
     /// <summary>Cross-context reference to the patient. A plain int, no EF navigation.</summary>
     public int PatientId { get; private set; }
 
-    /// <summary>Monday of the week ("Semana del 8 al 14 de septiembre").</summary>
+    /// <summary>Monday of the week ("week of 8 to 14 September").</summary>
     public DateOnly WeekStart { get; private set; }
 
     /// <summary>Sunday of the week.</summary>
@@ -95,19 +96,19 @@ public partial class WeeklySummary
     public MonitoringPeriodFacts ComplianceFacts =>
         _complianceFacts ??= JsonSerializer.Deserialize<MonitoringPeriodFacts>(_complianceFactsJson, FactsOptions)!;
 
-    /// <summary>"Cumpliste tus metas 5 de 7 días."</summary>
+    /// <summary>"You met your targets 5 of 7 days."</summary>
     public string Headline { get; private set; } = null!;
 
-    /// <summary>"LO QUE SALIÓ BIEN": one to three bullets.</summary>
+    /// <summary>What went well: one to three bullets.</summary>
     public IReadOnlyList<string> WentWell => _wentWell.ToList();
 
-    /// <summary>"EN QUÉ FIJARTE": up to two bullets.</summary>
+    /// <summary>What to look at: up to two bullets.</summary>
     public IReadOnlyList<string> WatchOut => _watchOut.ToList();
 
     /// <summary>The <c>ai_generations</c> row that wrote it. Not published: it stays for the audit.</summary>
     public long AiGenerationId { get; private set; }
 
-    /// <summary>es or en: the patient's language when it was generated (IAM-3).</summary>
+    /// <summary>es or en: the patient's language when it was generated.</summary>
     public string Language { get; private set; } = null!;
 
     public DateTimeOffset GeneratedAt { get; private set; }

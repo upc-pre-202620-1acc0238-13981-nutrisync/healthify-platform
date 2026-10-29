@@ -3,7 +3,7 @@ using System.Globalization;
 namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Scheduling;
 
 /// <summary>
-///     IA-2. A five-field cron expression (minute, hour, day of month, month, day of week) evaluated on the clock of
+///     A five-field cron expression (minute, hour, day of month, month, day of week) evaluated on the clock of
 ///     a time zone: <c>0 6 * * 1</c> is every Monday at 06:00 in that zone. Each field takes <c>*</c>, a number, a
 ///     range <c>a-b</c>, a list <c>a,b</c> and a step <c>*/n</c> or <c>a-b/n</c>; day of week is 0–7 (0 and 7 are
 ///     Sunday). When both day fields are restricted, a day matching either runs, as in classic cron.

@@ -15,11 +15,11 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.MonitoringAdherence.Interfaces.REST;
 
 /// <summary>
-///     MA-3. The visits of a patient, as the patient reads them (PT3, PT20, PT25).
+///     The visits of a patient, as the patient reads them.
 /// </summary>
 /// <remarks>
-///     Read only: "agendar o mover la consulta lo hace el nutricionista". The patient reads their own, and the
-///     practitioner with an active care link reads the same thing (PAC-1). Not in
+///     Read only: scheduling or moving the visit is up to the practitioner. The patient reads their own, and the
+///     practitioner with an active care link reads the same thing. Not in
 ///     <see cref="ScheduledFollowUpsController" /> because that one is for the practitioner alone.
 /// </remarks>
 [ApiController]

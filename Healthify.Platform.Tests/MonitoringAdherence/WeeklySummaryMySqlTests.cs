@@ -12,9 +12,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     IA-2/IA-5 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the weekly summary
+///     The weekly summary against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the weekly summary
 ///     round-trips its dates, its texts and its facts (json), the latest one is the most recent week, the unique
-///     index keeps one per patient and week, a purge removes them; and the review item existence of IA-5 is
+///     index keeps one per patient and week, a purge removes them; and the review item existence of the monitoring summary is
 ///     translated to SQL.
 /// </summary>
 [Collection(MySqlCollection.Name)]
@@ -61,7 +61,7 @@ public class WeeklySummaryMySqlTests
             Assert.NotNull(await repository.FindByPatientIdAndWeekStartAsync(10, monday.AddDays(-7)));
             Assert.Single(await repository.ListGeneratedBeforeAsync(generatedAt.AddDays(-1), 10));
 
-            // Business rule: One Summary Per Patient And Week (IA-2).
+            // Business rule: One Summary Per Patient And Week.
             context.Add(new WeeklySummary(10, await WeekOf(monday), "Otra", ["Bien"], [], 43, "es", generatedAt));
             await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync());
         }

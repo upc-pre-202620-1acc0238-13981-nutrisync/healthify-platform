@@ -5,12 +5,12 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Ai.Caching;
 
 /// <summary>
-///     IA-4/IA-5. <see cref="IMonitoringAiCache" /> in the memory of the process (singleton), with an absolute
+///     <see cref="IMonitoringAiCache" /> in the memory of the process (singleton), with an absolute
 ///     lifetime per entry measured on <see cref="TimeProvider" />.
 /// </summary>
 /// <remarks>
-///     DECISIÓN IA-4: in memory, not in a table. The MD allows it ("en memoria o en ai_generations", IA-3) and it is
-///     the safer side of §12-#14: generated content that nobody stored cannot outlive a revocation, a restart only
+///     In memory, not in a table. The spec allows either (memory or ai_generations) and memory is the safer side
+///     of purging AI content: generated content that nobody stored cannot outlive a revocation, a restart only
 ///     costs a new generation, and the validated output stays audited in <c>ai_generations</c> anyway. With several
 ///     instances each keeps its own entries; a hit is served only after the consent gate passes again (see the
 ///     command services), so an instance that missed the revocation event still serves nothing.

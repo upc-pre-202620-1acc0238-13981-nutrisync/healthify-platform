@@ -3,7 +3,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 namespace Healthify.Platform.MonitoringAdherence.Application.Internal;
 
 /// <summary>
-///     MA-2. Application DTO of the Practitioner Agenda: a visit and the name of its patient (PR17.0 "Ana
+///     Application DTO of the Practitioner Agenda: a visit and the name of its patient ("Ana
 ///     Flores"), read from Iam through its ACL in one batch for the whole agenda. Not a domain type and not an
 ///     HTTP resource.
 /// </summary>

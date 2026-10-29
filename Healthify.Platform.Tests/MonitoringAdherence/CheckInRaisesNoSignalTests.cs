@@ -9,7 +9,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-4, ethical rule. The check in is voluntary: it raises no signal, never enters the consistency index nor
+///     Ethical rule. The check in is voluntary: it raises no signal, never enters the consistency index nor
 ///     a deviation, and "Hard" does not escalate. The rule is kept by absence, and these tests pin the absence.
 /// </summary>
 public class CheckInRaisesNoSignalTests

@@ -267,7 +267,7 @@ public class ScheduledFollowUpRepository(AppDbContext context)
     }
 }
 
-/// <summary>MA-4. The check ins. Nothing here removes one.</summary>
+/// <summary>The check ins. Nothing here removes one.</summary>
 public class PreVisitCheckInRepository(AppDbContext context)
     : BaseRepository<PreVisitCheckIn>(context), IPreVisitCheckInRepository
 {
@@ -305,7 +305,7 @@ public class PreVisitCheckInRepository(AppDbContext context)
     }
 }
 
-/// <summary>IA-2. The weekly summaries. Removing one is allowed: it is generated content, not evaluated data.</summary>
+/// <summary>The weekly summaries. Removing one is allowed: it is generated content, not evaluated data.</summary>
 public class WeeklySummaryRepository(AppDbContext context)
     : BaseRepository<WeeklySummary>(context), IWeeklySummaryRepository
 {

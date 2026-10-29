@@ -89,14 +89,14 @@ public record DeviationDetected(
 /// <param name="Direction">Above or Below.</param>
 /// <param name="Evidence">What was observed, in one sentence. Evidence, not a verdict.</param>
 /// <param name="DeviatingDaysConsidered">
-///     NC-11. How many logged days of the horizon deviated in this direction (0 from producers before NC-11).
+///     How many logged days of the horizon deviated in this direction (0 from older producers).
 /// </param>
 /// <param name="LoggedDaysConsidered">
-///     NC-11. How many logged days the horizon held. Unlogged days are not in it (0 from producers before NC-11).
+///     How many logged days the horizon held. Unlogged days are not in it (0 from older producers).
 /// </param>
 /// <param name="MagnitudeEnergyKcal">
-///     X-2. Mean distance from the energy target in kcal per day, unsigned (the sign is the direction); null from
-///     producers before X-2.
+///     Mean distance from the energy target in kcal per day, unsigned (the sign is the direction); null from
+///     older producers that did not send it.
 /// </param>
 public record SustainedDeviationDetected(
     int DeviationId,
@@ -131,7 +131,7 @@ public record ConsistencyAlertRaised(int PatientId, decimal Value) : DomainEvent
 /// <param name="PromptedAt">When they were asked. Business rule: Prompt Date Recorded.</param>
 public record PatientPromptedAboutConsistency(int PatientId, DateTimeOffset PromptedAt) : DomainEventBase;
 
-/// <summary>MA-7. The patient saw the prompt (PT3). Stays inside Monitoring and Adherence.</summary>
+/// <summary>The patient saw the prompt. Stays inside Monitoring and Adherence.</summary>
 /// <param name="PatientId">The patient who saw it.</param>
 /// <param name="ShownAt">When. Business rule: Prompt Date Recorded.</param>
 public record ConsistencyPromptAcknowledged(int PatientId, DateTimeOffset ShownAt) : DomainEventBase;
@@ -150,10 +150,10 @@ public record ConsistencyPromptAcknowledged(int PatientId, DateTimeOffset ShownA
 /// <param name="PractitionerId">Who is being told.</param>
 /// <param name="Value">Unexplained weight movement in kilograms per week.</param>
 /// <param name="Evidence">What was observed, in one sentence, including when the patient was asked.</param>
-/// <param name="State">X-2. The state of the index when it was escalated (Alert); null from producers before X-2.</param>
-/// <param name="AlertSinceAt">X-2. Since when the index has been in alert.</param>
-/// <param name="ShownToPatientAt">X-2. When the patient acknowledged the prompt (MA-7).</param>
-/// <param name="WeeksInAlert">X-2. Whole weeks in alert at the moment of the escalation.</param>
+/// <param name="State">The state of the index when it was escalated (Alert); null from older producers.</param>
+/// <param name="AlertSinceAt">Since when the index has been in alert.</param>
+/// <param name="ShownToPatientAt">When the patient acknowledged the prompt.</param>
+/// <param name="WeeksInAlert">Whole weeks in alert at the moment of the escalation.</param>
 public record AlertEscalatedToPractitioner(
     int PatientId,
     int PractitionerId,
@@ -191,7 +191,7 @@ public record PatientReminded(int PatientId, DateTimeOffset RemindedAt) : Domain
 /// <param name="Specialty">Which speciality.</param>
 public record ReferralRecorded(int ReferralId, int PatientId, string Specialty) : DomainEventBase;
 
-/// <summary>RM-4. Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
+/// <summary>Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
 /// <param name="ReferralId">The referral that was closed.</param>
 /// <param name="PatientId">Whose referral.</param>
 public record ReferralClosed(int ReferralId, int PatientId) : DomainEventBase;
@@ -214,24 +214,24 @@ public record FollowUpScheduled(int FollowUpId, int PatientId, DateTimeOffset Sc
 /// <param name="PatientId">Whose visit it was.</param>
 public record FollowUpMissed(int FollowUpId, int PatientId) : DomainEventBase;
 
-/// <summary>MA-5. Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
+/// <summary>Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
 /// <param name="FollowUpId">The visit that was cancelled.</param>
 /// <param name="PatientId">Whose visit it was.</param>
 /// <param name="Reason">Why, in at most 30 characters.</param>
 public record FollowUpCancelled(int FollowUpId, int PatientId, string Reason) : DomainEventBase;
 
-/// <summary>MA-5. Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
+/// <summary>Stays inside Monitoring and Adherence. Nothing subscribes to it yet.</summary>
 /// <param name="FollowUpId">The visit that was moved.</param>
 /// <param name="PatientId">Whose visit it is.</param>
 /// <param name="ScheduledFor">The new moment.</param>
 public record FollowUpRescheduled(int FollowUpId, int PatientId, DateTimeOffset ScheduledFor) : DomainEventBase;
 
 /// <summary>
-///     MA-4. Stays inside Monitoring and Adherence. Internal, for metrics: the mockup shows no notification to the
+///     Stays inside Monitoring and Adherence. Internal, for metrics: the mockup shows no notification to the
 ///     practitioner.
 /// </summary>
 /// <remarks>
-///     Business rule: Check In Raises No Signal (MA-4). No context subscribes to this event, which is how the
+///     Business rule: Check In Raises No Signal. No context subscribes to this event, which is how the
 ///     rule is kept: nothing listening could turn "Hard" into a signal, a deviation or an escalation.
 /// </remarks>
 /// <param name="FollowUpId">The visit the check in is for.</param>

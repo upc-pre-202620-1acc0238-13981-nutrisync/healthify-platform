@@ -13,7 +13,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-2. Scheduling validates preparation and modality first, each to its own error, before the care link is
+///     Scheduling validates preparation and modality first, each to its own error, before the care link is
 ///     asked or anything is written; the agenda carries the name of each patient from one batch read of Iam.
 /// </summary>
 public class ScheduleFollowUpPreparationTests

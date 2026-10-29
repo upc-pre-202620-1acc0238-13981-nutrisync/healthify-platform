@@ -65,70 +65,70 @@ public enum MonitoringError
 
     ScheduledFollowUpNotFound,
 
-    /// <summary>Rule: Preparation From The Closed List (MA-2).</summary>
+    /// <summary>Rule: Preparation From The Closed List.</summary>
     UnknownPreparationInstruction,
 
-    /// <summary>Rule: Modality Is In Person Or Remote (MA-2).</summary>
+    /// <summary>Rule: Modality Is In Person Or Remote.</summary>
     UnknownConsultationModality,
 
-    /// <summary>Rule: Only A Scheduled Visit Changes (MA-2, MA-4, MA-5).</summary>
+    /// <summary>Rule: Only A Scheduled Visit Changes.</summary>
     FollowUpNotScheduled,
 
-    /// <summary>MA-2. The agenda filter names a state that does not exist.</summary>
+    /// <summary>The agenda filter names a state that does not exist.</summary>
     InvalidFollowUpState,
 
-    /// <summary>Rule: Check In Editable Until The Visit (MA-4).</summary>
+    /// <summary>Rule: Check In Editable Until The Visit.</summary>
     CheckInLocked,
 
-    /// <summary>Rule: Feeling Is Required (MA-4). Good, Fair or Hard.</summary>
+    /// <summary>Rule: Feeling Is Required. Good, Fair or Hard.</summary>
     FeelingRequired,
 
-    /// <summary>Rule: At Most Three Questions (MA-4), of each origin.</summary>
+    /// <summary>Rule: At Most Three Questions, of each origin.</summary>
     TooManyQuestions,
 
-    /// <summary>Rule: Difficulties From The Closed List (MA-4).</summary>
+    /// <summary>Rule: Difficulties From The Closed List.</summary>
     UnknownCheckInDifficulty,
 
-    /// <summary>Rule: A Question Has 3 To 300 Characters (MA-4), and its origin is Patient or AiSuggested.</summary>
+    /// <summary>Rule: A Question Has 3 To 300 Characters, and its origin is Patient or AiSuggested.</summary>
     InvalidCheckInQuestion,
 
-    /// <summary>MA-4. The patient has not answered the check in of this visit yet.</summary>
+    /// <summary>The patient has not answered the check in of this visit yet.</summary>
     PreVisitCheckInNotFound,
 
-    /// <summary>Rule: A Visit Is Scheduled For The Future (MA-5).</summary>
+    /// <summary>Rule: A Visit Is Scheduled For The Future.</summary>
     ScheduledForMustBeInFuture,
 
-    /// <summary>MA-5. A cancellation reason has at most 30 characters.</summary>
+    /// <summary>A cancellation reason has at most 30 characters.</summary>
     CancellationReasonTooLong,
 
     /// <summary>
-    ///     Rule: A Compliance Range Has Both Ends, In Order, And At Most 31 Days (MA-6). Also when <c>date</c> is sent
+    ///     Rule: A Compliance Range Has Both Ends, In Order, And At Most 31 Days. Also when <c>date</c> is sent
     ///     together with <c>from</c>/<c>to</c>.
     /// </summary>
     InvalidComplianceRange,
 
-    /// <summary>Rule: Only An Issued Prompt Is Acknowledged (MA-7). There is no consistency prompt to acknowledge.</summary>
+    /// <summary>Rule: Only An Issued Prompt Is Acknowledged. There is no consistency prompt to acknowledge.</summary>
     ConsistencyPromptNotIssued,
 
     /// <summary>
-    ///     Rule: Patient Prompt Required Before Escalation (MA-7). The patient saw the prompt less than N days ago
+    ///     Rule: Patient Prompt Required Before Escalation. The patient saw the prompt less than N days ago
     ///     (Monitoring:EscalationDaysAfterPatientAcknowledgement).
     /// </summary>
     PatientAcknowledgementTooRecent,
 
-    /// <summary>RM-4. The referral does not exist, or another practitioner recorded it.</summary>
+    /// <summary>The referral does not exist, or another practitioner recorded it.</summary>
     ReferralNotFound,
 
-    /// <summary>Rule: A Referral Is Closed Once (RM-4).</summary>
+    /// <summary>Rule: A Referral Is Closed Once.</summary>
     ReferralAlreadyClosed,
 
     /// <summary>
-    ///     Rule: Summary Needs Three Logged Days (IA-2, IA-4). There is not enough of the diary to write about yet (PT13.2.V
-    ///     "aún sin resumen"); also when no weekly summary was generated. 404.
+    ///     Rule: Summary Needs Three Logged Days. There is not enough of the diary to write about yet (the
+    ///     patient sees no summary yet); also when no weekly summary was generated. 404.
     /// </summary>
     NotEnoughData,
 
-    /// <summary>IA-2. A weekly summary starts on a Monday.</summary>
+    /// <summary>A weekly summary starts on a Monday.</summary>
     InvalidWeekStart,
 
     UnexpectedError

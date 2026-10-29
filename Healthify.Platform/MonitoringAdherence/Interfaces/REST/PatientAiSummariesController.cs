@@ -20,11 +20,11 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.MonitoringAdherence.Interfaces.REST;
 
 /// <summary>
-///     IA-2, IA-4 and IA-5. The AI texts of Monitoring and Adherence: the weekly summary and the suggested questions
+///     The AI texts of Monitoring and Adherence: the weekly summary and the suggested questions
 ///     the patient reads, and the monitoring summary the practitioner reads.
 /// </summary>
 /// <remarks>
-///     The figures of every text are computed without AI (MA-6, IN-5) and the output is rejected when its numbers
+///     The figures of every text are computed without AI and the output is rejected when its numbers
 ///     are not those, when it accuses or, for the patient, when it mentions a diagnosis. The patient functions never
 ///     receive the diagnosis nor the calculation basis.
 /// </remarks>

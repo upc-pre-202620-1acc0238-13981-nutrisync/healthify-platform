@@ -155,7 +155,7 @@ public sealed record FollowUpId
     }
 }
 
-/// <summary>Typed identity of a <c>PreVisitCheckIn</c> (MA-4).</summary>
+/// <summary>Typed identity of a <c>PreVisitCheckIn</c>.</summary>
 public sealed record PreVisitCheckInId
 {
     public PreVisitCheckInId(int value)
@@ -194,7 +194,7 @@ public sealed record PreVisitCheckInId
     }
 }
 
-/// <summary>Typed identity of a <c>WeeklySummary</c> (IA-2).</summary>
+/// <summary>Typed identity of a <c>WeeklySummary</c>.</summary>
 public sealed record WeeklySummaryId
 {
     public WeeklySummaryId(int value)

@@ -18,7 +18,7 @@ public interface IEvaluationWindowQueryService
     ///     The day-by-day series the patient sees. An unlogged day is part of the answer, not a hole
     ///     in it.
     /// </summary>
-    /// <summary>MA-6. Every calendar day of the range and its summary; never null.</summary>
+    /// <summary>Every calendar day of the range and its summary; never null.</summary>
     Task<DailyComplianceRange> Handle(GetDailyComplianceRangeQuery query,
         CancellationToken cancellationToken = default);
 
@@ -61,23 +61,23 @@ public interface IScheduledFollowUpQueryService
     Task<IEnumerable<ScheduledFollowUp>> Handle(GetScheduledFollowUpsByPractitionerIdQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-2. The agenda with the name of each patient, from one batch read of Iam.</summary>
+    /// <summary>The agenda with the name of each patient, from one batch read of Iam.</summary>
     Task<IReadOnlyList<FollowUpAgendaEntry>> Handle(GetPractitionerAgendaQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-2/RM-1/RM-2. The scheduled visit of each patient; empty, never null.</summary>
+    /// <summary>The scheduled visit of each patient; empty, never null.</summary>
     Task<IEnumerable<ScheduledFollowUp>> Handle(GetScheduledFollowUpsByPatientIdsQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-4. One visit, or null.</summary>
+    /// <summary>One visit, or null.</summary>
     Task<ScheduledFollowUp?> Handle(GetScheduledFollowUpByIdQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-3. The visit on the calendar of a patient with the name of the practitioner, or null.</summary>
+    /// <summary>The visit on the calendar of a patient with the name of the practitioner, or null.</summary>
     Task<PatientFollowUpEntry?> Handle(GetNextFollowUpByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-3. The visits of a patient with the name of the practitioner; empty, never null.</summary>
+    /// <summary>The visits of a patient with the name of the practitioner; empty, never null.</summary>
     Task<IReadOnlyList<PatientFollowUpEntry>> Handle(GetFollowUpsByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 
@@ -86,7 +86,7 @@ public interface IScheduledFollowUpQueryService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>MA-4. Read models PT25.3 "Le contaste a tu nutricionista cómo te fue" and EV-2.</summary>
+/// <summary>Read models of the check in, for the patient and for the consultation.</summary>
 public interface IPreVisitCheckInQueryService
 {
     /// <summary>The check in of one visit, or null when the patient has not answered.</summary>
@@ -98,10 +98,10 @@ public interface IPreVisitCheckInQueryService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>IA-2. Read model PT13 / PT13.2 "Tu semana".</summary>
+/// <summary>Read model of the weekly summary.</summary>
 public interface IWeeklySummaryQueryService
 {
-    /// <summary>The summary of the most recent week, or null (PT13.2.V "aún sin resumen").</summary>
+    /// <summary>The summary of the most recent week, or null (no summary yet).</summary>
     Task<WeeklySummary?> Handle(GetLatestWeeklySummaryByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 }

@@ -3,7 +3,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Services;
 namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Clock;
 
 /// <summary>
-///     MA-2. Days of the agenda in <c>MonitoringAdherence:ClinicalTimeZone</c> (IANA id, default America/Lima). An
+///     Days of the agenda in <c>MonitoringAdherence:ClinicalTimeZone</c> (IANA id, default America/Lima). An
 ///     unknown zone falls back to the default, and if even that is unavailable, to UTC.
 /// </summary>
 /// <remarks>

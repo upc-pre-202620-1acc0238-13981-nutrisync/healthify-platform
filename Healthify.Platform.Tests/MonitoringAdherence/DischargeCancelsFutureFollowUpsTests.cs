@@ -17,9 +17,9 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     CR-4 acceptance: the discharge (PR18) closes the evaluation window of the link and cancels the visits still
-///     ahead with that practitioner, so they leave the agenda (PR17.0-Alta). The same happens to the visits with
-///     the previous practitioner when the patient switches (CR-1). Past visits and other agendas are untouched.
+///     Acceptance: the discharge closes the evaluation window of the link and cancels the visits still
+///     ahead with that practitioner, so they leave the agenda. The same happens to the visits with
+///     the previous practitioner when the patient switches. Past visits and other agendas are untouched.
 /// </summary>
 public class DischargeCancelsFutureFollowUpsTests
 {

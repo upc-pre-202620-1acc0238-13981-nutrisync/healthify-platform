@@ -195,7 +195,7 @@ public class EvaluationWindowCommandService(
         return await EvaluateSingleDay(command.PatientId, command.Date, true, cancellationToken);
     }
 
-    /// <summary>Subflow 5.4, MA-1 - Mark Unlogged Days Before.</summary>
+    /// <summary>Subflow 5.4 - Mark Unlogged Days Before.</summary>
     /// <remarks>
     ///     The same filling of the silence that a live evaluation performs before its day
     ///     (<c>EvaluationWindow.MarkUnloggedDaysBefore</c>), for a synchronised batch whose days are
@@ -374,7 +374,7 @@ public class EvaluationWindowCommandService(
                 cancellationToken);
             if (window is null) return Failure(MonitoringError.EvaluationWindowNotFound);
 
-            // CR-1: the open window belongs to another link, typically the new one after a switch of
+            // The open window belongs to another link, typically the new one after a switch of
             // practitioner whose Care Link Established arrived first. That window is not this
             // command's to close: the window of the revoked link was already closed when it was
             // superseded.

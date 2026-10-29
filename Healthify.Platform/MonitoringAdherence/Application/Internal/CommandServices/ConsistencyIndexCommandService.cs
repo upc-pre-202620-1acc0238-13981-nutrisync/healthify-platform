@@ -121,7 +121,7 @@ public class ConsistencyIndexCommandService(
             // Recorded (Monitoring and Adherence, Subflow 5.7). The date is recorded because it is
             // the precondition of the escalation; the tone lives in the localized message the client
             // renders, which is the only place a tone can live.
-            // MA-7: it records that the prompt was issued; the patient seeing it is a separate acknowledgement.
+            // It records that the prompt was issued; the patient seeing it is a separate acknowledgement.
             if (!index.PromptPatient()) return Success(index);
 
             consistencyIndexRepository.Update(index);
@@ -142,7 +142,7 @@ public class ConsistencyIndexCommandService(
     }
 
     /// <summary>
-    ///     MA-7 - Acknowledge Consistency Prompt. The app painted the card in PT3: from now on the alert counts as
+    ///     Acknowledge Consistency Prompt. The app showed the card on the home screen: from now on the alert counts as
     ///     shown to the patient. Repeating it keeps the first moment.
     /// </summary>
     public async Task<Result<ConsistencyIndex, MonitoringError>> Handle(
@@ -155,7 +155,7 @@ public class ConsistencyIndexCommandService(
                 cancellationToken);
             if (index is null) return Failure(MonitoringError.ConsistencyPromptNotIssued);
 
-            // 4. State guard. Business rule: Only An Issued Prompt Is Acknowledged (MA-7).
+            // 4. State guard. Business rule: Only An Issued Prompt Is Acknowledged.
             if (index.ShownToPatientAt is not null) return Success(index);
             if (index.PromptIssuedAt is null) return Failure(MonitoringError.ConsistencyPromptNotIssued);
 
@@ -182,11 +182,11 @@ public class ConsistencyIndexCommandService(
     }
 
     /// <summary>
-    ///     MA-7. Days the patient has, after seeing the prompt, before the alert reaches the practitioner.
+    ///     Days the patient has, after seeing the prompt, before the alert reaches the practitioner.
     ///     Parameter: Monitoring:EscalationDaysAfterPatientAcknowledgement.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN MA-7: the MD asks for "N días desde ese acuse" without a number; 7 days (one week of logging after
+    ///     The spec asks for N days after the acknowledgement without a number; 7 days (one week of logging after
     ///     the card) is the default in code, configurable.
     /// </remarks>
     public static int AcknowledgementDays(IConfiguration configuration)
@@ -223,7 +223,7 @@ public class ConsistencyIndexCommandService(
             if (!index.ThreeWeeksInAlertElapsed(escalationWeeks, DateTimeOffset.UtcNow))
                 return Failure(MonitoringError.ThreeWeeksInAlertRequired);
 
-            // MA-7: and N days since the patient saw the prompt, so they had time to answer it.
+            // And N days since the patient saw the prompt, so they had time to answer it.
             if (!index.ShownToPatientAtLeast(AcknowledgementDays(configuration), DateTimeOffset.UtcNow))
                 return Failure(MonitoringError.PatientAcknowledgementTooRecent);
 
@@ -232,7 +232,7 @@ public class ConsistencyIndexCommandService(
             if (careLink is null) return Failure(MonitoringError.ActiveCareLinkRequired);
 
             var evidence = index.Evidence();
-            // X-2: the same evidence as numbers, read before escalating (the state and dates do not change).
+            // The same evidence as numbers, read before escalating (the state and dates do not change).
             var state = index.State.Value;
             var weeksInAlert = index.WeeksInAlertAt(DateTimeOffset.UtcNow);
 

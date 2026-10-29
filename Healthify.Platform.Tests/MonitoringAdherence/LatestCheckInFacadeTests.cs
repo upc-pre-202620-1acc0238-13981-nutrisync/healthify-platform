@@ -17,8 +17,8 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-4. Monitoring publishes the check in of the visit still open between a patient and a practitioner, and
-///     NC-2 shows it in EV-2 ("Antes de la consulta, … contó") while the consultation is in progress.
+///     Monitoring publishes the check in of the visit still open between a patient and a practitioner, and
+///     the consultation shows it in step 1 (what the patient said before the visit) while the consultation is in progress.
 /// </summary>
 public class LatestCheckInFacadeTests
 {

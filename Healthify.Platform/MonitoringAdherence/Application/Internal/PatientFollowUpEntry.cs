@@ -3,7 +3,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 namespace Healthify.Platform.MonitoringAdherence.Application.Internal;
 
 /// <summary>
-///     MA-3. Application DTO of the visits a patient reads (PT3, PT20, PT25): a visit and the name of the
+///     Application DTO of the visits a patient reads: a visit and the name of the
 ///     practitioner who scheduled it, read from Iam through its ACL in one batch. Not a domain type and not an HTTP
 ///     resource.
 /// </summary>

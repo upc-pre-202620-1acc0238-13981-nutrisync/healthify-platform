@@ -17,7 +17,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.MonitoringAdherence.Interfaces.REST;
 
 /// <summary>
-///     MA-4. The pre-visit check in (PT25.2, PT25.3, EV-2).
+///     The pre-visit check in.
 /// </summary>
 /// <remarks>
 ///     Only the patient writes it; the patient and the practitioner with an active care link read it. It is

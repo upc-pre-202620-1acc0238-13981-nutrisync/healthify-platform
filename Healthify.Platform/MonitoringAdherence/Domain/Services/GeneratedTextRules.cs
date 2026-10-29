@@ -6,11 +6,11 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 namespace Healthify.Platform.MonitoringAdherence.Domain.Services;
 
 /// <summary>
-///     IA-2/IA-4/IA-5. The rules every generated text of this context meets before anyone reads it. Static domain
+///     The rules every generated text of this context meets before anyone reads it. Static domain
 ///     service: no state, no I/O; the lists of words come from <see cref="IAiLanguageLexicon" />.
 /// </summary>
 /// <remarks>
-///     Business rule: The AI Does Not Count (IA-2). Every number in a text must be one of the facts of its period;
+///     Business rule: The AI Does Not Count. Every number in a text must be one of the facts of its period;
 ///     "N de M días" must name the days of the period as M and one of its day counts as N. Small numbers written as
 ///     words ("cinco de siete días") are checked the same way.
 ///     Business rule: Invitation Tone Never Accusation. Whole words or phrases of the lexicon, compared without case

@@ -43,7 +43,7 @@ public record DailyComplianceResource(
 }
 
 /// <summary>
-///     MA-6. The Daily Compliance Indicator over a range (PAC-2 "Esta semana · 5 de 7 días", PT13.2, PT20).
+///     The Daily Compliance Indicator over a range ("this week, 5 of 7 days").
 /// </summary>
 /// <param name="From">First day of the range.</param>
 /// <param name="To">Last day of the range.</param>
@@ -68,7 +68,7 @@ public record DailyComplianceRangeResource(
     public ComplianceSummaryResource Summary { get; init; } = Summary;
 }
 
-/// <summary>MA-6. One calendar day of a range.</summary>
+/// <summary>One calendar day of a range.</summary>
 /// <param name="Date">The calendar day the patient was living.</param>
 /// <param name="Outcome">Met, Exceeded, Short or Unlogged.</param>
 public record ComplianceDayResource(DateOnly Date, string Outcome)
@@ -84,14 +84,14 @@ public record ComplianceDayResource(DateOnly Date, string Outcome)
 }
 
 /// <summary>
-///     MA-6. The days of a range counted by outcome. "5 de 7 días" is <c>MetDays</c> of <c>TotalDays</c>
-///     (DECISIÓN §12-#7: the denominator is the calendar days, unlogged ones included).
+///     The days of a range counted by outcome. "5 of 7 days" is <c>MetDays</c> of <c>TotalDays</c>
+///     (the denominator is the calendar days, unlogged ones included).
 /// </summary>
 /// <param name="MetDays">Days within the targets.</param>
 /// <param name="ExceededDays">Days above.</param>
 /// <param name="ShortDays">Days below.</param>
 /// <param name="UnloggedDays">Days without a confirmed entry, evaluated or not.</param>
-/// <param name="LoggedDays">Days with something logged ("Registro 6 de 7 días").</param>
+/// <param name="LoggedDays">Days with something logged ("logged 6 of 7 days").</param>
 /// <param name="TotalDays">Calendar days of the range.</param>
 public record ComplianceSummaryResource(
     int MetDays,
@@ -366,10 +366,10 @@ public record DeviationResource(
 /// <param name="Value">Unexplained weight movement in kilograms per week.</param>
 /// <param name="State">Normal, Watch or Alert.</param>
 /// <param name="FirstFlaggedAt">When the index first left Normal in the current episode.</param>
-/// <param name="ShownToPatientAt">When the patient saw the prompt (MA-7).</param>
+/// <param name="ShownToPatientAt">When the patient saw the prompt.</param>
 /// <param name="EscalatedAt">When the practitioner was told.</param>
 /// <param name="LastRecomputedAt">When the index was last recomputed.</param>
-/// <param name="PatientPromptPending">MA-7. A prompt the patient has not seen yet.</param>
+/// <param name="PatientPromptPending">A prompt the patient has not seen yet.</param>
 public record ConsistencyIndexResource(
     int PatientId,
     decimal Value,
@@ -396,7 +396,7 @@ public record ConsistencyIndexResource(
     public DateTimeOffset? FirstFlaggedAt { get; init; } = FirstFlaggedAt;
 
     /// <summary>
-    ///     When the patient saw the prompt (MA-7: acknowledged by the app). Always before the practitioner is told.
+    ///     When the patient saw the prompt (acknowledged by the app). Always before the practitioner is told.
     /// </summary>
     public DateTimeOffset? ShownToPatientAt { get; init; } = ShownToPatientAt;
 
@@ -407,7 +407,7 @@ public record ConsistencyIndexResource(
     public DateTimeOffset LastRecomputedAt { get; init; } = LastRecomputedAt;
 
     /// <summary>
-    ///     MA-7. True when there is a prompt the patient has not seen yet: show the PT3 card and then call
+    ///     True when there is a prompt the patient has not seen yet: show the card on the home screen and then call
     ///     POST /patients/{id}/consistency-index/prompt-acknowledgement.
     /// </summary>
     public bool PatientPromptPending { get; init; } = PatientPromptPending;
@@ -420,8 +420,8 @@ public record ConsistencyIndexResource(
 /// <param name="Reason">Why.</param>
 /// <param name="IssuedBy">Identifier of the practitioner who issued it.</param>
 /// <param name="IssuedAt">When.</param>
-/// <param name="Status">RM-4. Open or Closed.</param>
-/// <param name="ClosedAt">RM-4. When it was closed, or null.</param>
+/// <param name="Status">Open or Closed.</param>
+/// <param name="ClosedAt">When it was closed, or null.</param>
 public record ReferralResource(
     int ReferralId,
     int PatientId,
@@ -450,10 +450,10 @@ public record ReferralResource(
     /// <summary>When it was issued.</summary>
     public DateTimeOffset IssuedAt { get; init; } = IssuedAt;
 
-    /// <summary>RM-4. Open ("en curso") or Closed.</summary>
+    /// <summary>Open (still in course) or Closed.</summary>
     public string Status { get; init; } = Status;
 
-    /// <summary>RM-4. When the practitioner closed it, or null while it is open.</summary>
+    /// <summary>When the practitioner closed it, or null while it is open.</summary>
     public DateTimeOffset? ClosedAt { get; init; } = ClosedAt;
 }
 
@@ -470,12 +470,12 @@ public record ReferralResource(
 /// <param name="ScheduledFor">When the visit is, or was.</param>
 /// <param name="State">Scheduled, Completed or Missed.</param>
 /// <param name="MissedAt">When it was flagged missed, if it was.</param>
-/// <param name="PatientFullName">MA-2/IAM-1. "Ana Flores", or null when it could not be read.</param>
-/// <param name="Preparation">MA-2. How the patient should prepare.</param>
-/// <param name="Modality">MA-2. InPerson or Remote.</param>
-/// <param name="ScheduledAt">MA-2. When the visit was put on the calendar.</param>
-/// <param name="CompletedAt">MA-2. When the consultation that completed it was published.</param>
-/// <param name="CancelledAt">MA-2. When it was cancelled.</param>
+/// <param name="PatientFullName">"Ana Flores", or null when it could not be read.</param>
+/// <param name="Preparation">How the patient should prepare.</param>
+/// <param name="Modality">InPerson or Remote.</param>
+/// <param name="ScheduledAt">When the visit was put on the calendar.</param>
+/// <param name="CompletedAt">When the consultation that completed it was published.</param>
+/// <param name="CancelledAt">When it was cancelled.</param>
 public record ScheduledFollowUpResource(
     int FollowUpId,
     int PatientId,
@@ -508,27 +508,27 @@ public record ScheduledFollowUpResource(
     /// <summary>When it was flagged missed, if it was. It closes nothing.</summary>
     public DateTimeOffset? MissedAt { get; init; } = MissedAt;
 
-    /// <summary>MA-2/IAM-1. Name of the patient (PR17.0 "Ana Flores"); null when Iam could not answer.</summary>
+    /// <summary>Name of the patient ("Ana Flores"); null when Iam could not answer.</summary>
     public string? PatientFullName { get; init; } = PatientFullName;
 
-    /// <summary>MA-2. Preparation codes (Fasting, LightClothing, BringBloodTests, EmptyBladder). Empty when none.</summary>
+    /// <summary>Preparation codes (Fasting, LightClothing, BringBloodTests, EmptyBladder). Empty when none.</summary>
     public IReadOnlyList<string> Preparation { get; init; } = Preparation ?? [];
 
-    /// <summary>MA-2. InPerson or Remote.</summary>
+    /// <summary>InPerson or Remote.</summary>
     public string Modality { get; init; } = Modality;
 
-    /// <summary>MA-2. When the visit was put on the calendar ("Agendada el 4 de septiembre").</summary>
+    /// <summary>When the visit was put on the calendar ("scheduled on 4 September").</summary>
     public DateTimeOffset? ScheduledAt { get; init; } = ScheduledAt;
 
-    /// <summary>MA-2. When the consultation that completed it was published.</summary>
+    /// <summary>When the consultation that completed it was published.</summary>
     public DateTimeOffset? CompletedAt { get; init; } = CompletedAt;
 
-    /// <summary>MA-2. When it was cancelled.</summary>
+    /// <summary>When it was cancelled.</summary>
     public DateTimeOffset? CancelledAt { get; init; } = CancelledAt;
 }
 
 /// <summary>
-///     MA-3. A visit as the patient reads it (PT3 and PT20 "Próxima consulta", PT25 and PT25.1).
+///     A visit as the patient reads it (the next visit, the visit list and its detail).
 /// </summary>
 /// <remarks>
 ///     No clinical note and no diagnosis travel with a visit: there is nothing on this record to carry one.
@@ -552,7 +552,7 @@ public record PatientFollowUpResource(
     /// <summary>Identifier of the visit.</summary>
     public int FollowUpId { get; init; } = FollowUpId;
 
-    /// <summary>When the visit is ("Jue 18 sept. · 10:00 a. m."), or was.</summary>
+    /// <summary>When the visit is ("Thu 18 Sep, 10:00 a.m."), or was.</summary>
     public DateTimeOffset ScheduledFor { get; init; } = ScheduledFor;
 
     /// <summary>InPerson or Remote.</summary>
@@ -561,7 +561,7 @@ public record PatientFollowUpResource(
     /// <summary>How to prepare (Fasting, LightClothing, BringBloodTests, EmptyBladder). Empty when none.</summary>
     public IReadOnlyList<string> Preparation { get; init; } = Preparation;
 
-    /// <summary>When the visit was put on the calendar ("Agendada el 4 de septiembre").</summary>
+    /// <summary>When the visit was put on the calendar ("scheduled on 4 September").</summary>
     public DateTimeOffset? ScheduledAt { get; init; } = ScheduledAt;
 
     /// <summary>Name of the practitioner who scheduled it; null when it could not be read.</summary>
@@ -571,10 +571,10 @@ public record PatientFollowUpResource(
     public string State { get; init; } = State;
 }
 
-/// <summary>MA-4. One question of a check in, with where it came from.</summary>
+/// <summary>One question of a check in, with where it came from.</summary>
 /// <param name="Text">The question.</param>
 /// <param name="Origin">Patient or AiSuggested.</param>
-/// <param name="Language">X-2. es or en for an AI suggestion; null for the patient's own questions and before X-2.</param>
+/// <param name="Language">Es or en for an AI suggestion; null for the patient's own questions and old suggestions.</param>
 public record CheckInQuestionResource(string Text, string Origin, string? Language = null)
 {
     /// <summary>The question.</summary>
@@ -583,19 +583,19 @@ public record CheckInQuestionResource(string Text, string Origin, string? Langua
     /// <summary>Patient or AiSuggested.</summary>
     public string Origin { get; init; } = Origin;
 
-    /// <summary>X-2. es or en: the language an AI suggestion was generated in. Null for the patient's own questions.</summary>
+    /// <summary>Es or en: the language an AI suggestion was generated in. Null for the patient's own questions.</summary>
     public string? Language { get; init; } = Language;
 }
 
 /// <summary>
-///     MA-4. The check in of a visit (PT25.3 "Le contaste a tu nutricionista cómo te fue"; EV-2 "Antes de la
-///     consulta, … contó").
+///     The check in of a visit, as the patient reviews it and as the practitioner reads it before the
+///     consultation.
 /// </summary>
 /// <param name="FollowUpId">The visit it is for.</param>
 /// <param name="Feeling">Good, Fair or Hard.</param>
 /// <param name="Difficulties">Dinners, Weekends, EatingOut, Schedules, Cravings; may be empty.</param>
 /// <param name="Questions">The questions; may be empty.</param>
-/// <param name="SubmittedAt">When it was first sent ("Enviado el 15 de septiembre").</param>
+/// <param name="SubmittedAt">When it was first sent ("sent on 15 September").</param>
 /// <param name="EditedAt">When it was last edited, if it was.</param>
 /// <param name="IsLocked">True once it can no longer be edited (the hour of the visit arrived).</param>
 public record PreVisitCheckInResource(
@@ -625,14 +625,14 @@ public record PreVisitCheckInResource(
     /// <summary>When it was last edited; null when never.</summary>
     public DateTimeOffset? EditedAt { get; init; } = EditedAt;
 
-    /// <summary>True once "Editar mi respuesta" is no longer possible.</summary>
+    /// <summary>True once the patient can no longer edit their answer.</summary>
     public bool IsLocked { get; init; } = IsLocked;
 }
 
-/// <summary>IA-2. The figures of the week the summary was written from (MA-6, IN-5), computed without AI.</summary>
-/// <param name="MetDays">Days within the targets ("Cumpliste tus metas 5 de 7 días").</param>
+/// <summary>The figures of the week the summary was written from, computed without AI.</summary>
+/// <param name="MetDays">Days within the targets ("you met your targets 5 of 7 days").</param>
 /// <param name="TotalDays">Calendar days of the week: always 7.</param>
-/// <param name="LoggedDays">Days with something logged ("registraste 6 de 7 días").</param>
+/// <param name="LoggedDays">Days with something logged ("you logged 6 of 7 days").</param>
 /// <param name="UnloggedDays">Days without a record; never counted as missed targets.</param>
 /// <param name="WeightChangeKg">Change of the smoothed home series, one decimal; null without a trend.</param>
 public record WeeklySummaryFactsResource(
@@ -659,14 +659,14 @@ public record WeeklySummaryFactsResource(
 }
 
 /// <summary>
-///     IA-2. The weekly summary (PT13 "Resumen con IA · Tu semana", PT13.2). Written by the AI from the diary; the
-///     app shows "Lo generó la IA a partir de tu diario. Puede equivocarse…".
+///     The weekly summary ("Your week", with AI). Written by the AI from the diary; the app warns that the AI
+///     wrote it from the diary and can be wrong.
 /// </summary>
-/// <param name="WeekStart">Monday ("Semana del 8 al 14 de septiembre").</param>
+/// <param name="WeekStart">Monday ("week of 8 to 14 September").</param>
 /// <param name="WeekEnd">Sunday.</param>
-/// <param name="Headline">"Cumpliste tus metas 5 de 7 días."</param>
-/// <param name="WentWell">"LO QUE SALIÓ BIEN": one to three bullets.</param>
-/// <param name="WatchOut">"EN QUÉ FIJARTE": up to two bullets.</param>
+/// <param name="Headline">"You met your targets 5 of 7 days."</param>
+/// <param name="WentWell">What went well: one to three bullets.</param>
+/// <param name="WatchOut">What to look at: up to two bullets.</param>
 /// <param name="Facts">The figures the texts come from.</param>
 /// <param name="Language">es or en.</param>
 /// <param name="GeneratedAt">When it was generated.</param>
@@ -705,7 +705,7 @@ public record WeeklySummaryResource(
     public DateTimeOffset GeneratedAt { get; init; } = GeneratedAt;
 }
 
-/// <summary>IA-4. One suggested question (PT25 chips).</summary>
+/// <summary>One suggested question, shown as a chip.</summary>
 /// <param name="Id">Identifier within the generation.</param>
 /// <param name="Text">The question, in first person.</param>
 public record SuggestedQuestionResource(string Id, string Text)
@@ -718,14 +718,14 @@ public record SuggestedQuestionResource(string Id, string Text)
 }
 
 /// <summary>
-///     IA-4. Questions the patient could bring to the visit (PT25 "Prepara tu consulta", PT25.2 "También podrías
-///     preguntar"). Adding one to the check in sends it with origin AiSuggested and this aiGenerationId (MA-4).
+///     Questions the patient could bring to the visit, offered as AI suggestions. Adding one to the check in sends
+///     it with origin AiSuggested and this aiGenerationId.
 /// </summary>
 /// <param name="Questions">Three to five questions.</param>
 /// <param name="AiGenerationId">The generation they came from.</param>
 /// <param name="BasedOnFrom">First day of the diary read.</param>
 /// <param name="BasedOnTo">Last day of the diary read.</param>
-/// <param name="Language">X-2. es or en: the language the questions were generated in.</param>
+/// <param name="Language">Es or en: the language the questions were generated in.</param>
 public record SuggestedQuestionsResource(
     IReadOnlyList<SuggestedQuestionResource> Questions,
     long AiGenerationId,
@@ -736,20 +736,20 @@ public record SuggestedQuestionsResource(
     /// <summary>Three to five questions.</summary>
     public IReadOnlyList<SuggestedQuestionResource> Questions { get; init; } = Questions;
 
-    /// <summary>The generation, to send with an accepted suggestion (MA-4).</summary>
+    /// <summary>The generation, to send with an accepted suggestion.</summary>
     public long AiGenerationId { get; init; } = AiGenerationId;
 
-    /// <summary>First day of the diary read ("según tu diario de estas semanas").</summary>
+    /// <summary>First day of the diary read ("based on your diary of these weeks").</summary>
     public DateOnly BasedOnFrom { get; init; } = BasedOnFrom;
 
     /// <summary>Last day of the diary read.</summary>
     public DateOnly BasedOnTo { get; init; } = BasedOnTo;
 
-    /// <summary>X-2. es or en: the language of the questions, to send back with an accepted suggestion (MA-4).</summary>
+    /// <summary>Es or en: the language of the questions, to send back with an accepted suggestion.</summary>
     public string? Language { get; init; } = Language;
 }
 
-/// <summary>IA-5. The facts of the period, computed without AI (MA-6, IN-5).</summary>
+/// <summary>The facts of the period, computed without AI.</summary>
 /// <param name="MetDays">Days within the targets.</param>
 /// <param name="TotalDays">Calendar days of the range.</param>
 /// <param name="ShortDays">Weekdays below the target ("Thu", "Sat").</param>
@@ -804,8 +804,8 @@ public record MonitoringSummaryFactsResource(
 }
 
 /// <summary>
-///     IA-5. Monitoring summary for the practitioner (PAC-2 "Resumen generado con IA · Revísalo antes de usarlo en
-///     consulta"). Without the patient's AI consent or with the feature off, only the facts (text null).
+///     Monitoring summary for the practitioner, generated by AI and reviewed before the consultation. Without the
+///     patient's AI consent or with the feature off, only the facts (text null).
 /// </summary>
 /// <param name="Text">The summary; null in the fallback.</param>
 /// <param name="Facts">The facts, always.</param>

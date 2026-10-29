@@ -17,15 +17,15 @@ using Healthify.Platform.Shared.Domain.Repositories;
 namespace Healthify.Platform.MonitoringAdherence.Application.Internal.CommandServices;
 
 /// <summary>
-///     IA-2 - Generate Weekly Summary.
+///     Generate Weekly Summary.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
 ///     1. the week (a Monday, already over);
 ///     2. the AI gates before the diary is read (kill switch and flag, then consent and the patient's preference:
-///     "si las desactivas, dejamos de usar tu diario") and the active care link;
+///     turning them off means the diary is no longer used) and the active care link;
 ///     3. the summary of that week, if it exists, is returned as it is (idempotent);
-///     4. the facts (MA-6, IN-5), and Summary Needs Three Logged Days;
+///     4. the facts, and Summary Needs Three Logged Days;
 ///     5. the generation through the shared pipeline, validated by <see cref="WeeklySummaryOutputValidator" />;
 ///     6. the aggregate, persisted. Nothing subscribes to it, so nothing is published.
 ///     The input never carries the diagnosis nor the calculation basis: this context does not have them.
@@ -63,15 +63,15 @@ public class WeeklySummaryCommandService(
                     cancellationToken) is null)
                 return Failure(MonitoringError.ActiveCareLinkRequired);
 
-            // 3. Business rule: One Summary Per Patient And Week (IA-2).
+            // 3. Business rule: One Summary Per Patient And Week.
             var existing = await weeklySummaryRepository.FindByPatientIdAndWeekStartAsync(command.PatientId,
                 command.WeekStart, cancellationToken);
             if (existing is not null) return new Result<WeeklySummary, MonitoringAiFailure>.Success(existing);
 
-            // 4. Business rule: The AI Does Not Count (IA-2). The figures come from MA-6 and IN-5.
+            // 4. Business rule: The AI Does Not Count. The figures come from the daily compliance and the weight trend.
             var facts = await factsReader.ReadAsync(command.PatientId, command.WeekStart, weekEnd, true,
                 cancellationToken);
-            // Business rule: Summary Needs Three Logged Days (IA-2).
+            // Business rule: Summary Needs Three Logged Days.
             if (facts.LoggedDays < WeeklySummary.MinimumLoggedDays) return Failure(MonitoringError.NotEnoughData);
 
             var language = MonitoringFactsReader.LanguageOf(
@@ -179,7 +179,7 @@ public class WeeklySummaryCommandService(
 }
 
 /// <summary>
-///     IA-4 - Suggest Questions (PT25 "Prepara tu consulta").
+///     Suggest Questions for the visit preparation screen.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
@@ -209,10 +209,10 @@ public class SuggestedQuestionsCommandService(
     TimeProvider timeProvider,
     ILogger<SuggestedQuestionsCommandService> logger) : ISuggestedQuestionsCommandService
 {
-    /// <summary>"desde la última consulta completada o 28 días".</summary>
+    /// <summary>Since the last completed visit, or 28 days.</summary>
     public const int MaximumPeriodDays = 28;
 
-    /// <summary>DECISIÓN IA-4: a cached generation lives at most a week; the MD fixes the key, not the lifetime.</summary>
+    /// <summary>A cached generation lives at most a week; the spec fixes the key, not the lifetime.</summary>
     public static readonly TimeSpan CacheLifetime = TimeSpan.FromDays(7);
 
     private static readonly AiFeature Feature = AiFeature.SuggestedQuestions;
@@ -244,7 +244,7 @@ public class SuggestedQuestionsCommandService(
                 await iamContextFacade.GetPreferredLanguage(command.PatientId, cancellationToken));
             var today = factsReader.Today();
 
-            // 4. The cache. Business rule: One Generation Per Visit (IA-4), renewed when the check in changes.
+            // 4. The cache. Business rule: One Generation Per Visit, renewed when the check in changes.
             var key = command.FollowUpId is { } id
                 ? $"follow-up:{id}"
                 : $"week:{WeeklySummary.WeekStartOf(today):yyyy-MM-dd}";
@@ -268,7 +268,7 @@ public class SuggestedQuestionsCommandService(
             if (from > to) return Failure(MonitoringError.NotEnoughData);
 
             var facts = await factsReader.ReadAsync(command.PatientId, from, to, false, cancellationToken);
-            // Business rule: Summary Needs Three Logged Days (IA-4, like IA-2).
+            // Business rule: Summary Needs Three Logged Days, as for the weekly summary.
             if (facts.LoggedDays < WeeklySummary.MinimumLoggedDays) return Failure(MonitoringError.NotEnoughData);
 
             var targets =
@@ -357,16 +357,16 @@ public class SuggestedQuestionsCommandService(
 }
 
 /// <summary>
-///     IA-5 - Summarize Monitoring (PAC-2 "Resumen generado con IA · Revísalo antes de usarlo en consulta").
+///     Summarize Monitoring: the AI summary the practitioner reviews before using it in the visit.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
-///     1. the range (default: the seven days up to yesterday; at most 31, MA-6);
+///     1. the range (default: the seven days up to yesterday; at most 31);
 ///     2. the active care link between the practitioner and the patient;
 ///     3. the AI gates: without the feature or the patient's AI consent, the deterministic facts are the answer
-///     (§12-#5) and the diary does not leave the platform;
+///     and the diary does not leave the platform;
 ///     4. the cache, six hours per patient and range;
-///     5. the facts (MA-6, IN-5). Business rule: Patient Shown First (MA-7): the consistency index is part of the
+///     5. the facts. Business rule: Patient Shown First: the consistency index is part of the
 ///     input only once a ConsistencyEscalation review item exists (asked to Nutritional Care by its facade);
 ///     6. the generation, validated by <see cref="MonitoringSummaryOutputValidator" />.
 /// </remarks>
@@ -386,7 +386,7 @@ public class MonitoringSummaryCommandService(
 {
     public const int DefaultRangeDays = 7;
 
-    /// <summary>"Caché de 6 h por (patient, rango)".</summary>
+    /// <summary>Six hours per patient and range.</summary>
     public static readonly TimeSpan CacheLifetime = TimeSpan.FromHours(6);
 
     private static readonly AiFeature Feature = AiFeature.PractitionerMonitoringSummary;
@@ -407,13 +407,13 @@ public class MonitoringSummaryCommandService(
                     cancellationToken))
                 return Failure(MonitoringError.ActiveCareLinkRequired);
 
-            // 3. Gates. DECISIÓN §12-#5: without them the answer is the deterministic fallback, the facts alone.
+            // 3. Gates. Without them the answer is the deterministic fallback, the facts alone.
             string? unavailable = null;
             if (!aiSettings.IsEnabled(Feature)) unavailable = nameof(AiError.AiFeatureDisabled);
             else if (!await consentPolicy.IsAllowedAsync(command.PatientId, Feature, cancellationToken))
                 unavailable = nameof(AiError.AiConsentRequired);
 
-            // Business rule: Patient Shown First (MA-7, IA-5).
+            // Business rule: Patient Shown First.
             var consistencyAllowed =
                 await nutritionalCareContextFacade.HasConsistencyEscalation(command.PatientId, cancellationToken);
             var language = MonitoringFactsReader.LanguageOf(
@@ -517,8 +517,8 @@ public class MonitoringSummaryCommandService(
 }
 
 /// <summary>
-///     §12-#14 - Purge Monitoring AI Content: the weekly summaries (IA-2) and the cached questions (IA-4) and
-///     monitoring summaries (IA-5) of the patient. The technical audit (<c>ai_generations</c>) is purged by Care
+///     Purge Monitoring AI Content: the weekly summaries and the cached questions and
+///     monitoring summaries of the patient. The technical audit (<c>ai_generations</c>) is purged by Care
 ///     Relationship.
 /// </summary>
 public class MonitoringAiContentCommandService(

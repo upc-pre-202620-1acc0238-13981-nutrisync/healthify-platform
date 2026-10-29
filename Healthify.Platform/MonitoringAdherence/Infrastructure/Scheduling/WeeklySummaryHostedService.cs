@@ -12,16 +12,16 @@ using Healthify.Platform.MonitoringAdherence.Application.Internal;
 namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Scheduling;
 
 /// <summary>
-///     IA-2. Policy "When The Week Ends": generates the weekly summary of every patient with an open window, on the
+///     Policy "When The Week Ends": generates the weekly summary of every patient with an open window, on the
 ///     schedule of <c>Ai:Features:WeeklySummary:Cron</c> (default <c>0 6 * * 1</c>, Mondays at 06:00) on the clinical
 ///     clock (<c>MonitoringAdherence:ClinicalTimeZone</c>, default America/Lima).
 /// </summary>
 /// <remarks>
 ///     Each run summarizes the most recent week that is over (Monday to Sunday). The command decides, patient by
 ///     patient: AI off, no consent or the preference off → nothing is read and nothing generated; fewer than three
-///     logged days → nothing (PT13.2.V); a week already summarized → kept as it is. So a run is idempotent, and at
+///     logged days → nothing; a week already summarized → kept as it is. So a run is idempotent, and at
 ///     start-up the run of the last occurrence (within a week) is repeated in case the host was down at its hour.
-///     Each cycle also deletes the summaries older than <c>Ai:RetentionDays</c> (§12-#14).
+///     Each cycle also deletes the summaries older than <c>Ai:RetentionDays</c>.
 ///     Guards: the cycle never throws; one scope per patient, so one failure does not poison the others; the
 ///     stopping token reaches every call.
 /// </remarks>
