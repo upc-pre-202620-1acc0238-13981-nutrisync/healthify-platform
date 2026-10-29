@@ -17,12 +17,14 @@ using Healthify.Platform.IntakeBodyResponse.Application.CommandServices;
 using Healthify.Platform.IntakeBodyResponse.Application.Internal;
 using Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServices;
 using Healthify.Platform.IntakeBodyResponse.Application.Internal.EventHandlers;
+using Healthify.Platform.IntakeBodyResponse.Application.Internal.QueryServices;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Commands;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Errors;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 using Healthify.Platform.IntakeBodyResponse.Domain.Repositories;
 using Healthify.Platform.IntakeBodyResponse.Infrastructure.Ai.Caching;
+using Healthify.Platform.IntakeBodyResponse.Infrastructure.Ai.Lexicon;
 using Healthify.Platform.IntakeBodyResponse.Infrastructure.Imaging;
 using Healthify.Platform.IntakeBodyResponse.Infrastructure.Scheduling;
 using Healthify.Platform.IntakeBodyResponse.Interfaces.REST;
@@ -68,6 +70,7 @@ public class MealPhotoRecognitionTests
     private readonly CapturingLogger<AiGenerationPipeline> _pipelineLog = new();
     private readonly ReferenceFood _lomo;
     private readonly IDiaryEntryRepository _diary = Substitute.For<IDiaryEntryRepository>();
+    private readonly IActiveTargetsCacheRepository _targets = Substitute.For<IActiveTargetsCacheRepository>();
     private readonly InMemoryCatalogNameHintsCache _hintsCache;
 
     public MealPhotoRecognitionTests()
@@ -102,6 +105,56 @@ public class MealPhotoRecognitionTests
         var stored = Assert.Single(_analyses.Stored);
         Assert.Equal((view.AnalysisId, PatientId, FirstGenerationId), (stored.Id, stored.PatientId, stored.AiGenerationId));
         Assert.Equal(_clock.GetUtcNow().AddHours(24), stored.ExpiresAt);
+    }
+
+    [Fact]
+    public async Task Without_a_published_plan_the_analysis_carries_no_plan_suggestion()
+    {
+        _targets.FindByPatientIdAsync(PatientId, Arg.Any<CancellationToken>()).Returns((ActiveTargetsCache?)null);
+        _model.Answers(Answer("Lomo saltado"));
+
+        var view = Success(await Service().Handle(Analyze()));
+
+        Assert.Null(view.PlanFit);
+        Assert.Null(view.AlternativePlanFits);
+    }
+
+    [Fact]
+    public async Task A_dish_that_breaks_a_restriction_of_the_plan_is_suggested_off_the_plan()
+    {
+        _targets.FindByPatientIdAsync(PatientId, Arg.Any<CancellationToken>()).Returns(Targets(["Vegetarian"]));
+        _model.Answers(Answer("Lomo saltado", alternatives: [("Arroz blanco", 150m), ("Tallarín saltado", 300m)]));
+
+        var view = Success(await Service().Handle(Analyze()));
+
+        Assert.Equal((PlanAdherence.OffPlan, PlanFitReason.BreaksRestriction),
+            (view.PlanFit!.SuggestedAdherence, view.PlanFit.Reason));
+        Assert.Equal(["Vegetarian"], view.PlanFit.ViolatedRestrictions);
+        // The rice fits; the noodles are not in the catalog, so there is nothing to suggest for them.
+        Assert.Equal([PlanAdherence.InPlan, null],
+            view.AlternativePlanFits!.Select(f => f?.SuggestedAdherence));
+        // Nothing about the plan went to the AI.
+        var request = _model.Requests.Single();
+        Assert.DoesNotContain("Vegetarian", request.SystemInstruction + request.UserContent,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task With_the_patients_day_a_dish_that_fits_what_is_left_is_suggested_in_the_plan()
+    {
+        var today = DateOnly.FromDateTime(_clock.GetUtcNow().UtcDateTime);
+        _targets.FindByPatientIdAsync(PatientId, Arg.Any<CancellationToken>()).Returns(Targets(["ShellfishFree"]));
+        _diary.ListByPatientIdAsync(PatientId, today, Arg.Any<CancellationToken>()).Returns([]);
+        _model.Answers(Answer("Lomo saltado"));
+
+        var view = Success(await Service().Handle(new AnalyzeMealPhotoCommand(PatientId,
+            MealPhotos.JpegWithMetadata(), today)));
+
+        // 320 g at 180 kcal / 100 g = 576 kcal, with the whole 1800 kcal of the day left.
+        Assert.Equal((PlanAdherence.InPlan, PlanFitReason.Fits, 576m, (decimal?)1800m),
+            (view.PlanFit!.SuggestedAdherence, view.PlanFit.Reason, view.PlanFit.EnergyKcal,
+                view.PlanFit.RemainingKcal));
+        Assert.Empty(view.PlanFit.ViolatedRestrictions);
     }
 
     [Fact]
@@ -624,8 +677,15 @@ public class MealPhotoRecognitionTests
         var foodCommands = new ReferenceFoodCommandService(request, request, [_provider],
             NullLogger<ReferenceFoodCommandService>.Instance, Substitute.For<IMediator>(), configuration);
         var catalog = new FoodCatalogContextFacade(new ReferenceFoodQueryService(request), foodCommands);
+        var planFits = new PlanFitQueryService(_targets, _diary, catalog, EmbeddedRestrictionLexicon.Instance, _clock);
         return new MealPhotoAnalysisCommandService(_analyses, _diary, _analyses, catalog, new PhotoMetadataStripper(),
-            pipeline, settings, consent ?? _consent, _hintsCache, configuration, _clock, _serviceLog);
+            pipeline, settings, consent ?? _consent, _hintsCache, planFits, configuration, _clock, _serviceLog);
+    }
+
+    private static ActiveTargetsCache Targets(IReadOnlyList<string> restrictions)
+    {
+        return new ActiveTargetsCache(new RefreshActiveTargetsCacheCommand(PatientId, 2,
+            new DateTimeOffset(2026, 9, 1, 0, 0, 0, TimeSpan.Zero), 1800m, 100m, 200m, 60m, [], restrictions));
     }
 
     private static AnalyzeMealPhotoCommand Analyze(byte[]? photo = null)

@@ -410,6 +410,8 @@ builder.Services.AddScoped<IActiveTargetsCacheQueryService, ActiveTargetsCacheQu
 builder.Services.AddScoped<IDiaryEntryQueryService, DiaryEntryQueryService>();
 builder.Services.AddScoped<ISelfWeighInQueryService, SelfWeighInQueryService>();
 builder.Services.AddScoped<IWeightTrendQueryService, WeightTrendQueryService>();
+// IN-8: «¿Estaba en tu plan?» suggested from the plan's restrictions and what is left today, without AI.
+builder.Services.AddScoped<IPlanFitQueryService, PlanFitQueryService>();
 builder.Services.AddScoped<IIntakeContextFacade, IntakeContextFacade>();
 builder.Services.AddScoped<WeightTrendRecalculationJob>();
 

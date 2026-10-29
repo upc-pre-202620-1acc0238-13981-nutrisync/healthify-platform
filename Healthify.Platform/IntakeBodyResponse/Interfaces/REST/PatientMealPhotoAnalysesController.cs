@@ -52,7 +52,9 @@ public class PatientMealPhotoAnalysesController(
             "three alternatives. No meal is logged yet: the app logs it afterwards with the identifier of this " +
             "analysis, within 24 hours. Only the patient can ask; it requires their agreement to AI processing and " +
             "photo recognition turned on, and there is a daily limit of 30 photos. If no dish can be recognised, " +
-            "the patient can log the meal by hand.")]
+            "the patient can log the meal by hand. The answer also suggests whether the dish is in the patient's " +
+            "plan (checked against the plan's restrictions and, when the app sends localDate, what is left today), " +
+            "for the app to preselect; that check is done on the server and nothing about the plan goes to the AI.")]
     [SwaggerResponse(StatusCodes.Status201Created, "The analysis.", typeof(MealPhotoAnalysisResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The photo is missing or not a JPEG/WebP image.",
         typeof(ProblemDetails))]
@@ -70,7 +72,8 @@ public class PatientMealPhotoAnalysesController(
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.", typeof(ProblemDetails))]
     [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "The AI feature is off or unavailable.",
         typeof(ProblemDetails))]
-    public async Task<IActionResult> AnalyzeMealPhoto(int patientId, IFormFile? photo)
+    public async Task<IActionResult> AnalyzeMealPhoto(int patientId, IFormFile? photo,
+        [FromForm] DateOnly? localDate = null)
     {
         if (patientId != this.GetAuthenticatedUserId()) return Forbid();
 
@@ -83,7 +86,7 @@ public class PatientMealPhotoAnalysesController(
             bytes = buffer.ToArray();
         }
 
-        var result = await commandService.Handle(new AnalyzeMealPhotoCommand(patientId, bytes),
+        var result = await commandService.Handle(new AnalyzeMealPhotoCommand(patientId, bytes, localDate),
             HttpContext.RequestAborted);
 
         return IntakeActionResultAssembler.ToAiFunctionResult(result, MealPhotoAnalysisResourceAssembler.ToResource,

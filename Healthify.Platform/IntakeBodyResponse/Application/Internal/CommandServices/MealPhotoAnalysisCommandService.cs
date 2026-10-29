@@ -1,8 +1,10 @@
 using Healthify.Platform.FoodCatalog.Interfaces.Acl;
 using Healthify.Platform.IntakeBodyResponse.Application.CommandServices;
+using Healthify.Platform.IntakeBodyResponse.Application.QueryServices;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Commands;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Errors;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.Queries;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 using Healthify.Platform.IntakeBodyResponse.Domain.Repositories;
 using Healthify.Platform.IntakeBodyResponse.Domain.Services;
@@ -31,7 +33,10 @@ namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServ
 ///     incoherent (then <see cref="IntakeError.PhotoNotRecognized" />). The alternatives follow the same path without
 ///     the providers: the local catalog, then a food created from their own nutrients (or the similar entry); one
 ///     the catalog refuses stays without a food and never fails the analysis;
-///     6. the analysis stored without any image, with its lifetime.
+///     6. the analysis stored without any image, with its lifetime;
+///     7. IN-8: the suggestion for «¿Estaba en tu plan?» of the dish and of each alternative
+///     (<see cref="IPlanFitQueryService" />), from the plan's restrictions and what is left today. Never sent to the
+///     AI, and it never fails the analysis.
 ///     It creates no diary entry: logging is <c>photo-logs</c> with the <c>analysisId</c>.
 ///     Business rule: Photo Never Stored (IN-7). The bytes live in this method and in the request to the provider;
 ///     they are never written, logged nor kept. The audit keeps their SHA-256.
@@ -46,6 +51,7 @@ public class MealPhotoAnalysisCommandService(
     IAiSettings aiSettings,
     IAiConsentPolicy consentPolicy,
     ICatalogNameHintsCache catalogNameHintsCache,
+    IPlanFitQueryService planFitQueryService,
     IConfiguration configuration,
     TimeProvider timeProvider,
     ILogger<MealPhotoAnalysisCommandService> logger) : IMealPhotoAnalysisCommandService
@@ -148,9 +154,12 @@ public class MealPhotoAnalysisCommandService(
             await analysisRepository.AddAsync(analysis, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
 
+            // 7. IN-8: the plan suggestion, computed here from the plan and the diary; the AI never sees either.
+            var fits = await PlanFitsAsync(command, analysis, output.DishName, cancellationToken);
+
             return new Result<MealPhotoAnalysisView, IntakeAiFailure>.Success(new MealPhotoAnalysisView(analysis.Id,
                 analysis.ReferenceFoodId, dish.Value.Name, analysis.EstimatedGrams, analysis.Confidence,
-                analysis.Alternatives, analysis.ExpiresAt));
+                analysis.Alternatives, analysis.ExpiresAt, fits?.FirstOrDefault(), fits?.Skip(1).ToList()));
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -196,6 +205,40 @@ public class MealPhotoAnalysisCommandService(
         {
             logger.LogError(ex, "Unexpected error purging the expired photo analyses");
             return new Result<int, IntakeError>.Failure(IntakeError.UnexpectedError);
+        }
+    }
+
+    /// <summary>
+    ///     IN-8. The suggestion for the dish first, then one per alternative in order. Null when there is none (no plan
+    ///     published yet, or the suggestion failed): a suggestion never fails the analysis.
+    /// </summary>
+    private async Task<IReadOnlyList<PlanFit?>?> PlanFitsAsync(AnalyzeMealPhotoCommand command,
+        MealPhotoAnalysis analysis, string dishName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var serverToday = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
+            var localDate = command.LocalDate is { } day && Math.Abs(day.DayNumber - serverToday.DayNumber) <= 1
+                ? day
+                : (DateOnly?)null;
+            var candidates = analysis.Alternatives
+                .Select(a => new PlanFitCandidate(a.ReferenceFoodId ?? 0, a.Grams, [a.Name]))
+                .Prepend(new PlanFitCandidate(analysis.ReferenceFoodId, analysis.EstimatedGrams, [dishName]))
+                .ToList();
+
+            var result = await planFitQueryService.Handle(new GetPlanFitsQuery(command.PatientId, localDate,
+                candidates), cancellationToken);
+            return result is Result<IReadOnlyList<PlanFit?>, IntakeError>.Success success ? success.Value : null;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "The plan suggestion of a meal photo for patient {PatientId} failed",
+                command.PatientId);
+            return null;
         }
     }
 
