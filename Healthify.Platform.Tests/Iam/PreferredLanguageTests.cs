@@ -32,7 +32,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-3. The account keeps its interface language (es by default), the owner changes it, the next sign-in
+///     The account keeps its interface language (es by default), the owner changes it, the next sign-in
 ///     returns it and carries it as the lang claim, and the errors come out in it when the client sends no
 ///     Accept-Language.
 /// </summary>

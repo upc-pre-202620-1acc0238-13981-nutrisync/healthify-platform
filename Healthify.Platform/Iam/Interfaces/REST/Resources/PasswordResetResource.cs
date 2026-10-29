@@ -1,6 +1,6 @@
 namespace Healthify.Platform.Iam.Interfaces.REST.Resources;
 
-/// <summary>IAM-2. Body of <c>POST /authentication/password-resets</c>.</summary>
+/// <summary>Body of <c>POST /authentication/password-resets</c>.</summary>
 public record PasswordResetResource(string? ResetToken, string? NewPassword)
 {
     /// <summary>The token returned by <c>POST /authentication/password-reset-verifications</c>. Valid for one use.</summary>

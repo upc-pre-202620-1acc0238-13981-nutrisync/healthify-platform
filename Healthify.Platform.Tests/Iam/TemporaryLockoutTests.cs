@@ -20,7 +20,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-5. «Tu cuenta está bloqueada temporalmente»: five failures lock the account for <c>Iam:LockoutMinutes</c>
+///     Temporary lockout: five failures lock the account for <c>Iam:LockoutMinutes</c>
 ///     (15 by default); once that time has passed, the right password signs in again.
 /// </summary>
 public class TemporaryLockoutTests

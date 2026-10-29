@@ -11,7 +11,7 @@ public interface IUserCommandService
     Task<Result<User, IamError>> Handle(RegisterAccountCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IAM-3 - Change Preferred Language. Only the account owner reaches it.</summary>
+    /// <summary>Change Preferred Language. Only the account owner reaches it.</summary>
     Task<Result<User, IamError>> Handle(ChangePreferredLanguageCommand command,
         CancellationToken cancellationToken = default);
 }

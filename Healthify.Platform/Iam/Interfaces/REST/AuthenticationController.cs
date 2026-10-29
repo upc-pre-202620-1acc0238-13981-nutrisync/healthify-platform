@@ -13,7 +13,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace Healthify.Platform.Iam.Interfaces.REST;
 
-/// <summary>Subflows 1.1, 1.2 and 1.3 of the Iam bounded context, and password recovery (IAM-2).</summary>
+/// <summary>Subflows 1.1, 1.2 and 1.3 of the Iam bounded context, and password recovery.</summary>
 [ApiController]
 [Route("api/v1/authentication")]
 [Authorize]

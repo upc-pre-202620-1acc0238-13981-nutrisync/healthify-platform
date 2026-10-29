@@ -32,21 +32,21 @@ public record SignInResponseResource(
     /// <summary>Moment the session started.</summary>
     public DateTimeOffset StartedAt { get; init; } = StartedAt;
 
-    /// <summary>IAM-1. Given names, so the app greets "Hola, María" without another call.</summary>
+    /// <summary>Given names, so the app greets "Hola, María" without another call.</summary>
     public string GivenNames { get; init; } = GivenNames;
 
-    /// <summary>IAM-1. Family names. Empty on accounts created before IAM-1.</summary>
+    /// <summary>Family names. Empty on accounts created before names were required.</summary>
     public string FamilyNames { get; init; } = FamilyNames;
 
-    /// <summary>IAM-3. Interface language of the account: es or en.</summary>
+    /// <summary>Interface language of the account: es or en.</summary>
     public string PreferredLanguage { get; init; } = PreferredLanguage;
 
     /// <summary>
-    ///     IAM-4. Exchange it at <c>POST /authentication/token-refreshes</c> for a new token before or after
+    ///     Exchange it at <c>POST /authentication/token-refreshes</c> for a new token before or after
     ///     <see cref="ExpiresAt" />. Valid for one use and 30 days. Clients that ignore it keep working.
     /// </summary>
     public string? RefreshToken { get; init; } = RefreshToken;
 
-    /// <summary>IAM-4. When <see cref="Token" /> expires.</summary>
+    /// <summary>When <see cref="Token" /> expires.</summary>
     public DateTimeOffset? ExpiresAt { get; init; } = ExpiresAt;
 }

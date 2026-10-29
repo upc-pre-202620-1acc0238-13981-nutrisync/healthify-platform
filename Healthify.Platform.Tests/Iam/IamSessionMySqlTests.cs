@@ -21,7 +21,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-3 and IAM-4 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the language
+///     Language and sessions against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the language
 ///     column and its default, and the refresh token columns through sign-in, rotation, reuse and sign-out, each
 ///     step in its own context as each request would be.
 /// </summary>
@@ -42,7 +42,7 @@ public class IamSessionMySqlTests
         await using var db = await MySqlIntegrationDatabase.CreateAsync(DateOnly.FromDateTime(DateTime.UtcNow));
         await using (var context = db.NewContext())
         {
-            // A row written without the column, as every account before IAM-3 was.
+            // A row written without the column, as every account before the interface language was stored.
             await context.Database.ExecuteSqlRawAsync(
                 "INSERT INTO users (email, given_names, family_names, password_hash, role, failed_sign_in_attempts) " +
                 "VALUES ('legacy@correo.com', 'legacy', '', 'hash', 'Patient', 0)");

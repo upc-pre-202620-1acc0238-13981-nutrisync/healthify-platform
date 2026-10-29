@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Healthify.Platform.Iam.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IAM-1. The given names and family names of the person behind an account, as they wrote them at
+///     The given names and family names of the person behind an account, as they wrote them at
 ///     registration ("María José" / "Flores Quispe").
 /// </summary>
 /// <remarks>

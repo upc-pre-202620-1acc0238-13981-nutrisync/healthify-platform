@@ -20,7 +20,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-4, retry fix. The token just rotated, presented again within the grace window while its successor is
+///     Retry fix. The token just rotated, presented again within the grace window while its successor is
 ///     unused, gets the same pair back and the session lives; outside the window, or once the successor was used,
 ///     it is reuse and the session ends. Two simultaneous refreshes of one token both get the same valid pair.
 /// </summary>

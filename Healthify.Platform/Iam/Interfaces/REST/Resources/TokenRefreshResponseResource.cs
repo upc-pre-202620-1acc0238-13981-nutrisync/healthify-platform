@@ -1,6 +1,6 @@
 namespace Healthify.Platform.Iam.Interfaces.REST.Resources;
 
-/// <summary>IAM-4. What a refresh returns: a new access token and the refresh token that replaces the one sent.</summary>
+/// <summary>What a refresh returns: a new access token and the refresh token that replaces the one sent.</summary>
 public record TokenRefreshResponseResource(string Token, string RefreshToken, DateTimeOffset ExpiresAt)
 {
     /// <summary>New bearer token for the same session, with the same role claim.</summary>

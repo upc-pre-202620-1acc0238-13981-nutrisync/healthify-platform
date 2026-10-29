@@ -2,9 +2,8 @@ namespace Healthify.Platform.Iam.Domain.Model.Commands;
 
 /// <summary>Subflow 1.1 - Account Registration. Registering grants access to nothing on its own.</summary>
 /// <remarks>
-///     IAM-1 appends the given names and family names. They are required (the person name is validated
-///     first and missing parts report NameRequired); the defaults only keep the positional contract
-///     additive.
+///     Given names and family names are required: the person name is validated first and a missing part
+///     reports NameRequired. Their default values exist only so older positional callers still compile.
 /// </remarks>
 public record RegisterAccountCommand(
     string Email,

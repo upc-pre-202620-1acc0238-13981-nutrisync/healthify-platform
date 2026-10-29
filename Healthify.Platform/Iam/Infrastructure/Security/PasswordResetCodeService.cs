@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace Healthify.Platform.Iam.Infrastructure.Security;
 
 /// <summary>
-///     IAM-2. Codes are six random digits, stored as HMAC-SHA256 of <c>{userId}:{code}</c> keyed with
+///     Codes are six random digits, stored as HMAC-SHA256 of <c>{userId}:{code}</c> keyed with
 ///     <c>TokenSettings:Secret</c>.
 /// </summary>
 /// <remarks>

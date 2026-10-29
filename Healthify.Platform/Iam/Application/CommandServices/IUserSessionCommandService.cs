@@ -20,7 +20,7 @@ public interface IUserSessionCommandService
     Task<Result<UserSession, IamError>> Handle(SignOutCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IAM-4 - Refresh Session. Rotates the refresh token; reusing a rotated one ends the session.</summary>
+    /// <summary>Refresh Session. Rotates the refresh token; reusing a rotated one ends the session.</summary>
     Task<Result<SignInOutcome, IamError>> Handle(RefreshSessionCommand command,
         CancellationToken cancellationToken = default);
 }

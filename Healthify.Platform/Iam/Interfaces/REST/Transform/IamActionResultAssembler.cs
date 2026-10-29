@@ -45,7 +45,7 @@ public static class IamActionResultAssembler
         };
     }
 
-    /// <summary>IAM-3 - Change Preferred Language. Success carries no body.</summary>
+    /// <summary>Change Preferred Language. Success carries no body.</summary>
     public static IActionResult ToChangePreferredLanguageResult(
         Result<User, IamError> result,
         IStringLocalizer<IamMessages> localizer)
@@ -58,7 +58,7 @@ public static class IamActionResultAssembler
         };
     }
 
-    /// <summary>IAM-4 - Refresh Session.</summary>
+    /// <summary>Refresh Session.</summary>
     public static IActionResult ToTokenRefreshResult(
         Result<SignInOutcome, IamError> result,
         IStringLocalizer<IamMessages> localizer)
@@ -85,7 +85,7 @@ public static class IamActionResultAssembler
         };
     }
 
-    /// <summary>IAM-2 - Request Password Reset. Always accepted; no body.</summary>
+    /// <summary>Request Password Reset. Always accepted; no body.</summary>
     public static IActionResult ToPasswordResetRequestResult(
         Result<bool, IamError> result,
         IStringLocalizer<IamMessages> localizer)
@@ -98,7 +98,7 @@ public static class IamActionResultAssembler
         };
     }
 
-    /// <summary>IAM-2 - Verify Password Reset Code. Success carries the reset token.</summary>
+    /// <summary>Verify Password Reset Code. Success carries the reset token.</summary>
     public static IActionResult ToPasswordResetVerificationResult(
         Result<PasswordResetVerification, IamError> result,
         IStringLocalizer<IamMessages> localizer)
@@ -112,7 +112,7 @@ public static class IamActionResultAssembler
         };
     }
 
-    /// <summary>IAM-2 - Reset Password. Success carries no body.</summary>
+    /// <summary>Reset Password. Success carries no body.</summary>
     public static IActionResult ToPasswordResetResult(
         Result<bool, IamError> result,
         IStringLocalizer<IamMessages> localizer)

@@ -22,9 +22,9 @@ public record SignUpResource(
     /// </summary>
     public string Role { get; init; } = Role;
 
-    /// <summary>IAM-1. Given names ("María José"). Required: up to 80 characters, no digits.</summary>
+    /// <summary>Given names ("María José"). Required: up to 80 characters, no digits.</summary>
     public string? GivenNames { get; init; } = GivenNames;
 
-    /// <summary>IAM-1. Family names ("Flores Quispe"). Required: up to 80 characters, no digits.</summary>
+    /// <summary>Family names ("Flores Quispe"). Required: up to 80 characters, no digits.</summary>
     public string? FamilyNames { get; init; } = FamilyNames;
 }

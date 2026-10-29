@@ -12,7 +12,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Healthify.Platform.Tests.Iam;
 
-/// <summary>IAM-1. The names cross the boundary in one query for a whole listing, and degrade to nothing.</summary>
+/// <summary>The names cross the boundary in one query for a whole listing, and degrade to nothing.</summary>
 [Collection(MySqlCollection.Name)]
 public class UsersByIdsFacadeTests
 {

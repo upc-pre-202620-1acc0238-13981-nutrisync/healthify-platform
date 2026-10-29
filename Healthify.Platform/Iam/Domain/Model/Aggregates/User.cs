@@ -32,7 +32,7 @@ public partial class User
         Email = new Email(command.Email);
         Role = new Role(command.Role);
 
-        // IAM-1. Required at registration; the value object rejects a missing part.
+        // Required at registration; the value object rejects a missing part.
         var name = new PersonName(command.GivenNames, command.FamilyNames);
         GivenNames = name.GivenNames;
         FamilyNames = name.FamilyNames;
@@ -45,26 +45,26 @@ public partial class User
     public UserId Id { get; private set; } = null!;
     public Email Email { get; private set; } = null!;
 
-    /// <summary>IAM-1. "María José". Validated as a <see cref="PersonName" /> when it is written.</summary>
+    /// <summary>"María José". Validated as a <see cref="PersonName" /> when it is written.</summary>
     /// <remarks>
     ///     NOTE: technical field. Stored as two flat columns instead of an owned <see cref="PersonName" />:
-    ///     accounts created before IAM-1 were backfilled with the local part of their email (which may
+    ///     accounts created before names were required were backfilled with the local part of their email (which may
     ///     contain digits) and an empty family name, and materialising the value object on every read would
     ///     throw for them.
     /// </remarks>
     public string GivenNames { get; private set; } = string.Empty;
 
-    /// <summary>IAM-1. "Flores Quispe". Empty only on accounts created before IAM-1.</summary>
+    /// <summary>"Flores Quispe". Empty only on accounts created before names were required.</summary>
     public string FamilyNames { get; private set; } = string.Empty;
 
-    /// <summary>IAM-1. "María José Flores Quispe", without a trailing space for pre-IAM-1 accounts.</summary>
+    /// <summary>"María José Flores Quispe", without a trailing space when the family names are empty.</summary>
     public string FullName => $"{GivenNames} {FamilyNames}".Trim();
     public string PasswordHash { get; private set; } = null!;
 
     /// <summary>Declared at registration and never mutated afterwards.</summary>
     public Role Role { get; private set; } = null!;
 
-    /// <summary>IAM-3. The interface language of the account; <c>es</c> until changed.</summary>
+    /// <summary>The interface language of the account; <c>es</c> until changed.</summary>
     public PreferredLanguage PreferredLanguage { get; private set; } = PreferredLanguage.Default;
 
     public int FailedSignInAttempts { get; private set; }
@@ -77,7 +77,7 @@ public partial class User
     public bool IsLockedOut => LockedOutAt is not null;
 
     /// <summary>
-    ///     Business rule: Lockout After Five Failed Attempts (Subflow 1.2), and Lockout Is Temporary (IAM-5): it
+    ///     Business rule: Lockout After Five Failed Attempts (Subflow 1.2), and Lockout Is Temporary: it
     ///     applies while <paramref name="now" /> is before <c>LockedOutAt + lockoutDuration</c>.
     /// </summary>
     public bool IsLockedOutAt(DateTimeOffset now, TimeSpan lockoutDuration)
@@ -89,13 +89,13 @@ public partial class User
     ///     Records a rejected credential check and locks the account once the threshold is reached.
     /// </summary>
     /// <remarks>
-    ///     IAM-5. A failure after an expired lockout starts a new count: the account gets five fresh attempts.
+    ///     A failure after an expired lockout starts a new count: the account gets five fresh attempts.
     /// </remarks>
     public void RegisterFailedSignInAttempt(DateTimeOffset now, TimeSpan lockoutDuration)
     {
         if (IsLockedOutAt(now, lockoutDuration)) return;
 
-        // Business rule: Lockout Is Temporary (IAM-5)
+        // Business rule: Lockout Is Temporary
         if (LockedOutAt is not null)
         {
             FailedSignInAttempts = 0;
@@ -108,7 +108,7 @@ public partial class User
         if (FailedSignInAttempts >= MaxFailedSignInAttempts) LockedOutAt = now;
     }
 
-    /// <summary>IAM-3. «El idioma se guarda en el dispositivo y en la cuenta».</summary>
+    /// <summary>Saves the interface language on the account; the app also keeps it on the device.</summary>
     public void ChangePreferredLanguage(PreferredLanguage language)
     {
         PreferredLanguage = language ?? throw new ArgumentException("A language is required.", nameof(language));
@@ -122,7 +122,7 @@ public partial class User
     }
 
     /// <summary>
-    ///     IAM-2. Sets the password chosen with a reset code. A lockout is cleared too: proving access to the email
+    ///     Sets the password chosen with a reset code. A lockout is cleared too: proving access to the email
     ///     is a stronger check than the password that was failing.
     /// </summary>
     public void ResetPassword(string passwordHash)
