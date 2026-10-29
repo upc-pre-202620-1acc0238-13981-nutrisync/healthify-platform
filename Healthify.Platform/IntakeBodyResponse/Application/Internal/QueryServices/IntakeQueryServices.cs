@@ -86,6 +86,47 @@ public class PlanFitQueryService(
     }
 }
 
+/// <summary>
+///     IN-9. The day's intake for the patient's own home (PT3): the same totals the meal ideas and the plan suggestion
+///     use (<see cref="DailyIntakeCalculator" />, confirmed entries only) and what is left of the published targets.
+///     It never rates the day.
+/// </summary>
+public class DailyIntakeQueryService(
+    IActiveTargetsCacheRepository targetsRepository,
+    IDiaryEntryRepository diaryEntryRepository,
+    IFoodCatalogContextFacade foodCatalogContextFacade,
+    TimeProvider timeProvider) : IDailyIntakeQueryService
+{
+    public async Task<Result<DailyIntake, IntakeError>> Handle(GetDailyIntakeQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        if (query.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
+
+        // The patient's day: today on their device, one day either side of the server's UTC date (as IN-8).
+        var serverToday = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
+        if (Math.Abs(query.LocalDate.DayNumber - serverToday.DayNumber) > 1)
+            return Failure(IntakeError.InvalidLocalDate);
+
+        var targets = await targetsRepository.FindByPatientIdAsync(query.PatientId, cancellationToken);
+        if (targets is null) return Failure(IntakeError.ActiveTargetsCacheNotFound);
+
+        var entries = await diaryEntryRepository.ListByPatientIdAsync(query.PatientId, query.LocalDate,
+            cancellationToken);
+        var eaten = await DailyIntakeCalculator.SumAsync(entries, foodCatalogContextFacade, cancellationToken);
+        var remaining = RemainingTargets.Of(targets.EnergyKcal, targets.ProteinG, targets.CarbG, targets.FatG,
+            eaten.EnergyKcal, eaten.ProteinG, eaten.CarbG, eaten.FatG);
+
+        return new Result<DailyIntake, IntakeError>.Success(new DailyIntake(query.LocalDate, eaten.EnergyKcal,
+            eaten.ProteinG, eaten.CarbG, eaten.FatG, entries.Count(e => e.HasConfirmedEstimate),
+            targets.PlanVersion, targets.EnergyKcal, targets.ProteinG, targets.CarbG, targets.FatG, remaining));
+    }
+
+    private static Result<DailyIntake, IntakeError> Failure(IntakeError error)
+    {
+        return new Result<DailyIntake, IntakeError>.Failure(error);
+    }
+}
+
 public class DiaryEntryQueryService(
     IDiaryEntryRepository repository,
     IFoodCatalogContextFacade foodCatalogContextFacade) : IDiaryEntryQueryService

@@ -599,6 +599,73 @@ public record MealPhotoAlternativeResource(
 }
 
 /// <summary>
+///     IN-9. What the patient logged on one of their days and what is left of their targets (PT3 «Medidor del día»).
+///     Descriptive only: it never rates the day.
+/// </summary>
+public record DailyIntakeResource(
+    DateOnly Date,
+    decimal EnergyKcal,
+    decimal ProteinG,
+    decimal CarbG,
+    decimal FatG,
+    int EntryCount,
+    int PlanVersion,
+    decimal TargetEnergyKcal,
+    decimal TargetProteinG,
+    decimal TargetCarbG,
+    decimal TargetFatG,
+    decimal RemainingEnergyKcal,
+    decimal RemainingProteinG,
+    decimal RemainingCarbG,
+    decimal RemainingFatG)
+{
+    /// <summary>The patient's day.</summary>
+    public DateOnly Date { get; init; } = Date;
+
+    /// <summary>Energy logged that day, in kilocalories. Only confirmed entries count.</summary>
+    public decimal EnergyKcal { get; init; } = EnergyKcal;
+
+    /// <summary>Protein logged that day, in grams.</summary>
+    public decimal ProteinG { get; init; } = ProteinG;
+
+    /// <summary>Carbohydrate logged that day, in grams.</summary>
+    public decimal CarbG { get; init; } = CarbG;
+
+    /// <summary>Fat logged that day, in grams.</summary>
+    public decimal FatG { get; init; } = FatG;
+
+    /// <summary>How many entries count towards the targets.</summary>
+    public int EntryCount { get; init; } = EntryCount;
+
+    /// <summary>The version of the plan the targets come from.</summary>
+    public int PlanVersion { get; init; } = PlanVersion;
+
+    /// <summary>The published daily energy target, in kilocalories.</summary>
+    public decimal TargetEnergyKcal { get; init; } = TargetEnergyKcal;
+
+    /// <summary>The published daily protein target, in grams.</summary>
+    public decimal TargetProteinG { get; init; } = TargetProteinG;
+
+    /// <summary>The published daily carbohydrate target, in grams.</summary>
+    public decimal TargetCarbG { get; init; } = TargetCarbG;
+
+    /// <summary>The published daily fat target, in grams.</summary>
+    public decimal TargetFatG { get; init; } = TargetFatG;
+
+    /// <summary>Energy left today, never below zero.</summary>
+    public decimal RemainingEnergyKcal { get; init; } = RemainingEnergyKcal;
+
+    /// <summary>Protein left today, never below zero.</summary>
+    public decimal RemainingProteinG { get; init; } = RemainingProteinG;
+
+    /// <summary>Carbohydrate left today, never below zero.</summary>
+    public decimal RemainingCarbG { get; init; } = RemainingCarbG;
+
+    /// <summary>Fat left today, never below zero.</summary>
+    public decimal RemainingFatG { get; init; } = RemainingFatG;
+}
+
+/// <summary>
 ///     IN-8. A suggestion for «¿Esta comida estaba en tu plan?», computed by the server without AI. The app preselects
 ///     it; the patient may change it, and what is logged is always their own answer.
 /// </summary>

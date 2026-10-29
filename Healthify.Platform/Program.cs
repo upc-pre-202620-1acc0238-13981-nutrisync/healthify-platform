@@ -412,6 +412,8 @@ builder.Services.AddScoped<ISelfWeighInQueryService, SelfWeighInQueryService>();
 builder.Services.AddScoped<IWeightTrendQueryService, WeightTrendQueryService>();
 // IN-8: «¿Estaba en tu plan?» suggested from the plan's restrictions and what is left today, without AI.
 builder.Services.AddScoped<IPlanFitQueryService, PlanFitQueryService>();
+// IN-9: what the patient logged today and what is left of their targets (home gauge), without rating the day.
+builder.Services.AddScoped<IDailyIntakeQueryService, DailyIntakeQueryService>();
 builder.Services.AddScoped<IIntakeContextFacade, IntakeContextFacade>();
 builder.Services.AddScoped<WeightTrendRecalculationJob>();
 
