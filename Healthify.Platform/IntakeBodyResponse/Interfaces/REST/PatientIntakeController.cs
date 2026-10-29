@@ -6,6 +6,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 using Healthify.Platform.IntakeBodyResponse.Interfaces.REST.Resources;
 using Healthify.Platform.IntakeBodyResponse.Interfaces.REST.Transform;
 using Healthify.Platform.IntakeBodyResponse.Resources;
+using Healthify.Platform.Shared.Application.Patterns;
 using Healthify.Platform.Shared.Interfaces.REST.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace Healthify.Platform.IntakeBodyResponse.Interfaces.REST;
 
 /// <summary>
 ///     The per-patient read models of the Intake and Body Response bounded context: My Daily Targets,
-///     Daily Diary, Weight Trend Chart and Pending Sync Queue.
+///     Daily Diary, Weight Trend Chart, Pending Sync Queue and the plan suggestion (IN-8).
 /// </summary>
 /// <remarks>
 ///     Patient only. The practitioner reads the same material through the composite monitoring panel,
@@ -34,6 +35,7 @@ public class PatientIntakeController(
     IActiveTargetsCacheQueryService activeTargetsQueryService,
     IDiaryEntryQueryService diaryEntryQueryService,
     IWeightTrendQueryService weightTrendQueryService,
+    IPlanFitQueryService planFitQueryService,
     IStringLocalizer<IntakeMessages> localizer) : ControllerBase
 {
     [HttpGet("{patientId:int}/active-targets")]
@@ -134,6 +136,46 @@ public class PatientIntakeController(
             new GetPendingSyncQueueByPatientIdQuery(patientId), HttpContext.RequestAborted)).ToList();
 
         return Ok(DiaryEntryResourceAssembler.ToResources(entries, await FoodNamesOf(entries)));
+    }
+
+    [HttpGet("{patientId:int}/plan-fit")]
+    [SwaggerOperation(
+        Summary = "Suggest whether a food is in the patient's plan",
+        Description =
+            "Suggests the answer to 'Was this meal in your plan?' for a food and portion the patient is about to " +
+            "log, so the app can preselect it. The suggestion is computed without AI: the food is checked against " +
+            "the restrictions of the published plan (for example shellfish-free) and, when the patient's date is " +
+            "sent, its energy is compared with what is left today. It is only a suggestion: the patient can change " +
+            "it, and what gets logged is always their own answer. Nothing here says the meal was wrong.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The suggestion.", typeof(PlanFitResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "The date is not today on the patient's device.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required.")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "Another patient's plan cannot be read.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "No targets have been published yet.",
+        typeof(ProblemDetails))]
+    [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "The food is not in the catalog.",
+        typeof(ProblemDetails))]
+    public async Task<IActionResult> GetPlanFit(int patientId, [FromQuery] int referenceFoodId,
+        [FromQuery] decimal grams, [FromQuery] DateOnly? date)
+    {
+        if (!IsSelf(patientId)) return NotThisPatient();
+
+        var result = await planFitQueryService.Handle(
+            new GetPlanFitsQuery(patientId, date, [new PlanFitCandidate(referenceFoodId, grams)]),
+            HttpContext.RequestAborted);
+
+        return result switch
+        {
+            Result<IReadOnlyList<PlanFit?>, IntakeError>.Success { Value: [{ } fit] } =>
+                Ok(PlanFitResourceAssembler.ToResource(fit)),
+            Result<IReadOnlyList<PlanFit?>, IntakeError>.Success =>
+                IntakeActionResultAssembler.ToNotFoundResult(IntakeError.ReferenceFoodNotResolved, localizer),
+            Result<IReadOnlyList<PlanFit?>, IntakeError>.Failure f =>
+                IntakeActionResultAssembler.ToNotFoundResult(f.Error, localizer),
+            _ => IntakeActionResultAssembler.ToNotFoundResult(IntakeError.UnexpectedError, localizer)
+        };
     }
 
     /// <summary>IN-1. The names of every food shown, resolved in one query rather than per entry.</summary>
