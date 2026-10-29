@@ -1,6 +1,9 @@
 using Healthify.Platform.IntakeBodyResponse.Application.Internal;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.Errors;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Queries;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
+using Healthify.Platform.Shared.Application.Patterns;
 
 namespace Healthify.Platform.IntakeBodyResponse.Application.QueryServices;
 
@@ -30,6 +33,18 @@ public interface IDiaryEntryQueryService
     ///     catalog cannot resolve are absent from the result.
     /// </summary>
     Task<IReadOnlyDictionary<int, string>> Handle(GetFoodNamesQuery query,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>IN-8. The suggestion for «¿Estaba en tu plan?».</summary>
+public interface IPlanFitQueryService
+{
+    /// <summary>
+    ///     One suggestion per candidate, in order; null for a candidate the catalog cannot resolve. Fails with
+    ///     <see cref="IntakeError.ActiveTargetsCacheNotFound" /> when no plan was published and with
+    ///     <see cref="IntakeError.InvalidLocalDate" /> when the day is not today on the patient's device.
+    /// </summary>
+    Task<Result<IReadOnlyList<PlanFit?>, IntakeError>> Handle(GetPlanFitsQuery query,
         CancellationToken cancellationToken = default);
 }
 

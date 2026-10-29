@@ -1,9 +1,12 @@
 using Healthify.Platform.FoodCatalog.Interfaces.Acl;
 using Healthify.Platform.IntakeBodyResponse.Application.QueryServices;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.Errors;
 using Healthify.Platform.IntakeBodyResponse.Domain.Model.Queries;
+using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 using Healthify.Platform.IntakeBodyResponse.Domain.Repositories;
 using Healthify.Platform.IntakeBodyResponse.Domain.Services;
+using Healthify.Platform.Shared.Application.Patterns;
 
 namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.QueryServices;
 
@@ -14,6 +17,72 @@ public class ActiveTargetsCacheQueryService(IActiveTargetsCacheRepository reposi
         CancellationToken cancellationToken = default)
     {
         return await repository.FindByPatientIdAsync(query.PatientId, cancellationToken);
+    }
+}
+
+/// <summary>
+///     IN-8. «¿Estaba en tu plan?» suggested from the published contract and the day's diary, without AI: the
+///     restrictions of the plan through <see cref="IRestrictionLexicon" /> and what is left today as the meal ideas
+///     compute it (<see cref="DailyIntakeCalculator" />).
+/// </summary>
+public class PlanFitQueryService(
+    IActiveTargetsCacheRepository targetsRepository,
+    IDiaryEntryRepository diaryEntryRepository,
+    IFoodCatalogContextFacade foodCatalogContextFacade,
+    IRestrictionLexicon lexicon,
+    TimeProvider timeProvider) : IPlanFitQueryService
+{
+    /// <summary>IN-8: how many foods one request may ask about (a photo asks for its dish and three alternatives).</summary>
+    public const int MaximumCandidates = 10;
+
+    private const decimal NutrientBasisGrams = 100m;
+
+    public async Task<Result<IReadOnlyList<PlanFit?>, IntakeError>> Handle(GetPlanFitsQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        if (query.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
+
+        // The patient's day: today on their device, one day either side of the server's UTC date (as IA-3).
+        var serverToday = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
+        if (query.LocalDate is { } day && Math.Abs(day.DayNumber - serverToday.DayNumber) > 1)
+            return Failure(IntakeError.InvalidLocalDate);
+
+        var targets = await targetsRepository.FindByPatientIdAsync(query.PatientId, cancellationToken);
+        if (targets is null) return Failure(IntakeError.ActiveTargetsCacheNotFound);
+
+        RemainingTargets? remaining = null;
+        if (query.LocalDate is { } localDate)
+        {
+            var entries = await diaryEntryRepository.ListByPatientIdAsync(query.PatientId, localDate,
+                cancellationToken);
+            var eaten = await DailyIntakeCalculator.SumAsync(entries, foodCatalogContextFacade, cancellationToken);
+            remaining = RemainingTargets.Of(targets.EnergyKcal, targets.ProteinG, targets.CarbG, targets.FatG,
+                eaten.EnergyKcal, eaten.ProteinG, eaten.CarbG, eaten.FatG);
+        }
+
+        var fits = new List<PlanFit?>();
+        foreach (var candidate in query.Candidates.Take(MaximumCandidates))
+        {
+            var food = candidate.ReferenceFoodId > 0 && candidate.Grams > 0
+                ? await foodCatalogContextFacade.GetReferenceFoodById(candidate.ReferenceFoodId, cancellationToken)
+                : null;
+            if (food is null)
+            {
+                fits.Add(null);
+                continue;
+            }
+
+            var energy = food.EnergyKcalPer100g * candidate.Grams / NutrientBasisGrams;
+            var names = (candidate.AlsoKnownAs ?? []).Prepend(food.LocalName);
+            fits.Add(PlanFitRules.Evaluate(names, energy, remaining, targets.Restrictions, lexicon));
+        }
+
+        return new Result<IReadOnlyList<PlanFit?>, IntakeError>.Success(fits);
+    }
+
+    private static Result<IReadOnlyList<PlanFit?>, IntakeError> Failure(IntakeError error)
+    {
+        return new Result<IReadOnlyList<PlanFit?>, IntakeError>.Failure(error);
     }
 }
 
