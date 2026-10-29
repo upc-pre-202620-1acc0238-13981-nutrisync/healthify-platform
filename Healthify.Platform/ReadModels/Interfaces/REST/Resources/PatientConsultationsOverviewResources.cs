@@ -1,12 +1,12 @@
 namespace Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 
 /// <summary>
-///     RM-5. PT25 "Mis consultas": the next visit, its check in and the consultations already held. Only what
+///     The patient's consultations screen: the next visit, its check in and the consultations already held. Only what
 ///     the patient can see: no diagnosis, no calculation basis, no BMI.
 /// </summary>
 /// <param name="PatientId">Identifier of the patient.</param>
 /// <param name="Next">The next visit, or null when there is none.</param>
-/// <param name="CheckIn">The check in of the next visit; null means the app shows "Responder".</param>
+/// <param name="CheckIn">The check in of the next visit; null means the app shows the reply card.</param>
 /// <param name="Past">The consultations already held, most recent first.</param>
 public record PatientConsultationsOverviewResource(
     int PatientId,
@@ -17,17 +17,17 @@ public record PatientConsultationsOverviewResource(
     /// <summary>Identifier of the patient.</summary>
     public int PatientId { get; init; } = PatientId;
 
-    /// <summary>"Próxima consulta". Null when there is no visit on the calendar.</summary>
+    /// <summary>The next consultation. Null when there is no visit on the calendar.</summary>
     public UpcomingConsultationResource? Next { get; init; } = Next;
 
-    /// <summary>The check in of the next visit (PT25.3); null shows the card "Responder".</summary>
+    /// <summary>The check in of the next visit; null shows the reply card.</summary>
     public ConsultationCheckInSummaryResource? CheckIn { get; init; } = CheckIn;
 
-    /// <summary>"ANTERIORES", most recent first.</summary>
+    /// <summary>The earlier consultations, most recent first.</summary>
     public IReadOnlyList<PastConsultationResource> Past { get; init; } = Past;
 }
 
-/// <summary>RM-5. The next visit (PT25 "Con tu nutricionista · presencial · Agendada el 4 de septiembre").</summary>
+/// <summary>The next visit: with whom, in person or remote, and when it was scheduled.</summary>
 /// <param name="FollowUpId">Identifier of the visit.</param>
 /// <param name="ScheduledFor">When it is.</param>
 /// <param name="Modality">InPerson or Remote.</param>
@@ -42,7 +42,7 @@ public record UpcomingConsultationResource(
     DateTimeOffset? ScheduledAt,
     string? PractitionerFullName)
 {
-    /// <summary>Identifier of the visit, for the check in (MA-4).</summary>
+    /// <summary>Identifier of the visit, for the check in.</summary>
     public int FollowUpId { get; init; } = FollowUpId;
 
     /// <summary>When the visit is.</summary>
@@ -54,20 +54,20 @@ public record UpcomingConsultationResource(
     /// <summary>Fasting, LightClothing, BringBloodTests, EmptyBladder. Empty when none.</summary>
     public IReadOnlyList<string> Preparation { get; init; } = Preparation;
 
-    /// <summary>"Agendada el 4 de septiembre".</summary>
+    /// <summary>When the visit was scheduled.</summary>
     public DateTimeOffset? ScheduledAt { get; init; } = ScheduledAt;
 
     /// <summary>Name of the practitioner; null when it could not be read.</summary>
     public string? PractitionerFullName { get; init; } = PractitionerFullName;
 }
 
-/// <summary>RM-5. PT25.3 "Le contaste a tu nutricionista cómo te fue · Enviado el 15 de septiembre".</summary>
+/// <summary>What the patient told the nutritionist about how it went, and when it was sent.</summary>
 /// <param name="Feeling">Good, Fair or Hard.</param>
 /// <param name="Difficulties">Dinners, Weekends, EatingOut, Schedules, Cravings; may be empty.</param>
 /// <param name="Questions">The questions, as the patient sent them.</param>
 /// <param name="SubmittedAt">When it was first sent.</param>
 /// <param name="EditedAt">When it was last edited, if it was.</param>
-/// <param name="IsLocked">True once "Editar mi respuesta" is no longer possible.</param>
+/// <param name="IsLocked">True once the patient can no longer edit the answer.</param>
 public record ConsultationCheckInSummaryResource(
     string Feeling,
     IReadOnlyList<string> Difficulties,
@@ -85,7 +85,7 @@ public record ConsultationCheckInSummaryResource(
     /// <summary>The questions for the practitioner. Empty when none.</summary>
     public IReadOnlyList<string> Questions { get; init; } = Questions;
 
-    /// <summary>"Enviado el 15 de septiembre".</summary>
+    /// <summary>When the answer was sent.</summary>
     public DateTimeOffset SubmittedAt { get; init; } = SubmittedAt;
 
     /// <summary>When it was last edited; null when never.</summary>
@@ -96,8 +96,8 @@ public record ConsultationCheckInSummaryResource(
 }
 
 /// <summary>
-///     RM-5. One consultation already held. The app builds the text in es/en from <c>Label</c>: "Primera consulta"
-///     or "Evaluación y nuevo plan (versión 3)".
+///     One consultation already held. The app builds the text in es/en from <c>Label</c>: "First consultation"
+///     or "Assessment and new plan (version 3)".
 /// </summary>
 /// <param name="ConsultationId">Identifier of the consultation.</param>
 /// <param name="Date">When it was published.</param>
@@ -111,12 +111,12 @@ public record PastConsultationResource(int ConsultationId, DateTimeOffset Date, 
     /// <summary>Identifier of the consultation.</summary>
     public int ConsultationId { get; init; } = ConsultationId;
 
-    /// <summary>"3 de septiembre de 2026".</summary>
+    /// <summary>When it was published.</summary>
     public DateTimeOffset Date { get; init; } = Date;
 
     /// <summary>FirstConsultation or AssessmentAndNewPlan.</summary>
     public string Label { get; init; } = Label;
 
-    /// <summary>"(versión 3)".</summary>
+    /// <summary>The plan version shown after the label.</summary>
     public int? PlanVersion { get; init; } = PlanVersion;
 }

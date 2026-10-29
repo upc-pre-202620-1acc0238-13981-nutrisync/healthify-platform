@@ -17,7 +17,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     NC-8, CR-3, MA-7 and RM-4 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the
+///     Against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the
 ///     columns of this session's migrations round-trip through the EF mappings (JSON converters, nullable dates,
 ///     the referral status default).
 /// </summary>

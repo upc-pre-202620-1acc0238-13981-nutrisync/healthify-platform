@@ -12,7 +12,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     RM-3. PAC-2 without the consistency index (Patient First Always: it reaches the practitioner only as a
+///     The monitoring panel without the consistency index (Patient First Always: it reaches the practitioner only as a
 ///     ConsistencyEscalation review item), and with the week, the logged days, the weight trend, the last clinical
 ///     measurement and, per diary entry, the food, the plan adherence and whether it counts.
 /// </summary>

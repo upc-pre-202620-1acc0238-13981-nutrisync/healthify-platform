@@ -19,7 +19,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     RM-5. PT25 composed from Monitoring (next visit and its check in), Nutritional Care (consultations already
+///     The patient's consultations screen composed from Monitoring (next visit and its check in), Nutritional Care (consultations already
 ///     held) and Iam (the practitioner's name). Only what the patient can see, and each section degrades alone.
 /// </summary>
 public class PatientConsultationsComposerTests

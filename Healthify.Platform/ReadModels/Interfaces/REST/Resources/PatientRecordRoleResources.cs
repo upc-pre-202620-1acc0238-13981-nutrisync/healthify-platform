@@ -1,7 +1,7 @@
 namespace Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 
 /// <summary>
-///     RM-4 - The record as the practitioner reads it (PAC-3): every field of <see cref="PatientRecordResource" />
+///     The record as the practitioner reads it: every field of <see cref="PatientRecordResource" />
 ///     plus the active diagnosis, the evaluations with their BMI, the clinical weight and the compliance.
 /// </summary>
 /// <remarks>
@@ -25,29 +25,29 @@ public record PractitionerPatientRecordResource : PatientRecordResource
         Compliance = compliance;
     }
 
-    /// <summary>"Diagnóstico activo · Sobrepeso grado I · 3 mar. 2026 · solo profesional", or null.</summary>
+    /// <summary>The active diagnosis with its date, shown to the practitioner only, or null.</summary>
     public RecordActiveDiagnosisResource? ActiveDiagnosis { get; init; }
 
-    /// <summary>"EVALUACIONES", most recent first.</summary>
+    /// <summary>The evaluations, most recent first.</summary>
     public IReadOnlyList<RecordEvaluationResource> Evaluations { get; init; }
 
-    /// <summary>"Peso clínico 74.2 kg · −1.8 kg desde marzo", or null without evaluations.</summary>
+    /// <summary>The clinical weight and its change since the first evaluation, or null without evaluations.</summary>
     public RecordClinicalWeightResource? ClinicalWeight { get; init; }
 
-    /// <summary>"IMC 26.3 · Sobrepeso grado I" of the latest evaluation, or null.</summary>
+    /// <summary>BMI and its category of the latest evaluation, or null.</summary>
     public RecordBmiResource? Bmi { get; init; }
 
-    /// <summary>"Cumplimiento 5 de 7 días", or null.</summary>
+    /// <summary>Compliance as "5 of 7 days", or null.</summary>
     public RecordComplianceResource? Compliance { get; init; }
 }
 
 /// <summary>
-///     RM-4 - The record as the patient reads it (PT20): every field of <see cref="PatientRecordResource" /> plus
+///     The record as the patient reads it: every field of <see cref="PatientRecordResource" /> plus
 ///     their practitioner, next consultation, numbers, plan and referrals.
 /// </summary>
 /// <remarks>
 ///     Business rule: Diagnosis Never Leaves The Context, for the patient. No diagnosis, calculation basis, BMI or BMI
-///     category (§12-#9), and none must ever be added here.
+///     category, and none must ever be added here.
 /// </remarks>
 public record PatientOwnRecordResource : PatientRecordResource
 {
@@ -66,25 +66,25 @@ public record PatientOwnRecordResource : PatientRecordResource
         Referrals = referrals;
     }
 
-    /// <summary>"Tu nutricionista · Te acompaña desde el 12 mar. 2026 · Vigente", or null.</summary>
+    /// <summary>Their nutritionist, since when and the link status, or null.</summary>
     public RecordPractitionerResource? Practitioner { get; init; }
 
-    /// <summary>"Mis consultas · Próxima", or null.</summary>
+    /// <summary>The next consultation, or null.</summary>
     public RecordNextFollowUpResource? NextFollowUp { get; init; }
 
-    /// <summary>"MIS NÚMEROS".</summary>
+    /// <summary>The "my numbers" section.</summary>
     public RecordMyNumbersResource MyNumbers { get; init; }
 
-    /// <summary>"MI PLAN: Indicaciones / Restricciones", or null without a published plan.</summary>
+    /// <summary>The "my plan" section with guidelines and restrictions, or null without a published plan.</summary>
     public RecordPlanResource? Plan { get; init; }
 
-    /// <summary>"Derivaciones", most recent first; "Sin derivaciones activas" when none is Open.</summary>
+    /// <summary>The referrals, most recent first; the app shows "no active referrals" when none is Open.</summary>
     public IReadOnlyList<RecordReferralResource> Referrals { get; init; }
 }
 
-/// <summary>RM-4. The active diagnosis. Practitioner only.</summary>
+/// <summary>The active diagnosis. Practitioner only.</summary>
 /// <param name="DiagnosisId">Identifier of the diagnosis.</param>
-/// <param name="Code">Closed list code (NC-4); the client translates it. Null before NC-4.</param>
+/// <param name="Code">Closed list code; the client translates it. Null for diagnoses written before the closed list.</param>
 /// <param name="Statement">The statement as recorded.</param>
 /// <param name="IssuedAt">When it was issued.</param>
 public record RecordActiveDiagnosisResource(int DiagnosisId, string? Code, string Statement, DateTimeOffset IssuedAt)
@@ -92,7 +92,7 @@ public record RecordActiveDiagnosisResource(int DiagnosisId, string? Code, strin
     /// <summary>Identifier of the diagnosis.</summary>
     public int DiagnosisId { get; init; } = DiagnosisId;
 
-    /// <summary>Closed list code (NC-4), or null for diagnoses written before it.</summary>
+    /// <summary>Closed list code, or null for diagnoses written before it.</summary>
     public string? Code { get; init; } = Code;
 
     /// <summary>The statement as the practitioner recorded it.</summary>
@@ -102,14 +102,14 @@ public record RecordActiveDiagnosisResource(int DiagnosisId, string? Code, strin
     public DateTimeOffset IssuedAt { get; init; } = IssuedAt;
 }
 
-/// <summary>RM-4. One evaluation of PAC-3. Practitioner only.</summary>
+/// <summary>One evaluation of the patient record. Practitioner only.</summary>
 /// <param name="AssessmentId">The assessment.</param>
 /// <param name="TakenAt">When the measurement was taken.</param>
 /// <param name="WeightKg">Weight in kilograms.</param>
 /// <param name="Bmi">BMI.</param>
 /// <param name="BmiCategory">BMI category code.</param>
 /// <param name="WaistCm">Waist in centimetres, or null.</param>
-/// <param name="IsFirst">"primera evaluación".</param>
+/// <param name="IsFirst">Whether it is the first evaluation.</param>
 public record RecordEvaluationResource(
     int AssessmentId,
     DateTimeOffset TakenAt,
@@ -141,7 +141,7 @@ public record RecordEvaluationResource(
     public bool IsFirst { get; init; } = IsFirst;
 }
 
-/// <summary>RM-4. PAC-3 "Peso clínico 74.2 kg · −1.8 kg desde marzo". Practitioner only.</summary>
+/// <summary>The clinical weight and its change since the first evaluation. Practitioner only.</summary>
 /// <param name="LatestKg">Weight of the latest evaluation.</param>
 /// <param name="LatestDate">When it was taken.</param>
 /// <param name="DeltaKgSinceFirst">Latest minus first.</param>
@@ -161,11 +161,11 @@ public record RecordClinicalWeightResource(
     /// <summary>Latest minus first: negative when the weight went down.</summary>
     public decimal DeltaKgSinceFirst { get; init; } = DeltaKgSinceFirst;
 
-    /// <summary>When the first evaluation was taken ("desde marzo").</summary>
+    /// <summary>When the first evaluation was taken ("since March").</summary>
     public DateTimeOffset FirstDate { get; init; } = FirstDate;
 }
 
-/// <summary>RM-4. PAC-3 "IMC 26.3 · Sobrepeso grado I". Practitioner only.</summary>
+/// <summary>BMI and its category. Practitioner only.</summary>
 /// <param name="Value">BMI of the latest evaluation.</param>
 /// <param name="Category">Its category code.</param>
 public record RecordBmiResource(decimal Value, string Category)
@@ -177,7 +177,7 @@ public record RecordBmiResource(decimal Value, string Category)
     public string Category { get; init; } = Category;
 }
 
-/// <summary>RM-4. "Cumplimiento 5 de 7 días · Últimos 7 días" (DECISIÓN §12-#7: calendar days).</summary>
+/// <summary>Compliance as "5 of 7 days" over the last 7 calendar days.</summary>
 /// <param name="From">First of the days.</param>
 /// <param name="To">Last of the days.</param>
 /// <param name="Met">Days within the targets.</param>
@@ -197,7 +197,7 @@ public record RecordComplianceResource(DateOnly From, DateOnly To, int Met, int 
     public int Total { get; init; } = Total;
 }
 
-/// <summary>RM-4. PT20 "Tu nutricionista · Te acompaña desde el 12 mar. 2026 · Vigente".</summary>
+/// <summary>The patient's nutritionist, since when and the link status.</summary>
 /// <param name="PractitionerId">Identifier of the practitioner.</param>
 /// <param name="FullName">Their full name.</param>
 /// <param name="LinkedSince">When the link was established, or null.</param>
@@ -214,11 +214,11 @@ public record RecordPractitionerResource(int PractitionerId, string FullName, Da
     /// <summary>When the link was established, or null.</summary>
     public DateTimeOffset? LinkedSince { get; init; } = LinkedSince;
 
-    /// <summary>Active ("Vigente") or PendingConsent.</summary>
+    /// <summary>Active or PendingConsent.</summary>
     public string LinkStatus { get; init; } = LinkStatus;
 }
 
-/// <summary>RM-4. PT20 "Mis consultas · Próxima: jueves 18 sept. · 10:00 a. m.".</summary>
+/// <summary>The patient's next consultation: day and time.</summary>
 /// <param name="FollowUpId">Identifier of the visit.</param>
 /// <param name="ScheduledFor">When it is.</param>
 /// <param name="Modality">InPerson or Remote.</param>
@@ -239,7 +239,7 @@ public record RecordNextFollowUpResource(int FollowUpId, DateTimeOffset Schedule
     public IReadOnlyList<string> Preparation { get; init; } = Preparation;
 }
 
-/// <summary>RM-4. PT20 "Peso clínico 74.2 kg · Evaluación del 3 mar.". Weight and date only: no BMI.</summary>
+/// <summary>The clinical weight and the date of its evaluation. Weight and date only: no BMI.</summary>
 /// <param name="Kg">Weight in kilograms.</param>
 /// <param name="TakenAt">When it was taken.</param>
 public record RecordPatientClinicalWeightResource(decimal Kg, DateTimeOffset TakenAt)
@@ -251,12 +251,12 @@ public record RecordPatientClinicalWeightResource(decimal Kg, DateTimeOffset Tak
     public DateTimeOffset TakenAt { get; init; } = TakenAt;
 }
 
-/// <summary>RM-4. PT20 "MIS NÚMEROS". No BMI, no category, no diagnosis.</summary>
-/// <param name="EnergyTargetKcal">"Mis metas de energía 1 850 kcal · Por día", or null without a plan.</param>
-/// <param name="PlanVersion">"versión 3", or null.</param>
-/// <param name="Compliance">"Mi cumplimiento 5 de 7 días", or null.</param>
-/// <param name="ClinicalWeight">"Peso clínico", or null.</param>
-/// <param name="WeightSlopeKgPerWeek">"Mi tendencia −0,3 kg/sem", or null.</param>
+/// <summary>The patient's "my numbers" section. No BMI, no category, no diagnosis.</summary>
+/// <param name="EnergyTargetKcal">The daily energy target in kcal, or null without a plan.</param>
+/// <param name="PlanVersion">The plan version, or null.</param>
+/// <param name="Compliance">Their compliance as "5 of 7 days", or null.</param>
+/// <param name="ClinicalWeight">The clinical weight, or null.</param>
+/// <param name="WeightSlopeKgPerWeek">Their weight trend in kg per week, or null.</param>
 public record RecordMyNumbersResource(
     decimal? EnergyTargetKcal,
     int? PlanVersion,
@@ -280,7 +280,7 @@ public record RecordMyNumbersResource(
     public decimal? WeightSlopeKgPerWeek { get; init; } = WeightSlopeKgPerWeek;
 }
 
-/// <summary>RM-4. PT20 "MI PLAN: Indicaciones / Restricciones".</summary>
+/// <summary>The patient's "my plan" section: guidelines and restrictions.</summary>
 /// <param name="Guidelines">A catalog code or a custom text each.</param>
 /// <param name="Restrictions">Restriction codes.</param>
 /// <param name="LegacyRestrictions">Free text restrictions from before the closed list.</param>

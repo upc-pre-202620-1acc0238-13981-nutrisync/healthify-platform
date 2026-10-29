@@ -12,7 +12,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.ReadModels.Interfaces.REST;
 
 /// <summary>
-///     RM-1. The roster of a practitioner (PR1), composed across contexts.
+///     The roster of a practitioner, composed across contexts.
 /// </summary>
 /// <remarks>
 ///     A practitioner reads only their own roster. It lists the links that are Active or waiting for the

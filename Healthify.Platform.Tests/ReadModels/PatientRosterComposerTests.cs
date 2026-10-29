@@ -29,7 +29,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     RM-1. The roster of a practitioner (PR1): one row per Active or PendingConsent link with the name, the
+///     The roster of a practitioner: one row per Active or PendingConsent link with the name, the
 ///     care status (HasBaseline, version in force, consultation in progress, open item), IsNew and the next
 ///     visit, read with one batch call per facade, never one per patient.
 /// </summary>
@@ -98,7 +98,7 @@ public class PatientRosterComposerTests
         Assert.True(luz.IsNew);
         Assert.Null(luz.NextFollowUpAt);
 
-        // "Luz Ramírez · Vinculada desde 28 ago. 2026 · sin plan · Nueva": with baseline but no plan, still new.
+        // "Luz Ramírez, linked since 28 Aug 2026, no plan, new": with baseline but no plan, still new.
         var pending = roster[2];
         Assert.Equal(("PendingConsent", true, null as int?, true), (pending.LinkStatus, pending.HasBaseline,
             pending.ActivePlanVersion, pending.IsNew));

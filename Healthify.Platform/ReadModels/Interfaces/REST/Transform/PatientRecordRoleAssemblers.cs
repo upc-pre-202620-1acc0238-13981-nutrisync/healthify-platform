@@ -5,7 +5,7 @@ using Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 
 namespace Healthify.Platform.ReadModels.Interfaces.REST.Transform;
 
-/// <summary>RM-4. PAC-3: the record plus what only the practitioner reads.</summary>
+/// <summary>The record plus what only the practitioner reads.</summary>
 public static class PractitionerPatientRecordResourceAssembler
 {
     public static PractitionerPatientRecordResource ToResource(PatientRecordComposition composition,
@@ -43,7 +43,7 @@ public static class PractitionerPatientRecordResourceAssembler
 }
 
 /// <summary>
-///     RM-4. PT20: the record plus what the patient reads about themselves. It receives nothing that could carry a
+///     The record plus what the patient reads about themselves. It receives nothing that could carry a
 ///     diagnosis, a BMI or a BMI category.
 /// </summary>
 public static class PatientOwnRecordResourceAssembler

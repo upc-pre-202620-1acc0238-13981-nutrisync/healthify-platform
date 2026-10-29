@@ -13,7 +13,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.ReadModels.Interfaces.REST;
 
 /// <summary>
-///     RM-2. The summary the practitioner opens from the roster (PAC-1), composed across contexts.
+///     The summary the practitioner opens from the roster, composed across contexts.
 /// </summary>
 /// <remarks>
 ///     Practitioner only, and only with a live link to the patient: registering grants no access, so the link

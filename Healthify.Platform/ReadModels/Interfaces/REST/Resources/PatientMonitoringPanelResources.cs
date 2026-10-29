@@ -26,9 +26,9 @@ namespace Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 /// <param name="ConfirmedFoodName">Local name of the confirmed food, or null.</param>
 /// <param name="ConfirmedPortionGrams">The confirmed portion in grams, or null.</param>
 /// <param name="ConfirmedAt">When the patient spoke, or null.</param>
-/// <param name="FoodName">RM-3. The food the entry shows: the confirmed one, or the proposed one while it waits.</param>
-/// <param name="PlanAdherence">RM-3 (IN-1). InPlan, OffPlan or NotAnswered.</param>
-/// <param name="IsCountedTowardsTargets">RM-3 (IN-1). Whether it adds to the day ("Confirmada").</param>
+/// <param name="FoodName">The food the entry shows: the confirmed one, or the proposed one while it waits.</param>
+/// <param name="PlanAdherence">InPlan, OffPlan or NotAnswered.</param>
+/// <param name="IsCountedTowardsTargets">Whether it adds to the day (confirmed).</param>
 public record PanelDiaryEntryResource(
     int DiaryEntryId,
     DateTimeOffset LocalTimestamp,
@@ -92,19 +92,19 @@ public record PanelDiaryEntryResource(
     public DateTimeOffset? ConfirmedAt { get; init; } = ConfirmedAt;
 
     /// <summary>
-    ///     RM-3. "Lomo saltado": the confirmed food, or the proposed one while it is "Por confirmar". Null when there
+    ///     "Lomo saltado": the confirmed food, or the proposed one while it awaits confirmation. Null when there
     ///     is no food or the catalog cannot resolve it.
     /// </summary>
     public string? FoodName { get; init; } = FoodName;
 
-    /// <summary>RM-3 (IN-1). InPlan, OffPlan or NotAnswered. Descriptive only, never a grade.</summary>
+    /// <summary>InPlan, OffPlan or NotAnswered. Descriptive only, never a grade.</summary>
     public string PlanAdherence { get; init; } = PlanAdherence;
 
-    /// <summary>RM-3 (IN-1). "Confirmada" (true) or "Por confirmar" (false): only a confirmed entry is intake.</summary>
+    /// <summary>Confirmed (true) or awaiting confirmation (false): only a confirmed entry is intake.</summary>
     public bool IsCountedTowardsTargets { get; init; } = IsCountedTowardsTargets;
 }
 
-/// <summary>RM-3. One day of PAC-2 "Esta semana · L M M J V S D".</summary>
+/// <summary>One day of the "this week" strip on the monitoring panel.</summary>
 /// <param name="Date">The calendar day.</param>
 /// <param name="Outcome">Met, Exceeded, Short or Unlogged.</param>
 public record PanelWeekDayResource(DateOnly Date, string Outcome)
@@ -113,13 +113,13 @@ public record PanelWeekDayResource(DateOnly Date, string Outcome)
     public DateOnly Date { get; init; } = Date;
 
     /// <summary>
-    ///     Met ("Dentro de metas"), Short ("Por debajo"), Exceeded, or Unlogged: its own grey state ("Sin
-    ///     registro"), never "Por debajo". Days still ahead are Unlogged.
+    ///     Met (within targets), Short (below), Exceeded, or Unlogged: its own grey state, never Short. Days
+    ///     still ahead are Unlogged.
     /// </summary>
     public string Outcome { get; init; } = Outcome;
 }
 
-/// <summary>RM-3 (MA-6). PAC-2 "Esta semana · 5 de 7 días", Monday to Sunday.</summary>
+/// <summary>The "this week, 5 of 7 days" strip, Monday to Sunday.</summary>
 /// <param name="From">Monday.</param>
 /// <param name="To">Sunday.</param>
 /// <param name="Days">The seven days, Monday first.</param>
@@ -128,7 +128,7 @@ public record PanelWeekDayResource(DateOnly Date, string Outcome)
 /// <param name="ShortDays">Days below.</param>
 /// <param name="UnloggedDays">Days without a record (or still ahead).</param>
 /// <param name="LoggedDays">Days with something logged.</param>
-/// <param name="TotalDays">Calendar days: the "7" (DECISIÓN §12-#7).</param>
+/// <param name="TotalDays">Calendar days: the "7".</param>
 public record PanelWeekResource(
     DateOnly From,
     DateOnly To,
@@ -168,7 +168,7 @@ public record PanelWeekResource(
     public int TotalDays { get; init; } = TotalDays;
 }
 
-/// <summary>RM-3. PAC-2 "Registro 6 de 7 días · Comidas registradas".</summary>
+/// <summary>Logged days on the panel ("6 of 7 days with meals logged").</summary>
 /// <param name="From">First of the seven days.</param>
 /// <param name="To">The panel day.</param>
 /// <param name="Logged">Days with something logged.</param>
@@ -188,7 +188,7 @@ public record PanelLoggedDaysResource(DateOnly From, DateOnly To, int Logged, in
     public int TotalDays { get; init; } = TotalDays;
 }
 
-/// <summary>RM-3 (IN-5). PAC-2 "Tendencia de peso −0,3 kg/sem · Autopesaje · 4 semanas". Never today's weight.</summary>
+/// <summary>The home weigh in trend per week over four weeks. Never today's weight.</summary>
 /// <param name="Weeks">Weeks the trend covers.</param>
 /// <param name="SlopeKgPerWeek">Kilograms per week, or null with fewer than two points.</param>
 /// <param name="ChangeKg">Change over the weeks, or null.</param>
@@ -208,10 +208,10 @@ public record PanelWeightTrendSummaryResource(int Weeks, decimal? SlopeKgPerWeek
     public int PointCount { get; init; } = PointCount;
 }
 
-/// <summary>RM-3 (NC-3). PAC-2 "Última medición clínica · 3 sept. · en ayunas, sin zapatos · 74.2 kg".</summary>
+/// <summary>The last clinical measurement: date, protocol and weight.</summary>
 /// <param name="TakenAt">When it was taken.</param>
 /// <param name="WeightKg">Weight in kilograms.</param>
-/// <param name="ProtocolChecks">EV-2 checklist codes; empty for measurements before NC-3.</param>
+/// <param name="ProtocolChecks">Protocol checklist codes; empty for measurements taken before the checklist existed.</param>
 /// <param name="Protocol">The protocol as recorded.</param>
 public record PanelClinicalMeasurementResource(
     DateTimeOffset TakenAt,
@@ -228,7 +228,7 @@ public record PanelClinicalMeasurementResource(
     /// <summary>Fasting, NoShoes, LightClothing, EmptyBladder, SameScale (the client translates them).</summary>
     public IReadOnlyList<string> ProtocolChecks { get; init; } = ProtocolChecks;
 
-    /// <summary>The protocol as recorded: free text before NC-3, the readable summary since.</summary>
+    /// <summary>The protocol as recorded: free text before the checklist existed, the readable summary since.</summary>
     public string Protocol { get; init; } = Protocol;
 }
 
@@ -303,11 +303,11 @@ public record PanelDailyIntakeSummaryResource(
 /// <param name="DailyCompliance">Day by day, oldest first.</param>
 /// <param name="ClinicalAnthropometrySeries">Weight taken by the practitioner, oldest first.</param>
 /// <param name="SelfWeighInTrend">The smoothed home series, kept separate.</param>
-/// <param name="Consistency">Deprecated by RM-3: always null.</param>
-/// <param name="Week">RM-3. "Esta semana", Monday to Sunday, or null.</param>
-/// <param name="LoggedDays">RM-3. "Registro 6 de 7 días", or null.</param>
-/// <param name="WeightTrendSummary">RM-3. "Tendencia de peso · 4 semanas", or null.</param>
-/// <param name="LastClinicalMeasurement">RM-3. "Última medición clínica", or null.</param>
+/// <param name="Consistency">No longer filled: always null.</param>
+/// <param name="Week">This week, Monday to Sunday, or null.</param>
+/// <param name="LoggedDays">The logged days ("6 of 7 days"), or null.</param>
+/// <param name="WeightTrendSummary">The weight trend over four weeks, or null.</param>
+/// <param name="LastClinicalMeasurement">The last clinical measurement, or null.</param>
 public record PatientMonitoringPanelResource(
     int PatientId,
     DateOnly Date,
@@ -349,22 +349,22 @@ public record PatientMonitoringPanelResource(
     public IReadOnlyList<RecordWeightTrendPointResource> SelfWeighInTrend { get; init; } = SelfWeighInTrend;
 
     /// <summary>
-    ///     Deprecated by RM-3: always null, kept so existing clients do not break. Patient First Always: the
+    ///     No longer filled: always null, kept so existing clients do not break. Patient First Always: the
     ///     practitioner learns about a consistency alert only as a ConsistencyEscalation item in the review inbox,
     ///     after the patient saw it.
     /// </summary>
-    [Obsolete("Removed from the panel by RM-3 (Patient First Always); always null. Use the review inbox.")]
+    [Obsolete("Always null; the review inbox replaced it.")]
     public RecordConsistencyResource? Consistency { get; init; } = Consistency;
 
-    /// <summary>RM-3 (MA-6). PAC-2 "Esta semana · 5 de 7 días · L M M J V S D".</summary>
+    /// <summary>The "this week, 5 of 7 days" strip, Monday to Sunday.</summary>
     public PanelWeekResource? Week { get; init; } = Week;
 
-    /// <summary>RM-3. PAC-2 "Registro 6 de 7 días": the last seven calendar days up to <see cref="Date" />.</summary>
+    /// <summary>The logged days ("6 of 7 days"): the last seven calendar days up to <see cref="Date" />.</summary>
     public PanelLoggedDaysResource? LoggedDays { get; init; } = LoggedDays;
 
-    /// <summary>RM-3 (IN-5). PAC-2 "Tendencia de peso −0,3 kg/sem · Autopesaje · 4 semanas".</summary>
+    /// <summary>The home weigh in trend per week over four weeks.</summary>
     public PanelWeightTrendSummaryResource? WeightTrendSummary { get; init; } = WeightTrendSummary;
 
-    /// <summary>RM-3 (NC-3). PAC-2 "Última medición clínica".</summary>
+    /// <summary>The last clinical measurement.</summary>
     public PanelClinicalMeasurementResource? LastClinicalMeasurement { get; init; } = LastClinicalMeasurement;
 }

@@ -18,8 +18,8 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     RM-2. The patient summary (PAC-1) composed from the five facades: PAC-0 when there is no baseline, "desde
-///     la última consulta" from the last published consultation (or 7 days / 4 weeks before the first one), and
+///     The patient summary composed from the five facades: the empty state when there is no baseline, "since
+///     the last consultation" from the last published consultation (or 7 days / 4 weeks before the first one), and
 ///     a quiet facade leaves only its own section empty.
 /// </summary>
 public class PatientSummaryComposerTests

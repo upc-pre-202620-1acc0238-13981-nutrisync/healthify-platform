@@ -112,7 +112,7 @@ public static class PatientMonitoringPanelResourceAssembler
             composition.ClinicalAnthropometrySeries
                 .Select(PatientRecordResourceAssembler.ToResource).ToList(),
             composition.SelfWeighInTrend.Select(PatientRecordResourceAssembler.ToResource).ToList(),
-            // RM-3: the consistency index left the panel (Patient First Always); the field stays, always null.
+            // The consistency index left the panel (Patient First Always); the field stays, always null.
             null,
             composition.Week is null
                 ? null
@@ -166,7 +166,7 @@ public static class PatientMonitoringPanelResourceAssembler
     }
 }
 
-/// <summary>RM-2. Turns the composed patient summary into what the endpoint returns.</summary>
+/// <summary>Turns the composed patient summary into what the endpoint returns.</summary>
 public static class PatientSummaryResourceAssembler
 {
     public static PatientSummaryResource ToResource(PatientSummaryComposition composition)
@@ -198,7 +198,7 @@ public static class PatientSummaryResourceAssembler
     }
 }
 
-/// <summary>RM-1. Turns one composed roster entry into what the endpoint returns.</summary>
+/// <summary>Turns one composed roster entry into what the endpoint returns.</summary>
 public static class PatientRosterItemResourceAssembler
 {
     public static PatientRosterItemResource ToResource(PatientRosterEntry entry)
@@ -219,7 +219,7 @@ public static class PatientRosterItemResourceAssembler
     }
 }
 
-/// <summary>RM-5. PT25 "Mis consultas". The label is a code; the app writes it in es/en.</summary>
+/// <summary>The patient's consultations screen. The label is a code; the app writes it in es/en.</summary>
 public static class PatientConsultationsOverviewResourceAssembler
 {
     public static PatientConsultationsOverviewResource ToResource(PatientConsultationsComposition composition)
