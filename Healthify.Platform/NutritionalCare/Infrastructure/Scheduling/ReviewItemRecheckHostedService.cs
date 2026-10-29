@@ -4,12 +4,12 @@ using Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Scheduling;
 
 /// <summary>
-///     NC-10 (DECISIÓN §12-#12). Background worker of the scheduled rechecks: every 12 hours
+///     Background worker of the scheduled rechecks: every 12 hours
 ///     (<c>Scheduling:ReviewItemRecheckIntervalHours</c>) it opens a <c>ScheduledRecheck</c> review item for each
 ///     adjustment whose <c>ResolvedAt + RecheckAfterDays</c> arrived.
 /// </summary>
 /// <remarks>
-///     "Las señales llegan a una bandeja donde decide una persona": the recheck is one more item in the inbox. It
+///     Signals reach an inbox where a person decides: the recheck is one more item in the inbox. It
 ///     resolves the review item command service only and can never modify a plan.
 ///     Guards, as the other workers: the cycle in try/catch, a scope of its own, the stopping token propagated, and an
 ///     idempotent cycle (an issued recheck is marked and never opened again).

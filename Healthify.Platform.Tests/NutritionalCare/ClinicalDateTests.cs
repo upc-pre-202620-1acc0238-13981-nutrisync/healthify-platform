@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-3. The clinical date is the practice's (NutritionalCare:ClinicalTimeZone, default America/Lima,
+///     The clinical date is the practice's (NutritionalCare:ClinicalTimeZone, default America/Lima,
 ///     UTC-5 without daylight saving time), not UTC's: it decides ages and consultation dates.
 /// </summary>
 public class ClinicalDateTests

@@ -7,7 +7,7 @@ public interface IPatientBaselineRepository : IBaseRepository<PatientBaseline>
 {
     Task<PatientBaseline?> FindByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
 
-    /// <summary>RM-1. The baselines of these patients, in one query.</summary>
+    /// <summary>The baselines of these patients, in one query.</summary>
     Task<IReadOnlyList<PatientBaseline>> ListByPatientIdsAsync(IReadOnlyCollection<int> patientIds,
         CancellationToken cancellationToken = default);
 }

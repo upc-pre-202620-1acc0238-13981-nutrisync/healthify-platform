@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Healthify.Platform.Tests.TestSupport;
 
-/// <summary>X-3. Readers over the problem responses of the action result assemblers.</summary>
+/// <summary>Readers over the problem responses of the action result assemblers.</summary>
 public static class ProblemResponses
 {
     /// <summary>A localizer that answers every key with the key itself, so a test can see which text was picked.</summary>

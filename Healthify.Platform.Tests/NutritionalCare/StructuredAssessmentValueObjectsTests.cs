@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-3. Invariants of the structured assessment of EV-2: activity level, eating habits,
+///     Invariants of the structured assessment of step 1: activity level, eating habits,
 ///     biochemistry, the protocol checklist, the plausibility ranges and the body mass index.
 /// </summary>
 public class StructuredAssessmentValueObjectsTests
@@ -125,7 +125,7 @@ public class StructuredAssessmentValueObjectsTests
     [Fact]
     public void Bmi_is_weight_over_height_squared_with_one_decimal()
     {
-        // EV-2: 74.2 kg and 168 cm show "IMC calculado 26.3 kg/m²".
+        // 74.2 kg and 168 cm show "calculated BMI 26.3 kg/m²".
         var bmi = new BodyMassIndex(74.2m, 168m);
 
         Assert.Equal(26.3m, bmi.Value);

@@ -17,8 +17,7 @@ internal sealed record ValidatedTargetParameters(
     decimal FatPercentOfEnergy);
 
 /// <summary>
-///     Subflow 3.3 - the arithmetic of Propose Targets, shared by the stand-alone endpoint and step 3 of
-///     the guided consultation (NC-5), so both produce exactly the same numbers from the same parameters.
+///     Subflow 3.3 - the arithmetic of Propose Targets for step 3 of the guided consultation.
 /// </summary>
 internal static class TargetCalculation
 {

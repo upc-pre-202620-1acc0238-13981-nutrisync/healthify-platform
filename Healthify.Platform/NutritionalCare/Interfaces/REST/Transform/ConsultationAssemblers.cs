@@ -9,7 +9,7 @@ using Healthify.Platform.NutritionalCare.Interfaces.REST.Resources;
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Transform;
 
 // ---------------------------------------------------------------------------------------------
-// NC-2. Resource to Command / Query
+// Resource to Command / Query
 // ---------------------------------------------------------------------------------------------
 
 public static class ConsultationCommandAssembler
@@ -96,7 +96,7 @@ public static class ConsultationQueryAssembler
 }
 
 // ---------------------------------------------------------------------------------------------
-// NC-2. Domain to Resource
+// Domain to Resource
 // ---------------------------------------------------------------------------------------------
 
 public static class ConsultationResourceAssembler
@@ -127,7 +127,7 @@ public static class ConsultationResourceAssembler
             consultation.ScheduledFollowUpId);
     }
 
-    /// <summary>MA-4. The check in as Monitoring published it through its ACL.</summary>
+    /// <summary>The check in as Monitoring published it through its ACL.</summary>
     private static ConsultationPatientCheckInResource ToCheckIn(PreVisitCheckInItem checkIn)
     {
         return new ConsultationPatientCheckInResource(checkIn.FollowUpId, checkIn.Feeling, checkIn.Difficulties,

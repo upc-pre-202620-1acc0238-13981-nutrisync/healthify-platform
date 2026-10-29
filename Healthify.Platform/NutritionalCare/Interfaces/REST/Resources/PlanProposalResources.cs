@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Resources;
 
 /// <summary>
-///     NC-10 - PR14.IA "Plan propuesto por IA". Professional information: the patient reads only the message, and only
+///     The AI plan proposal of a review item. Professional information: the patient reads only the message, and only
 ///     once a practitioner assigns the plan.
 /// </summary>
 public record PlanAdjustmentProposalResource(
@@ -30,7 +30,7 @@ public record PlanAdjustmentProposalResource(
     /// <summary>The review item it belongs to.</summary>
     public int ReviewItemId { get; init; } = ReviewItemId;
 
-    /// <summary>"Ajustar la energía y reforzar las cenas".</summary>
+    /// <summary>A short title, such as "Adjust the energy and strengthen dinners".</summary>
     public string Title { get; init; } = Title;
 
     /// <summary>Energy of the version in force when the proposal is read ("1 796 →"), or null when there is none.</summary>
@@ -48,19 +48,19 @@ public record PlanAdjustmentProposalResource(
     /// <summary>Proposed daily fat, in grams.</summary>
     public decimal ProposedFatG { get; init; } = ProposedFatG;
 
-    /// <summary>"Nueva indicación": guideline catalog codes (the client translates them).</summary>
+    /// <summary>New guidelines: guideline catalog codes (the client translates them).</summary>
     public IReadOnlyList<string> AddedGuidelines { get; init; } = AddedGuidelines;
 
     /// <summary>Guideline codes of the version in force the proposal removes.</summary>
     public IReadOnlyList<string> RemovedGuidelines { get; init; } = RemovedGuidelines;
 
-    /// <summary>"Mensaje para Ana". Editable in PR14.IA-A.</summary>
+    /// <summary>The message for the patient. Editable before assigning the plan.</summary>
     public string PatientMessage { get; init; } = PatientMessage;
 
-    /// <summary>"Seguimiento: Revisar de nuevo en 7 días".</summary>
+    /// <summary>Follow-up: review again in N days.</summary>
     public int RecheckAfterDays { get; init; } = RecheckAfterDays;
 
-    /// <summary>"Por qué".</summary>
+    /// <summary>Why the change is proposed.</summary>
     public string Rationale { get; init; } = Rationale;
 
     /// <summary>When it was generated.</summary>
@@ -73,19 +73,19 @@ public record PlanAdjustmentProposalResource(
     public int? AssignedPlanVersion { get; init; } = AssignedPlanVersion;
 
     /// <summary>
-    ///     X-2. es or en: the language of <c>title</c> and <c>rationale</c> (the practitioner's when it was generated).
-    ///     Null for proposals generated before X-2.
+    ///     Es or en: the language of <c>title</c> and <c>rationale</c> (the practitioner's when it was generated).
+    ///     Null for proposals generated before languages were recorded.
     /// </summary>
     public string? PractitionerLanguage { get; init; } = PractitionerLanguage;
 
-    /// <summary>X-2. es or en: the language of <c>patientMessage</c> (the patient's). Null before X-2.</summary>
+    /// <summary>Es or en: the language of <c>patientMessage</c> (the patient's). Null on older proposals.</summary>
     public string? PatientLanguage { get; init; } = PatientLanguage;
 }
 
 /// <summary>
-///     NC-10 - Payload of <c>POST /review-items/{id}/plan-proposal/acceptance</c>: <c>{ asIs: true }</c> (PR14.IA
-///     "Resolver"), or <c>{ asIs: false, energyKcal, proteinG, carbG, fatG, guidelines[], patientMessage }</c>
-///     (PR14.IA-A "Asignar plan ajustado").
+///     Payload of <c>POST /review-items/{id}/plan-proposal/acceptance</c>: <c>{ asIs: true }</c> (assign as
+///     is), or <c>{ asIs: false, energyKcal, proteinG, carbG, fatG, guidelines[], patientMessage }</c>
+///     (assign the adjusted plan).
 /// </summary>
 public record AcceptPlanProposalResource(
     bool AsIs,
@@ -120,10 +120,10 @@ public record AcceptPlanProposalResource(
     public string? PatientMessage { get; init; } = PatientMessage;
 }
 
-/// <summary>NC-10 - What an accepted proposal leaves: <c>{ reviewItem, planVersion }</c>.</summary>
+/// <summary>What an accepted proposal leaves: <c>{ reviewItem, planVersion }</c>.</summary>
 public record PlanProposalAcceptanceResource(ReviewItemResource ReviewItem, NutritionPlanResource PlanVersion)
 {
-    /// <summary>The item, resolved: "Plan v4 asignado (propuesta IA aceptada tal cual)".</summary>
+    /// <summary>The item, resolved: "Plan v4 assigned (AI proposal accepted as is)".</summary>
     public ReviewItemResource ReviewItem { get; init; } = ReviewItem;
 
     /// <summary>The version now in force, already published to the patient.</summary>

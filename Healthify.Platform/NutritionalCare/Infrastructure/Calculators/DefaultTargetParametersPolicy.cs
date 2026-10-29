@@ -6,14 +6,14 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Calculators;
 
 /// <summary>
-///     NC-5. Reads <c>NutritionalCare:DefaultTargetParameters</c> and falls back, value by value, to the
+///     Reads <c>NutritionalCare:DefaultTargetParameters</c> and falls back, value by value, to the
 ///     defaults in code when a key is missing or invalid: Mifflin-St Jeor, actual weight, a fixed deficit of
 ///     500 kcal, 1.6 g of protein per kg and 30 % of the energy from fat.
 /// </summary>
 /// <remarks>
-///     NOTE: the MD writes the deficit kind as "Kcal"; the value object calls it <c>FixedKcal</c>, which is
+///     NOTE: the design writes the deficit kind as "Kcal"; the value object calls it <c>FixedKcal</c>, which is
 ///     what is configured. The reference weight of the defaults is always the measured weight: an ideal or
-///     adjusted weight is a number the practitioner gives through "Cambiar parámetros".
+///     adjusted weight is a number the practitioner gives when changing the parameters.
 /// </remarks>
 public class DefaultTargetParametersPolicy(
     IConfiguration configuration,
@@ -37,7 +37,7 @@ public class DefaultTargetParametersPolicy(
         var protein = ReadDecimal("ProteinGramsPerKg", DefaultProteinGramsPerKg, v => v is > 0m and <= 4m);
         var fat = ReadDecimal("FatPercentOfEnergy", DefaultFatPercentOfEnergy, v => v is >= 10m and <= 60m);
 
-        // DECISIÓN §12-#2: for Underweight and NormalWeight the default deficit is 0 kcal. No weight loss is
+        // For Underweight and NormalWeight the default deficit is 0 kcal. No weight loss is
         // proposed to someone with low or normal weight; to be confirmed with the nutritionist.
         if (diagnosis is { IsAtOrBelowNormalWeight: true }) deficitValue = 0m;
 

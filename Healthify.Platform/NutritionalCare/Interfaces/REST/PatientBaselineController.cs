@@ -17,8 +17,8 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST;
 
 /// <summary>
-///     NC-1. The patient baseline: birth date, biological sex, height and medical history, recorded
-///     once (EV-1) and edited afterwards from the Summary tab or from EV-2.
+///     The patient baseline: birth date, biological sex, height and medical history, recorded
+///     once and edited afterwards from the Summary tab or from step 1 of the consultation.
 /// </summary>
 /// <remarks>
 ///     Practitioner only. The patient does not see their own medical history in the app.

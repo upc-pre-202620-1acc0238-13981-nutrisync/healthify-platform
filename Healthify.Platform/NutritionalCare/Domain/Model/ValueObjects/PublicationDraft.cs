@@ -1,12 +1,12 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-2. What the practitioner chose in EV-5 before publishing: restriction codes, guideline codes and custom
-///     guidelines, and (NC-9) the message for the patient. Kept with the consultation so "Lo que escribiste no se
-///     perdió" (EV-5.E) holds even if the app closes.
+///     What the practitioner chose in step 4 before publishing: restriction codes, guideline codes and custom
+///     guidelines, and the message for the patient. Kept with the consultation so nothing written is
+///     lost, even if the app closes.
 /// </summary>
 /// <remarks>
-///     The values were already checked against the NC-6 catalogs, and the message against
+///     The values were already checked against the closed catalogs, and the message against
 ///     <see cref="PatientFacingMessage" />, when the draft was saved.
 /// </remarks>
 public sealed record PublicationDraft
@@ -30,7 +30,7 @@ public sealed record PublicationDraft
 
     public IReadOnlyList<string> CustomGuidelines { get; }
 
-    /// <summary>NC-9. The message for the patient written in EV-5, or null.</summary>
+    /// <summary>The message for the patient written in step 4, or null.</summary>
     public string? PatientMessage { get; }
 
     public bool Equals(PublicationDraft? other)

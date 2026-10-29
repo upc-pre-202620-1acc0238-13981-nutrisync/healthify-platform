@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
 /// <summary>
-///     NC-5. "Cambiar parámetros" in EV-4: the same shape as a target proposal. Every value is optional;
+///     "Change parameters" in step 3: the same shape as a target proposal. Every value is optional;
 ///     what is left out keeps its default (<c>IDefaultTargetParametersPolicy</c>).
 /// </summary>
 /// <param name="Equation">MifflinStJeor, HarrisBenedict, FaoWhoUnu or KatchMcArdle.</param>

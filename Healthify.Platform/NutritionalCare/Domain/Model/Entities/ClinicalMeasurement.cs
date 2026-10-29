@@ -13,7 +13,7 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.Entities;
 /// </remarks>
 public class ClinicalMeasurement
 {
-    /// <summary>Plausibility ranges of the guided consultation (NC-3).</summary>
+    /// <summary>Plausibility ranges of the guided consultation.</summary>
     private const decimal MinimumWeightKg = 20m, MaximumWeightKg = 350m;
 
     private const decimal MinimumWaistCm = 40m, MaximumWaistCm = 200m;
@@ -26,7 +26,10 @@ public class ClinicalMeasurement
     {
     }
 
-    /// <summary>Stand-alone endpoint (Subflow 3.1): height and free text protocol come with the request.</summary>
+    /// <summary>
+    ///     Measurements taken before the guided consultation (Subflow 3.1): height and free text protocol
+    ///     come with the command.
+    /// </summary>
     internal ClinicalMeasurement(
         decimal weightKg,
         decimal heightCm,
@@ -50,8 +53,8 @@ public class ClinicalMeasurement
     }
 
     /// <summary>
-    ///     Guided consultation (NC-3): the height is the baseline's, taken as a snapshot so the historic
-    ///     body mass index never changes, and the protocol is the EV-2 checklist.
+    ///     Guided consultation: the height is the baseline's, taken as a snapshot so the historic
+    ///     body mass index never changes, and the protocol is the checklist.
     /// </summary>
     internal ClinicalMeasurement(
         decimal weightKg,
@@ -80,26 +83,26 @@ public class ClinicalMeasurement
     public decimal HeightCm { get; private set; }
 
     /// <summary>
-    ///     Business rule: Measurement Protocol Recorded (Subflow 3.1). Free text on the stand-alone
-    ///     endpoint; in the guided consultation, the readable summary of <see cref="ProtocolChecks" />.
+    ///     Business rule: Measurement Protocol Recorded (Subflow 3.1). Free text on measurements taken
+    ///     before the guided consultation; in it, the readable summary of <see cref="ProtocolChecks" />.
     /// </summary>
     public MeasurementProtocol Protocol { get; private set; } = null!;
 
-    /// <summary>NC-3. The EV-2 checklist, or null for measurements that only have the free text protocol.</summary>
+    /// <summary>The protocol checklist, or null for measurements that only have the free text protocol.</summary>
     public IReadOnlyList<string>? ProtocolChecks => _protocolChecks;
 
     public decimal? BodyFatPercentage { get; private set; }
     public decimal? WaistCircumferenceCm { get; private set; }
 
-    /// <summary>NC-3. kg/m², one decimal. Stored so the historic value never changes.</summary>
+    /// <summary>kg/m², one decimal. Stored so the historic value never changes.</summary>
     public decimal BmiKgM2 { get; private set; }
 
-    /// <summary>NC-3. WHO category of <see cref="BmiKgM2" />. Never leaves this bounded context.</summary>
+    /// <summary>WHO category of <see cref="BmiKgM2" />. Never leaves this bounded context.</summary>
     public string BmiCategory { get; private set; } = null!;
 
     public DateTimeOffset TakenAt { get; private set; }
 
-    /// <summary>NC-3 - Business rule: Plausible Measurement. Weight 20-350 kg, waist 40-200 cm, fat 3-70 %.</summary>
+    /// <summary>Business rule: Plausible Measurement. Weight 20-350 kg, waist 40-200 cm, fat 3-70 %.</summary>
     public static void EnsurePlausible(decimal weightKg, decimal? waistCm, decimal? bodyFatPercentage)
     {
         if (weightKg is < MinimumWeightKg or > MaximumWeightKg)

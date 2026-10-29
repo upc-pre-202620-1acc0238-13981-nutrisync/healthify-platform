@@ -92,7 +92,7 @@ public class NutritionPlanQueryService(INutritionPlanRepository repository) : IN
         {
             var plan = published[i];
             var targets = plan.PrescribedTargets!;
-            // DECISIÓN NC-8: versions published before NC-8 have no stored summary; it is calculated here with the
+            // Versions published before change summaries were stored have no summary; it is calculated here with the
             // same domain service, on read and without writing it, so their rows are not rewritten.
             var changes = plan.ChangesFromPrevious ?? PlanVersionDiff.Compare(i == 0 ? null : published[i - 1], plan);
             versions.Add(new PatientPlanVersion(plan.Version, plan.PublishedAt!.Value, plan.IsActive,
@@ -138,7 +138,7 @@ public class ReviewItemQueryService(
         return item is null ? null : (await WithNamesAsync([item], cancellationToken))[0];
     }
 
-    /// <summary>NC-11/IAM-1: the names in one read for all the items. The facade degrades to an empty map.</summary>
+    /// <summary>The names in one read for all the items. The facade degrades to an empty map.</summary>
     private async Task<IReadOnlyList<ReviewInboxEntry>> WithNamesAsync(IReadOnlyList<ReviewItem> items,
         CancellationToken cancellationToken)
     {
@@ -238,14 +238,14 @@ public class ConsultationQueryService(
             ? await planRepository.FindByIdAsync(planId, cancellationToken)
             : null;
 
-        // NC-6: while the draft waits for EV-5, the practitioner sees the legacy restrictions of the version in
+        // While the draft waits for step 4, the practitioner sees the legacy restrictions of the version in
         // force to map them to a code.
         IReadOnlyList<string> legacy = [];
         if (consultation.IsInProgress && plan is not null)
             legacy = (await planRepository.FindActiveByPatientIdAsync(consultation.PatientId, cancellationToken))
                 ?.LegacyRestrictions ?? [];
 
-        // MA-4. EV-2 "Antes de la consulta, … contó": the check in of the visit still open between this patient and
+        // The pre-visit check in shown in step 1: the check in of the visit still open between this patient and
         // this practitioner. Only while the consultation is in progress: once published, that visit is completed
         // and its check in belongs to history. The facade degrades to null.
         var checkIn = consultation.IsInProgress
@@ -263,7 +263,7 @@ public class ConsultationQueryService(
         if (consultation?.DiagnosisId is null) return [];
 
         var diagnosis = await diagnosisRepository.FindByIdAsync(consultation.DiagnosisId.Value, cancellationToken);
-        // IA-7: the AI suggestion is ConsultationAiCommandService; this table is its fallback.
+        // The AI suggestion is ConsultationAiCommandService; this table is its fallback.
         return diagnosis?.Code is null ? [] : defaultGuidelines.For(diagnosis.Code);
     }
 
@@ -277,8 +277,8 @@ public class ConsultationQueryService(
         var measurement = assessment?.LatestMeasurement;
         if (measurement is null) return null;
 
-        // NC-4 fallback: the WHO category of the body mass index of step 1, with a rationale written from the
-        // same measurement. EV-3 is never left empty. IA-6 (the AI suggestion) is ConsultationAiCommandService,
+        // The fallback: the WHO category of the body mass index of step 1, with a rationale written from the
+        // same measurement. The suggestion card is never left empty. The AI suggestion is ConsultationAiCommandService,
         // which answers this same suggestion whenever the AI does not.
         var code = DiagnosisCode.FromBodyMassIndex(measurement.BmiKgM2);
         var rationale = ClinicalRationale.FromMeasurement(measurement.BmiKgM2, measurement.WaistCircumferenceCm,

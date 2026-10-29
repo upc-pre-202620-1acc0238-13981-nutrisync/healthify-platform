@@ -45,7 +45,7 @@ public static class ConsultationScenario
         return Identity.Assign(diagnosis, new DiagnosisId(diagnosisId));
     }
 
-    /// <summary>NC-7. The diagnosis of step 2, pending until the consultation publishes its plan.</summary>
+    /// <summary>The diagnosis of step 2, pending until the consultation publishes its plan.</summary>
     public static NutritionalDiagnosis PendingDiagnosis(int diagnosisId, NutritionalAssessment assessment,
         string code, int consultationId)
     {
@@ -55,7 +55,7 @@ public static class ConsultationScenario
         return Identity.Assign(diagnosis, new DiagnosisId(diagnosisId));
     }
 
-    /// <summary>NC-7. A consultation with steps 1 to 3 saved: the next step is the publication.</summary>
+    /// <summary>A consultation with steps 1 to 3 saved: the next step is the publication.</summary>
     public static Consultation AtPublication(int consultationId, int patientId, int practitionerId, int assessmentId,
         int diagnosisId, int planId)
     {

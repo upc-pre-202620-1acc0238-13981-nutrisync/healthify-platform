@@ -21,7 +21,7 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     X-2. Text the system generates is stored as a code with its parameters, for the client to word in the reader's
+///     Text the system generates is stored as a code with its parameters, for the client to word in the reader's
 ///     language, and the old sentence stays as the legacy fallback; text a person writes is kept as written; text of
 ///     the AI is generated in the language of whoever reads it. Here: the change reason of a plan version
 ///     (NewConsultation, SignalAdjustment, Custom), the structured evidence of every signal type and the two languages
@@ -221,7 +221,7 @@ public class GeneratedTextLanguageTests
         foreach (var evidence in samples)
             Assert.Equal(evidence,
                 ReviewItemEvidenceJsonConverter.Deserialize(ReviewItemEvidenceJsonConverter.Serialize(evidence)));
-        // Rows written before X-2 read the same.
+        // Rows written by older code read the same.
         Assert.Equal(new ReviewItemEvidence(-40m, 5, 9, "Below"), ReviewItemEvidenceJsonConverter.Deserialize(
             """{"averagePercentFromTarget":-40,"deviatedDays":5,"loggedDaysConsidered":9,"direction":"Below"}"""));
     }

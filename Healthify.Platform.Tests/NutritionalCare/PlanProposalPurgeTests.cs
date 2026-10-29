@@ -16,10 +16,10 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     IA-8. When the patient's AI processing ends (consent withdrawn, or the link ended or discharge, which publish
+///     When the patient's AI processing ends (consent withdrawn, or the link ended or discharge, which publish
 ///     the same <see cref="AiProcessingConsentChanged" /> with Granted = false), the AI plan proposals no practitioner
 ///     accepted are deleted. Accepted ones produced a version of the plan and stay as clinical record. The review
-///     items are untouched, and PR14 keeps working without a proposal. Real services over in-memory repositories;
+///     items are untouched, and the review keeps working without a proposal. Real services over in-memory repositories;
 ///     <see cref="PlanProposalAcceptanceMySqlTests" /> checks that the rows really go away in MySQL.
 /// </summary>
 public class PlanProposalPurgeTests
@@ -50,7 +50,7 @@ public class PlanProposalPurgeTests
         Assert.Same(item, Assert.Single(_care.ReviewItemRows));
         Assert.Equal(before, (item.State.Value, item.Evidence, item.EvidenceData, item.CreatedAt));
 
-        // PR14 without AI: no proposal and none on the way (404), and the practitioner resolves as before.
+        // The review without AI: no proposal and none on the way (404), and the practitioner resolves as before.
         var lookup = await _care.ReviewItemQueries.Handle(new GetPlanProposalByReviewItemIdQuery(item.Id.Value));
         Assert.Null(lookup!.ReviewItem.Proposal);
         Assert.False(lookup.IsGenerating);
@@ -86,7 +86,7 @@ public class PlanProposalPurgeTests
     [Fact]
     public async Task A_dismissed_proposal_is_deleted_and_the_resolution_stays()
     {
-        // DECISIÓN IA-8: "no aceptadas" includes the dismissed ones.
+        // "Unaccepted" includes the dismissed ones.
         var plan = await PublishedPlanAsync();
         var item = await ItemWithProposalAsync(plan);
         await _care.ReviewItems.Handle(new ResolveReviewItemCommand(item.Id.Value, PractitionerId, false, "Sin cambios"));

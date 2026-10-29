@@ -25,7 +25,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     MA-2. The agenda of Monitoring with the real command and query services over an in-memory repository, the
+///     The agenda of Monitoring with the real command and query services over an in-memory repository, the
 ///     policy on Consultation Completed and the missed-visit worker, all wired as in production.
 /// </summary>
 public sealed class InMemoryScheduledFollowUps
@@ -44,17 +44,17 @@ public sealed class InMemoryScheduledFollowUps
         CheckInQueries = new PreVisitCheckInQueryService(CheckInRepository, Repository, Clock);
     }
 
-    /// <summary>MA-4. The clock of the check in services; tests move it to cross the hour of a visit.</summary>
+    /// <summary>The clock of the check in services; tests move it to cross the hour of a visit.</summary>
     public MutableTimeProvider Clock { get; } = new(DateTimeOffset.UtcNow);
 
-    /// <summary>MA-4. The stored check ins.</summary>
+    /// <summary>The stored check ins.</summary>
     public List<PreVisitCheckIn> CheckIns { get; } = [];
 
     public IPreVisitCheckInRepository CheckInRepository { get; }
     public IPreVisitCheckInCommandService CheckInCommands { get; }
     public IPreVisitCheckInQueryService CheckInQueries { get; }
 
-    /// <summary>MA-4. The Monitoring facade over these services, as other contexts read it.</summary>
+    /// <summary>The Monitoring facade over these services, as other contexts read it.</summary>
     public MonitoringContextFacade Facade()
     {
         return new MonitoringContextFacade(Substitute.For<IEvaluationWindowQueryService>(),
@@ -297,7 +297,7 @@ public sealed class InMemoryScheduledFollowUps
         }
     }
 
-    /// <summary>MA-4. One check in per visit, as the unique index enforces.</summary>
+    /// <summary>One check in per visit, as the unique index enforces.</summary>
     private sealed class CheckInRepositoryInMemory(List<PreVisitCheckIn> rows) : IPreVisitCheckInRepository
     {
         public Task AddAsync(PreVisitCheckIn entity, CancellationToken cancellationToken = default)

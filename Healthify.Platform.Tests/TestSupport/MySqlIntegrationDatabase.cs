@@ -90,7 +90,7 @@ public sealed class MySqlIntegrationDatabase : IAsyncDisposable
         services.AddScoped<IConsultationCommandService, ConsultationCommandService>();
         services.AddScoped<INutritionPlanCommandService, NutritionPlanCommandService>();
         services.AddScoped<IActiveTargetsCacheCommandService, ActiveTargetsCacheCommandService>();
-        // NC-10: the review inbox and the acceptance of a plan proposal.
+        // The review inbox and the acceptance of a plan proposal.
         services.AddScoped<IReviewItemRepository, ReviewItemRepository>();
         services.AddSingleton(Substitute.For<IMonitoringContextFacade>());
         services.AddSingleton(Substitute.For<IIntakeContextFacade>());

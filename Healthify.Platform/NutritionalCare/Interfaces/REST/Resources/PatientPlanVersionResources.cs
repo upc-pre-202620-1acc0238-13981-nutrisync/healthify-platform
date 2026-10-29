@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Resources;
 
 /// <summary>
-///     NC-8 - One version of the plan, for the patient (PT4 "Plan versión 3 · vigente", PT4.1).
+///     One version of the plan, for the patient's plan history and its detail.
 /// </summary>
 /// <remarks>
 ///     A resource of its own, separate from <see cref="NutritionPlanResource" />: it carries no calculation basis,
@@ -49,17 +49,17 @@ public record PatientPlanVersionResource(
     /// <summary>Restriction codes (LactoseFree, GlutenFree, Vegan…).</summary>
     public IReadOnlyList<string> Restrictions { get; init; } = Restrictions;
 
-    /// <summary>"Qué cambió en esta versión". Empty for the first version.</summary>
+    /// <summary>"What changed in this version". Empty for the first version.</summary>
     public IReadOnlyList<PlanChangeResource> ChangesFromPrevious { get; init; } = ChangesFromPrevious;
 
-    /// <summary>NC-9. The practitioner's message for this version, or null.</summary>
+    /// <summary>The practitioner's message for this version, or null.</summary>
     public string? PatientMessage { get; init; } = PatientMessage;
 
-    /// <summary>NC-6. Free text restrictions written before the closed list. Show them as written.</summary>
+    /// <summary>Free text restrictions written before the closed list. Show them as written.</summary>
     public IReadOnlyList<string> LegacyRestrictions { get; init; } = LegacyRestrictions ?? [];
 }
 
-/// <summary>NC-8. One line of "Qué cambió en esta versión"; the client writes the sentence in es/en.</summary>
+/// <summary>One line of "What changed in this version"; the client writes the sentence in es/en.</summary>
 public record PlanChangeResource(string Type, string? Code, string? Custom, string? Macro, decimal? From, decimal? To)
 {
     /// <summary>

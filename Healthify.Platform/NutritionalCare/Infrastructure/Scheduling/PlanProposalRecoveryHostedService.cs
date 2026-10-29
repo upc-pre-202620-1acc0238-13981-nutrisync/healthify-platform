@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Scheduling;
 
 /// <summary>
-///     NC-10. Recovery of the plan proposal queue: at start-up and every
+///     Recovery of the plan proposal queue: at start-up and every
 ///     <c>Scheduling:PlanProposalRecoveryIntervalMinutes</c> (30) it queues again the open sustained deviations of the
 ///     last <c>NutritionalCare:PlanProposalRecoveryHours</c> (72) without a proposal and with the patient's AI consent.
 /// </summary>

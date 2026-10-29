@@ -44,8 +44,9 @@ public class OnAlertEscalatedToPractitionerHandler(
     }
 
     /// <summary>
-    ///     X-2. The evidence as numbers too, like NC-11 for a sustained deviation, so the client words it in the
-    ///     practitioner's language. Dates are days of the practice's calendar. Null when the producer predates X-2 or
+    ///     The evidence as numbers too, as for a sustained deviation, so the client words it in the
+    ///     practitioner's language. Dates are days of the practice's calendar. Null when the producer predates
+    ///     localized evidence or
     ///     the numbers do not hold together: the English text evidence still opens the item.
     /// </summary>
     private static ReviewItemEvidenceDto? EvidenceDataOf(AlertEscalatedToPractitioner notification,

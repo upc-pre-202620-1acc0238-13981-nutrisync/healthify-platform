@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
 /// <summary>
-///     NC-5 - Step 3 of the consultation (EV-4): "Aceptar metas" or "Escribir mis propios valores" on the
+///     Step 3 of the consultation: "Accept targets" or "Write my own values" on the
 ///     draft plan version of the consultation.
 /// </summary>
 /// <param name="ConsultationId">The consultation in progress.</param>

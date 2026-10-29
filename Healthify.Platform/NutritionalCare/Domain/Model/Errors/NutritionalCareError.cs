@@ -82,99 +82,99 @@ public enum NutritionalCareError
     /// <summary>Anthropometry is missing, so no equation can run.</summary>
     ClinicalMeasurementRequired,
 
-    /// <summary>NC-1. The patient has no baseline yet; PAC-0 shows it as empty.</summary>
+    /// <summary>The patient has no baseline yet; the patient summary shows it as empty.</summary>
     BaselineNotFound,
 
-    /// <summary>Rule: One Baseline Per Patient (NC-1).</summary>
+    /// <summary>Rule: One Baseline Per Patient.</summary>
     BaselineAlreadyRecorded,
 
-    /// <summary>Rule: Plausible Birth Date (NC-1), between 1 and 120 years before today.</summary>
+    /// <summary>Rule: Plausible Birth Date, between 1 and 120 years before today.</summary>
     InvalidBirthDate,
 
-    /// <summary>NC-1. Height outside 50 to 250 cm.</summary>
+    /// <summary>Height outside 50 to 250 cm.</summary>
     InvalidHeight,
 
-    /// <summary>Rule: Closed Medical Condition List (NC-1).</summary>
+    /// <summary>Rule: Closed Medical Condition List.</summary>
     UnknownMedicalCondition,
 
-    /// <summary>Only Female and Male are recorded (NC-1).</summary>
+    /// <summary>Only Female and Male are recorded.</summary>
     InvalidBiologicalSex,
 
-    /// <summary>Rule: Closed Activity Level List (NC-3).</summary>
+    /// <summary>Rule: Closed Activity Level List.</summary>
     InvalidActivityLevel,
 
-    /// <summary>Rule: Measurement Protocol Recorded (3.1), as the EV-2 checklist: at least one check (NC-3).</summary>
+    /// <summary>Rule: Measurement Protocol Recorded (3.1), as the checklist: at least one check.</summary>
     ProtocolChecklistEmpty,
 
-    /// <summary>Rule: Closed Protocol Checklist (NC-3). A check that is not on the EV-2 list.</summary>
+    /// <summary>Rule: Closed Protocol Checklist. A check that is not on the list.</summary>
     UnknownProtocolCheck,
 
-    /// <summary>Rule: Plausible Measurement (NC-3). Weight 20-350 kg, waist 40-200 cm, body fat 3-70 %.</summary>
+    /// <summary>Rule: Plausible Measurement. Weight 20-350 kg, waist 40-200 cm, body fat 3-70 %.</summary>
     ImplausibleMeasurement,
 
-    /// <summary>Rule: Plausible Biochemistry (NC-3).</summary>
+    /// <summary>Rule: Plausible Biochemistry.</summary>
     ImplausibleBiochemistry,
 
-    /// <summary>NC-3. Meals per day, water or meals out outside their ranges.</summary>
+    /// <summary>Meals per day, water or meals out outside their ranges.</summary>
     InvalidEatingHabits,
 
-    /// <summary>Rule: Baseline Required (NC-2/NC-3). A consultation reads age, sex and height from it.</summary>
+    /// <summary>Rule: Baseline Required. A consultation reads age, sex and height from it.</summary>
     BaselineRequired,
 
     ConsultationNotFound,
 
-    /// <summary>Rule: One Consultation In Progress Per Patient (NC-2).</summary>
+    /// <summary>Rule: One Consultation In Progress Per Patient.</summary>
     ConsultationAlreadyInProgress,
 
-    /// <summary>The consultation was completed or abandoned; it no longer moves (NC-2).</summary>
+    /// <summary>The consultation was completed or abandoned; it no longer moves.</summary>
     ConsultationNotInProgress,
 
-    /// <summary>Rule: Steps In Order (NC-2). No diagnosis without the measurement, no targets without the diagnosis.</summary>
+    /// <summary>Rule: Steps In Order. No diagnosis without the measurement, no targets without the diagnosis.</summary>
     ConsultationStepOutOfOrder,
 
-    /// <summary>Rule: Closed Diagnosis Code List (NC-4).</summary>
+    /// <summary>Rule: Closed Diagnosis Code List.</summary>
     UnknownDiagnosisCode,
 
-    /// <summary>Rule: Accepted Suggestion Is Traceable (NC-4). Unknown source, or an accepted AI suggestion without its generation or rationale.</summary>
+    /// <summary>Rule: Accepted Suggestion Is Traceable. Unknown source, or an accepted AI suggestion without its generation or rationale.</summary>
     InvalidDiagnosisSource,
 
-    /// <summary>Rule: Closed Restriction List (NC-6).</summary>
+    /// <summary>Rule: Closed Restriction List.</summary>
     UnknownRestriction,
 
-    /// <summary>Rule: Closed Guideline Catalog (NC-6). A code that is not in the catalog.</summary>
+    /// <summary>Rule: Closed Guideline Catalog. A code that is not in the catalog.</summary>
     UnknownGuideline,
 
-    /// <summary>NC-6. A custom guideline ("Otra indicación") outside 3 to 140 characters.</summary>
+    /// <summary>A custom guideline outside 3 to 140 characters.</summary>
     InvalidCustomGuideline,
 
-    /// <summary>Rule: At Most Five Custom Guidelines Per Version (NC-6).</summary>
+    /// <summary>Rule: At Most Five Custom Guidelines Per Version.</summary>
     TooManyCustomGuidelines,
 
-    /// <summary>NC-2. The Idempotency-Key header must hold 1 to 64 visible ASCII characters.</summary>
+    /// <summary>The Idempotency-Key header must hold 1 to 64 visible ASCII characters.</summary>
     InvalidIdempotencyKey,
 
-    /// <summary>NC-2. The state filter is not InProgress, Completed or Abandoned.</summary>
+    /// <summary>The state filter is not InProgress, Completed or Abandoned.</summary>
     InvalidConsultationState,
 
-    /// <summary>NC-11. The state filter of the review inbox is not Open or Resolved.</summary>
+    /// <summary>The state filter of the review inbox is not Open or Resolved.</summary>
     InvalidReviewItemState,
 
-    /// <summary>Rule: Patient Facing Message (NC-9). The message for the patient has more than 500 characters.</summary>
+    /// <summary>Rule: Patient Facing Message. The message for the patient has more than 500 characters.</summary>
     InvalidPatientMessage,
 
-    /// <summary>NC-10. The review item has no AI plan proposal (the AI is off, failed, or it was not generated).</summary>
+    /// <summary>The review item has no AI plan proposal (the AI is off, failed, or it was not generated).</summary>
     PlanProposalNotFound,
 
-    /// <summary>NC-10. The proposal was already accepted or dismissed, or its item resolved.</summary>
+    /// <summary>The proposal was already accepted or dismissed, or its item resolved.</summary>
     PlanProposalAlreadyDecided,
 
-    /// <summary>Rule: Calorie Floor (NC-10). The edited energy is below the floor, or a target is not positive.</summary>
+    /// <summary>Rule: Calorie Floor. The edited energy is below the floor, or a target is not positive.</summary>
     PlanProposalOutOfSafetyBounds,
 
-    /// <summary>Rule: Proposal Only For A Sustained Deviation (NC-10, DECISIÓN §12-#11).</summary>
+    /// <summary>Rule: Proposal Only For A Sustained Deviation.</summary>
     ReviewItemNotSustainedDeviation,
 
-    /// <summary>NC-10. Accepting with edits (asIs false) needs the edited targets and guidelines.</summary>
+    /// <summary>Accepting with edits (asIs false) needs the edited targets and guidelines.</summary>
     PlanProposalEditsRequired,
 
     UnexpectedError

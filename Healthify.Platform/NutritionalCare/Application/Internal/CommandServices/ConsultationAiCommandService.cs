@@ -14,20 +14,20 @@ using Healthify.Platform.Shared.Application.Patterns;
 namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandServices;
 
 /// <summary>
-///     IA-6 - Suggest Diagnosis and IA-7 - Suggest Guidelines, inside the guided consultation.
+///     Suggest Diagnosis and Suggest Guidelines, inside the guided consultation.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
 ///     1. only a practitioner (Iam), and only the one leading the consultation, with the care link still active;
-///     2. the step the suggestion needs: the measurement of step 1 (IA-6) or the diagnosis of step 2 (IA-7);
+///     2. the step the suggestion needs: the measurement of step 1 or the diagnosis of step 2;
 ///     3. the deterministic suggestion, computed first: it is the answer whenever the AI is not;
-///     4. the generation through the shared pipeline (kill switch, the patient's AI consent, §12-#5, quota, the
+///     4. the generation through the shared pipeline (kill switch, the patient's AI consent, quota, the
 ///     provider, the validator of the function). Any failure there is logged and answered with step 3.
 ///     The input is the clinical snapshot of the assessment (index, waist, body fat, sex, age, condition codes,
 ///     activity, habits and labs): never a name, an identifier, the free-text history or anything a patient wrote.
-///     These are practitioner functions, so they may read the diagnosis (NC-4); their output never reaches the
+///     These are practitioner functions, so they may read the diagnosis; their output never reaches the
 ///     patient. Nothing is stored here: the suggestion is shown, and only what the practitioner then saves (with
-///     <c>AiGenerationId</c>, NC-4) becomes part of the record.
+///     <c>AiGenerationId</c>) becomes part of the record.
 /// </remarks>
 public class ConsultationAiCommandService(
     IConsultationRepository consultationRepository,
@@ -49,7 +49,7 @@ public class ConsultationAiCommandService(
                 cancellationToken);
             if (consultation is null) return new Result<DiagnosisSuggestion, NutritionalCareError>.Failure(error);
 
-            // 2. Business rule: Steps In Order (NC-2). No suggestion without the measurement of step 1.
+            // 2. Business rule: Steps In Order. No suggestion without the measurement of step 1.
             var assessment = consultation.AssessmentId is { } assessmentId
                 ? await assessmentRepository.FindByIdAsync(assessmentId, cancellationToken)
                 : null;
@@ -58,7 +58,7 @@ public class ConsultationAiCommandService(
                 return new Result<DiagnosisSuggestion, NutritionalCareError>.Failure(
                     NutritionalCareError.ConsultationStepOutOfOrder);
 
-            // 3. The deterministic suggestion (NC-4 fallback): EV-3 is never left empty.
+            // 3. The deterministic suggestion, the fallback: the suggestion card is never left empty.
             var bmiCategory = DiagnosisCode.FromBodyMassIndex(measurement.BmiKgM2);
             var rule = new DiagnosisSuggestion(bmiCategory.Value,
                 ClinicalRationale.FromMeasurement(measurement.BmiKgM2, measurement.WaistCircumferenceCm,
@@ -104,7 +104,7 @@ public class ConsultationAiCommandService(
                 cancellationToken);
             if (consultation is null) return new Result<GuidelineSuggestions, NutritionalCareError>.Failure(error);
 
-            // 2. Business rule: Steps In Order (NC-2). The guidelines follow the coded diagnosis of step 2.
+            // 2. Business rule: Steps In Order. The guidelines follow the coded diagnosis of step 2.
             var diagnosis = consultation.DiagnosisId is { } diagnosisId
                 ? await diagnosisRepository.FindByIdAsync(diagnosisId, cancellationToken)
                 : null;
@@ -112,7 +112,7 @@ public class ConsultationAiCommandService(
                 return new Result<GuidelineSuggestions, NutritionalCareError>.Failure(
                     NutritionalCareError.ConsultationStepOutOfOrder);
 
-            // 3. The fixed table of NC-6: cheap, deterministic and the answer whenever the AI is not.
+            // 3. The fixed default table: cheap, deterministic and the answer whenever the AI is not.
             var rule = new GuidelineSuggestions(defaultGuidelines.For(diagnosis.Code), DiagnosisSuggestion.RuleSource,
                 null);
 
@@ -141,7 +141,7 @@ public class ConsultationAiCommandService(
                 return new Result<GuidelineSuggestions, NutritionalCareError>.Success(rule);
             }
 
-            // In the order of EV-5, whatever order the model used.
+            // In the order step 4 shows them, whatever order the model used.
             var suggested = Guideline.Codes.Where(c => success.Value.Output.Suggested.Contains(c)).ToList();
             return new Result<GuidelineSuggestions, NutritionalCareError>.Success(
                 new GuidelineSuggestions(suggested, DiagnosisSuggestion.AiSource, success.Value.GenerationId));
@@ -198,7 +198,7 @@ public class ConsultationAiCommandService(
     private async Task<(Consultation? Consultation, NutritionalCareError Error)> LoadLedConsultationAsync(
         int consultationId, int practitionerId, CancellationToken cancellationToken)
     {
-        // Business rule: only a practitioner issues a diagnosis (Subflow 3.2), and only the one leading it (NC-2).
+        // Business rule: only a practitioner issues a diagnosis (Subflow 3.2), and only the one leading it.
         if (!await iamContextFacade.IsPractitioner(practitionerId, cancellationToken))
             return (null, NutritionalCareError.PractitionerOnly);
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     IN-7. The food catalog in memory, shared by several "requests" (each with its own pending changes, as each
+///     The food catalog in memory, shared by several "requests" (each with its own pending changes, as each
 ///     request has its own DbContext), with the unique index on <c>source_hash</c> enforced at commit, as MySQL does.
 ///     Reads see only what was committed. <see cref="BeforeCommit" /> lets a test hold commits to force a race.
 /// </summary>

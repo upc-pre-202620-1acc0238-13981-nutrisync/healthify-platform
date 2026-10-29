@@ -6,13 +6,13 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.Events;
 public record DailyTargets(decimal EnergyKcal, decimal ProteinG, decimal CarbG, decimal FatG);
 
 /// <summary>
-///     NC-6. One guideline of the published contract: a catalog code (the client translates it) or a custom
+///     One guideline of the published contract: a catalog code (the client translates it) or a custom
 ///     text (clinical data, never translated). Exactly one of the two is set.
 /// </summary>
 public record GuidelineItem(string? Code, string? Custom);
 
 /// <summary>
-///     NC-8. One line of "Qué cambió en esta versión": a type (GuidelineAdded, GuidelineRemoved, RestrictionAdded,
+///     One line of "what changed in this version": a type (GuidelineAdded, GuidelineRemoved, RestrictionAdded,
 ///     RestrictionRemoved, EnergyChanged, MacroChanged, NoTargetChanges) and what it is about. Only targets,
 ///     guidelines and restrictions: what the patient already receives.
 /// </summary>
@@ -32,12 +32,12 @@ public record PlanChangeItem(string Type, string? Code, string? Custom, string? 
 ///     There is no diagnosis here, no rationale, no equation, no reference weight, no activity
 ///     factor and no deficit. A patient does not need to read their diagnosis in order to log what
 ///     they ate, and exposing it would open a clinical problem this platform does not manage.
-///     NC-6 extends the contract, it does not replace it: <c>Guidelines</c> keeps the original list of
+///     The closed catalogs extend the contract, they do not replace it: <c>Guidelines</c> keeps the original list of
 ///     strings (a code, or the custom text); <c>GuidelineItems</c> says which is which; <c>Restrictions</c>
 ///     carries <c>DietaryRestriction</c> codes; <c>LegacyRestrictions</c> the free text restrictions written
 ///     before the closed list, which the patient keeps seeing.
-///     NC-8 extends it again: <c>ChangesFromPrevious</c> ("Qué cambió", null for versions published before NC-8)
-///     and <c>PatientMessage</c> (NC-9).
+///     It is extended again with <c>ChangesFromPrevious</c> (what changed, null for versions published before it)
+///     and <c>PatientMessage</c>.
 /// </remarks>
 public record ActiveTargetsUpdated(
     int PatientId,

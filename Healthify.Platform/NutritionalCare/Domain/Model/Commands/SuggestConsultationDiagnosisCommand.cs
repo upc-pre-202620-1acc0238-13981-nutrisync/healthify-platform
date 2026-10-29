@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
 /// <summary>
-///     IA-6 - Suggest the diagnosis of step 2 (EV-3 "Sugerencia de IA"). A command because it may run an AI generation,
+///     Suggest the diagnosis of step 2. A command because it may run an AI generation,
 ///     which is audited; it never changes the consultation.
 /// </summary>
 /// <param name="ConsultationId">The consultation.</param>

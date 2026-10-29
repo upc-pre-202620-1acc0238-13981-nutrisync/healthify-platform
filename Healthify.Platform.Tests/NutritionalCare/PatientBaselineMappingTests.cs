@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-1. MySql.EntityFrameworkCore reads a DATE column as DateTime and throws when asked for a
+///     MySql.EntityFrameworkCore reads a DATE column as DateTime and throws when asked for a
 ///     DateOnly (found against a real MySQL 8.4). The mapping must keep its explicit conversion.
 /// </summary>
 public class PatientBaselineMappingTests

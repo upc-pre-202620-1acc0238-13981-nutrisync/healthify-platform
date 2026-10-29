@@ -4,13 +4,13 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Aggregates;
 
 /// <summary>
-///     NC-1. The facts about the patient that do not change from one consultation to the next:
+///     The facts about the patient that do not change from one consultation to the next:
 ///     birth date, biological sex, height and medical history from a closed list.
 /// </summary>
 /// <remarks>
 ///     Recorded once and edited afterwards. The age is never stored: it is derived from the birth
 ///     date on the day it is asked for, so it updates itself on the patient's birthday.
-///     DECISIÓN §12-#13: editing the baseline never rewrites past assessments; each assessment keeps
+///     Editing the baseline never rewrites past assessments; each assessment keeps
 ///     its own snapshot of age, sex, height and conditions.
 /// </remarks>
 public partial class PatientBaseline
@@ -64,7 +64,7 @@ public partial class PatientBaseline
         return age;
     }
 
-    /// <summary>NC-1 - Edit from the Summary tab or from EV-2.</summary>
+    /// <summary>Edit from the Summary tab or from step 1 of the consultation.</summary>
     public void Update(UpdatePatientBaselineCommand command, DateOnly today)
     {
         Apply(command.BirthDate, command.BiologicalSex, command.HeightCm, command.Conditions, today);
@@ -73,7 +73,7 @@ public partial class PatientBaseline
         BirthDateEstimated = false;
     }
 
-    /// <summary>Business rule: Plausible Birth Date (NC-1). Between 1 and 120 years before today.</summary>
+    /// <summary>Business rule: Plausible Birth Date. Between 1 and 120 years before today.</summary>
     public static void EnsurePlausibleBirthDate(DateOnly birthDate, DateOnly today)
     {
         if (birthDate > today.AddYears(-MinimumAgeYears) || birthDate < today.AddYears(-MaximumAgeYears))

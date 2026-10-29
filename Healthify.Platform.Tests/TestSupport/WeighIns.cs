@@ -3,7 +3,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Tests.TestSupport;
 
-/// <summary>Self weigh-ins as EF would load them (identity assigned), for the IN-3/IN-4/IN-5 tests.</summary>
+/// <summary>Self weigh-ins as EF would load them (identity assigned), for the weigh-in tests.</summary>
 public static class WeighIns
 {
     public static SelfWeighIn Reading(int id, int patientId, DateOnly day, decimal kg, bool fasted = true,

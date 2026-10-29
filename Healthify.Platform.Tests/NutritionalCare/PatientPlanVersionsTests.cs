@@ -18,7 +18,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-8 acceptance: the patient reads their plan versions with "Qué cambió", the summary travels in
+///     Acceptance: the patient reads their plan versions with "what changed", the summary travels in
 ///     ActiveTargetsUpdated to the Intake cache, and the patient never receives the diagnosis or the calculation
 ///     basis (Diagnosis And Basis Never Leave The Context).
 /// </summary>

@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Migrations.Operations;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-6. The data migration of the free text lists (NutritionalCare_GuidelineCodes and
+///     The data migration of the free text lists (NutritionalCare_GuidelineCodes and
 ///     IntakeBodyResponse_ActiveTargetsCacheV2) and the JSON mapping that reads both shapes.
 /// </summary>
 public class GuidelineCodesMigrationTests
@@ -64,7 +64,7 @@ public class GuidelineCodesMigrationTests
 
         Assert.Equal([Guideline.FromCode("ReduceSalt"), Guideline.CustomText("Caminar 20 min")],
             GuidelineJsonConverter.Deserialize(stored));
-        // The shape before NC-6, should a row escape the data migration.
+        // The shape before the closed lists, should a row escape the data migration.
         Assert.Equal([Guideline.CustomText("Prioriza vegetales")],
             GuidelineJsonConverter.Deserialize("""["Prioriza vegetales"]"""));
         Assert.Empty(GuidelineJsonConverter.Deserialize("[]"));

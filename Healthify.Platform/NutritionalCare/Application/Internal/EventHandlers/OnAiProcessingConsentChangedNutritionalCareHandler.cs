@@ -8,17 +8,17 @@ using Healthify.Platform.Shared.Application.Patterns;
 namespace Healthify.Platform.NutritionalCare.Application.Internal.EventHandlers;
 
 /// <summary>
-///     Policy "When AI Processing Consent Withdrawn" (CR-2, §12-#14), this context's part: purge the AI suggestions
-///     it keeps for the patient (IA-6 diagnosis suggestion, IA-7 guideline suggestions, IA-8 plan adjustment
-///     proposal) that no practitioner accepted. What the practitioner accepted is the practitioner's clinical act and
+///     Policy "When AI Processing Consent Withdrawn", this context's part: purge the AI suggestions it keeps for
+///     the patient (diagnosis suggestion, guideline suggestions, plan adjustment proposal) that no practitioner
+///     accepted. What the practitioner accepted is the practitioner's clinical act and
 ///     stays.
 /// </summary>
 /// <remarks>
-///     IA-6 and IA-7 store nothing in this context: their suggestions are shown and only what the practitioner saves
-///     (a clinical act) is kept. IA-8: the proposals still Proposed or Dismissed are deleted; the accepted ones
-///     produced a version of the plan and stay; the review items are untouched (PR14 without AI). The event is also
-///     published when the link ends (any reason) or at discharge (rule «AI Processing Ends With The Link»), so this
-///     one handler covers the three cases. The practitioner functions read no AI preference (§12-#5), so there is no
+///     The diagnosis and guideline suggestions store nothing in this context: they are shown and only what the
+///     practitioner saves (a clinical act) is kept. Plan proposals still Proposed or Dismissed are deleted; the
+///     accepted ones produced a version of the plan and stay; the review items are untouched and show without AI. The event is also
+///     published when the link ends (any reason) or at discharge (rule "AI Processing Ends With The Link"), so this
+///     one handler covers the three cases. The practitioner functions read no AI preference, so there is no
 ///     handler of AI Preferences Changed here. The technical audit (<c>ai_generations</c>) is purged by Care
 ///     Relationship.
 /// </remarks>

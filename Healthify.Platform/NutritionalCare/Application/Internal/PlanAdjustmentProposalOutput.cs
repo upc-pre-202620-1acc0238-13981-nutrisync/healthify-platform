@@ -1,6 +1,6 @@
 namespace Healthify.Platform.NutritionalCare.Application.Internal;
 
-/// <summary>IA-8. What the model answers (schema of <c>plan-adjustment-proposal@n.md</c>).</summary>
+/// <summary>What the model answers (schema of <c>plan-adjustment-proposal@n.md</c>).</summary>
 public sealed record PlanAdjustmentProposalOutput(
     string Title,
     decimal EnergyKcal,

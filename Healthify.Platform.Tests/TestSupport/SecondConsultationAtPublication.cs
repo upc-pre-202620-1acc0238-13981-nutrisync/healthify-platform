@@ -13,7 +13,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     NC-7. A patient with an active diagnosis (1) and an active version (v1) from a first consultation, and a
+///     A patient with an active diagnosis (1) and an active version (v1) from a first consultation, and a
 ///     second consultation at step 4: its diagnosis (2) is pending and its draft (v2) prescribed.
 /// </summary>
 public sealed class SecondConsultationAtPublication

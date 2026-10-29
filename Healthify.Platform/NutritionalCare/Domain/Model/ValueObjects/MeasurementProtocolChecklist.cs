@@ -1,13 +1,13 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-3. The protocol of a clinical measurement as the EV-2 checklist: fasting, no shoes, light
+///     The protocol of a clinical measurement as the checklist of step 1: fasting, no shoes, light
 ///     clothing, empty bladder, same scale.
 /// </summary>
 /// <remarks>
 ///     Business rule: Measurement Protocol Recorded (Subflow 3.1), restated for the checklist: at least
 ///     one box must be ticked. It plays the role the free text <see cref="MeasurementProtocol" /> plays
-///     on the stand-alone endpoint.
+///     on measurements taken before the guided consultation.
 /// </remarks>
 public sealed record MeasurementProtocolChecklist
 {
@@ -17,7 +17,7 @@ public sealed record MeasurementProtocolChecklist
     public const string EmptyBladder = "EmptyBladder";
     public const string SameScale = "SameScale";
 
-    /// <summary>Every check, in the order EV-2 shows them. The stored list follows this order.</summary>
+    /// <summary>Every check, in the order step 1 shows them. The stored list follows this order.</summary>
     public static IReadOnlyList<string> All { get; } = [Fasting, NoShoes, LightClothing, EmptyBladder, SameScale];
 
     public MeasurementProtocolChecklist(IEnumerable<string>? checks)

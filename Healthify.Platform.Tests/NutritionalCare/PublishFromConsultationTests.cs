@@ -20,7 +20,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-7. Step 4 of the guided consultation, PublishFromConsultation: in one transaction the pending diagnosis
+///     Step 4 of the guided consultation, PublishFromConsultation: in one transaction the pending diagnosis
 ///     of the consultation replaces the active one, the prescribed draft replaces the version in force, and the
 ///     consultation closes. Never two active at once; events only after the commit.
 /// </summary>
@@ -284,21 +284,6 @@ public class PublishFromConsultationTests
 
         AssertFailure(await CreateService().Handle(Publish()), NutritionalCareError.ConsultationStepOutOfOrder);
         AssertNothingChanged();
-    }
-
-    [Fact]
-    public async Task The_stand_alone_publication_refuses_a_draft_whose_diagnosis_is_still_pending()
-    {
-        var service = new NutritionPlanCommandService(_plans, _diagnoses,
-            Substitute.For<INutritionalAssessmentRepository>(), _unitOfWork, Substitute.For<IBmrCalculator>(),
-            NullLogger<NutritionPlanCommandService>.Instance, _mediator);
-        _plans.FindActiveByPatientIdAsync(PatientId, Arg.Any<CancellationToken>()).Returns((NutritionPlan?)null);
-
-        var result = await service.Handle(new PublishNutritionPlanCommand(DraftPlanId, PractitionerId, [], []));
-
-        var failure = Assert.IsType<Result<NutritionPlan, NutritionalCareError>.Failure>(result);
-        Assert.Equal(NutritionalCareError.PlanRequiresDiagnosis, failure.Error);
-        Assert.False(_draft.IsPublished);
     }
 
     [Theory]

@@ -3,7 +3,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Application.Internal;
 
 /// <summary>
-///     NC-8. One published plan version as the patient may read it (PT4, PT4.1).
+///     One published plan version as the patient may read it.
 /// </summary>
 /// <remarks>
 ///     Business rule: Diagnosis And Basis Never Leave The Context (Subflow 3.5). Built from the aggregate on
