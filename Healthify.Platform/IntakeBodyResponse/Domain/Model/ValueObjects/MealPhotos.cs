@@ -1,11 +1,11 @@
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IN-7. The photo of a dish, as the patient sent it for recognition. Lives in memory for the length of one
+///     The photo of a dish, as the patient sent it for recognition. Lives in memory for the length of one
 ///     request and is never stored: no column, no file and no log line holds its bytes.
 /// </summary>
 /// <remarks>
-///     Business rule: Meal Photo Is JPEG Or WebP (IN-7). The format is read from the signature of the bytes, never
+///     Business rule: Meal Photo Is JPEG Or WebP. The format is read from the signature of the bytes, never
 ///     from the declared content type, so a renamed file of any other kind is refused.
 ///     <see cref="ToString" /> is overridden so the bytes are never printed.
 /// </remarks>
@@ -47,7 +47,7 @@ public sealed class MealPhoto
 }
 
 /// <summary>
-///     IN-7. Another dish the photo could show, as the AI proposed it, resolved to the local catalog when the catalog
+///     Another dish the photo could show, as the AI proposed it, resolved to the local catalog when the catalog
 ///     carries it. Up to three per analysis.
 /// </summary>
 public sealed record MealPhotoAlternative
@@ -79,7 +79,7 @@ public sealed record MealPhotoAlternative
     public int? ReferenceFoodId { get; }
 }
 
-/// <summary>IN-7. Bounds of a portion the AI may estimate from a photo (the schema says the same).</summary>
+/// <summary>Bounds of a portion the AI may estimate from a photo (the schema says the same).</summary>
 public static class MealPhotoPortion
 {
     public const decimal MinimumGrams = 5m;

@@ -23,7 +23,7 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-10. The AI plan proposal of a sustained deviation (PR14.IA): generated in the background after the item
+///     The AI plan proposal of a sustained deviation: generated in the background after the item
 ///     opens, it attaches a text to the item and never touches the plan; only the practitioner's acceptance creates
 ///     the adjusted version, supersedes the previous one and resolves the item, together. Then the scheduled recheck.
 ///     Real Nutritional Care services over in-memory repositories, real AI pipeline with a fake model.
@@ -116,7 +116,7 @@ public class PlanProposalInReviewItemTests
         Assert.Equal(2, proposal.AssignedPlanVersion);
         Assert.Equal(item.ResolvedAt!.Value.AddDays(7), item.RecheckDueAt);
 
-        // The version reached the patient through the existing fan-out, with the message (NC-9).
+        // The version reached the patient through the existing fan-out, with the message.
         var cache = Assert.Single(_care.Caches);
         Assert.Equal(2, cache.PlanVersion);
         Assert.Equal(Message, cache.PatientMessage);
@@ -295,7 +295,7 @@ public class PlanProposalInReviewItemTests
         Assert.True(ReviewItemResourceAssembler.ToResource(item).HasPlanProposal);
     }
 
-    // ---- The scheduled recheck (DECISIÓN §12-#12) ----
+    // ---- The scheduled recheck ----
 
     [Fact]
     public async Task The_recheck_opens_a_ScheduledRecheck_item_once_when_its_date_arrives()

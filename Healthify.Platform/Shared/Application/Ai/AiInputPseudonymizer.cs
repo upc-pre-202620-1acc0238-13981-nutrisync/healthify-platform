@@ -10,7 +10,7 @@ namespace Healthify.Platform.Shared.Application.Ai;
 public record PseudonymizedInput(string Json, string Hash);
 
 /// <summary>
-///     IA-0, guard 3. Minimization and pseudonymization of every input before it reaches the provider: the input
+///     Guard 3. Minimization and pseudonymization of every input before it reaches the provider: the input
 ///     never carries a name, an email, a real identifier or a photo. Each context already builds its input from
 ///     aggregates (kcal per day, adherence, counts, trend, restrictions, targets); this is the technical net under
 ///     that discipline, applied the same way to every function.

@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 namespace Healthify.Platform.Tests.Ai;
 
 /// <summary>
-///     IA-0 architecture rule: Shared, and the AI module inside it, references no bounded context (nor the ReadModels
+///     Architecture rule: Shared, and the AI module inside it, references no bounded context (nor the ReadModels
 ///     composition layer). Checked by reflection on every type under <c>Healthify.Platform.Shared</c>, compiler-made
 ///     ones included (async state machines, lambdas): base types, interfaces, fields, properties, signatures,
 ///     attributes and every type, method or field the IL of each method body touches.

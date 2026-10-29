@@ -26,7 +26,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-3, IN-4 and IN-5 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): nullable
+///     Self weigh-ins against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): nullable
 ///     protocol columns, the per-patient unique client identifier, a lost race on that index, the one-shot
 ///     recalculation and the range summary.
 /// </summary>
@@ -138,7 +138,7 @@ public class SelfWeighInMySqlTests
         var today = DateTimeOffset.UtcNow;
         await using (var context = db.NewContext())
         {
-            // Fasted on another scale: excluded before IN-3, in the line after it.
+            // Fasted on another scale: excluded before the fasted-only protocol, in the line after it.
             context.Add(Reading(today.AddDays(-14), new ProtocolCompliance(true, true, false)));
             context.Add(Reading(today.AddDays(-7), new ProtocolCompliance(true, true, true)));
             context.Add(Reading(today.AddDays(-1), new ProtocolCompliance(false, true, true)));

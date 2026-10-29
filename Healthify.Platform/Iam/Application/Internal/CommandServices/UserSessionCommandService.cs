@@ -45,7 +45,7 @@ public class UserSessionCommandService(
             if (user is null)
                 return new Result<SignInOutcome, IamError>.Failure(IamError.InvalidCredentials);
 
-            // Business rule: Lockout After Five Failed Attempts (Subflow 1.2) and Lockout Is Temporary (IAM-5)
+            // Business rule: Lockout After Five Failed Attempts (Subflow 1.2) and Lockout Is Temporary
             var now = refreshTokenService.Now();
             var lockoutDuration = lockoutPolicy.LockoutDuration();
             if (user.IsLockedOutAt(now, lockoutDuration))
@@ -69,7 +69,7 @@ public class UserSessionCommandService(
             // into the session; the session exposes no mutator for it.
             var session = user.StartSession();
 
-            // IAM-4. The session is born with a refresh token; only its hash is stored. A client that
+            // The session is born with a refresh token; only its hash is stored. A client that
             // ignores it keeps working exactly as before, with the access token alone.
             var refreshToken = refreshTokenService.Issue();
             session.RotateRefreshToken(refreshToken.Hash, refreshToken.ExpiresAt, refreshTokenService.Now());
@@ -98,20 +98,20 @@ public class UserSessionCommandService(
         }
     }
 
-    /// <summary>IAM-4 - Refresh Session.</summary>
+    /// <summary>Refresh Session.</summary>
     /// <remarks>
     ///     Same session, same role claim: a refresh issues a new access token for the session that already
     ///     exists, so Role Immutable Per Session (Subflow 1.2) still holds. Every use rotates the refresh token.
-    ///     Business rule: Refresh Retry Within Grace Is Not Reuse (IAM-4). The token just rotated away from,
+    ///     Business rule: Refresh Retry Within Grace Is Not Reuse. The token just rotated away from,
     ///     presented again within <c>TokenSettings:RefreshReuseGraceSeconds</c> while its successor is still
     ///     unused, gets the very same pair back: the successor is derived from it and the access token is issued
     ///     at the rotation instant with an identifier derived from the successor. Nothing is written.
-    ///     Business rule: Refresh Token Reuse Ends The Session (IAM-4). The rotated token outside that window, or
+    ///     Business rule: Refresh Token Reuse Ends The Session. The rotated token outside that window, or
     ///     once its successor has been used (it is then the token rotated two steps back), terminates the
     ///     session, which also invalidates whatever the copy was rotated into. Every failure is the same 401.
     ///     Concurrency: the session row is updated only if its refresh token hash is still the one read. Of two
     ///     simultaneous refreshes one rotates; the other loses the update, reads the row again and replays.
-    ///     DECISIÓN IAM-4: a token rotated more than two steps back is simply unknown: refused, session kept.
+    ///     A token rotated more than two steps back is treated as unknown: it is refused and the session is kept.
     /// </remarks>
     public async Task<Result<SignInOutcome, IamError>> Handle(RefreshSessionCommand command,
         CancellationToken cancellationToken = default)
@@ -165,11 +165,11 @@ public class UserSessionCommandService(
                     return Issued(user, session, successor.Token);
                 }
 
-                // Business rule: Refresh Retry Within Grace Is Not Reuse (IAM-4).
+                // Business rule: Refresh Retry Within Grace Is Not Reuse.
                 if (session.CanReplayRotation(tokenHash, successor.Hash, now, refreshTokenService.ReuseGrace()))
                     return Issued(user, session, successor.Token);
 
-                // Business rule: Refresh Token Reuse Ends The Session (IAM-4).
+                // Business rule: Refresh Token Reuse Ends The Session.
                 if (session.IsRotatedRefreshToken(tokenHash))
                     return await RejectAsReuseAsync(session, cancellationToken);
 
@@ -186,7 +186,7 @@ public class UserSessionCommandService(
     }
 
     /// <summary>
-    ///     IAM-4. The pair that goes with the current refresh token: the same strings every time it is built, so
+    ///     The pair that goes with the current refresh token: the same strings every time it is built, so
     ///     the rotation and its replays answer identically.
     /// </summary>
     private Result<SignInOutcome, IamError> Issued(User user, UserSession session, string refreshToken)
@@ -199,14 +199,14 @@ public class UserSessionCommandService(
             tokenService.ExpiresAt(issuedAt)));
     }
 
-    /// <summary>IAM-4. Terminates a session whose rotated token came back; an unknown token is only refused.</summary>
+    /// <summary>Terminates a session whose rotated token came back; an unknown token is only refused.</summary>
     private async Task<Result<SignInOutcome, IamError>> RejectAsReuseAsync(UserSession? rotated,
         CancellationToken cancellationToken)
     {
         if (rotated is not { IsActive: true })
             return new Result<SignInOutcome, IamError>.Failure(IamError.RefreshTokenInvalid);
 
-        // Business rule: Refresh Token Reuse Ends The Session (IAM-4). Retried once if a refresh of the same
+        // Business rule: Refresh Token Reuse Ends The Session. Retried once if a refresh of the same
         // session committed in between.
         for (var attempt = 0; ; attempt++)
         {
@@ -317,7 +317,7 @@ public class UserSessionCommandService(
             }
             catch (ConcurrencyConflictException)
             {
-                // IAM-4: a refresh of this session rotated its token in between. Read it again and sign out
+                // A refresh of this session rotated its token in between. Read it again and sign out
                 // that; a second conflict, or a session that ended meanwhile, reports as usual.
                 await sessionRepository.ReloadAsync(session, cancellationToken);
                 session.Terminate();

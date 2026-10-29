@@ -19,7 +19,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-1. Every way of writing to the diary leads Monitoring to evaluate the day it touched
+///     Every way of writing to the diary leads Monitoring to evaluate the day it touched
 ///     exactly once per request. The real diary command service publishes into a mediator wired to
 ///     the real Monitoring policies, and every evaluation of a day (normal or re-evaluation) is counted.
 /// </summary>

@@ -20,7 +20,7 @@ namespace Healthify.Platform.ReadModels.Application;
 ///     shown as a trend.
 ///     What is not here: the nutritional diagnosis and the calculation basis. Neither leaves
 ///     Nutritional Care, and neither is on any contract this composer can reach.
-///     RM-3: nor the consistency index. Patient First Always: the practitioner hears about it only as a
+///     Nor the consistency index. Patient First Always: the practitioner hears about it only as a
 ///     ConsistencyEscalation item in the review inbox, after the patient saw it, never on the panel.
 /// </remarks>
 /// <param name="PatientId">Whose panel.</param>
@@ -31,13 +31,13 @@ namespace Healthify.Platform.ReadModels.Application;
 /// <param name="DailyCompliance">Day by day, oldest first. Unlogged days included as such.</param>
 /// <param name="ClinicalAnthropometrySeries">Weight taken by the practitioner, oldest first.</param>
 /// <param name="SelfWeighInTrend">The smoothed home series, kept separate from the clinical one.</param>
-/// <param name="WeekFrom">RM-3. Monday of the week of <paramref name="Date" />.</param>
-/// <param name="WeekTo">RM-3. Sunday of that week.</param>
-/// <param name="Week">RM-3 (MA-6). That week day by day and counted, or null when it cannot be read.</param>
-/// <param name="LoggedDaysFrom">RM-3. First of the last seven calendar days.</param>
-/// <param name="LoggedDays">RM-3. The last seven calendar days counted ("Registro 6 de 7 días"), or null.</param>
-/// <param name="WeightTrendSummary">RM-3 (IN-5). "−0,3 kg/sem · Autopesaje · 4 semanas", or null.</param>
-/// <param name="LastClinicalMeasurement">RM-3 (NC-3). "Última medición clínica", or null.</param>
+/// <param name="WeekFrom">Monday of the week of <paramref name="Date" />.</param>
+/// <param name="WeekTo">Sunday of that week.</param>
+/// <param name="Week">That week day by day and counted, or null when it cannot be read.</param>
+/// <param name="LoggedDaysFrom">First of the last seven calendar days.</param>
+/// <param name="LoggedDays">The last seven calendar days counted ("logged 6 of 7 days"), or null.</param>
+/// <param name="WeightTrendSummary">The home weigh in trend over four weeks, per week, or null.</param>
+/// <param name="LastClinicalMeasurement">The last clinical measurement, or null.</param>
 public record PatientMonitoringPanelComposition(
     int PatientId,
     DateOnly Date,
@@ -65,7 +65,7 @@ public record PatientMonitoringPanelComposition(
 ///     could query deviations on demand would be a second, quieter path from a signal to a clinical
 ///     decision, and the whole point of the review inbox is that there is only one and a person
 ///     stands in it.
-///     RM-3: the consistency index is no longer read here (Patient First Always); the AI summary of IA-5 is not
+///     The consistency index is no longer read here (Patient First Always); the AI monitoring summary is not
 ///     either, so the panel never waits on a model.
 ///     Read models are not a bounded context. There is no aggregate here, no command, no event, no
 ///     table and no error enum.
@@ -84,10 +84,10 @@ public class PatientMonitoringPanelComposer(
     /// </remarks>
     public const int DefaultDays = 7;
 
-    /// <summary>RM-3. "Tendencia · 4 semanas".</summary>
+    /// <summary>The weight trend covers four weeks.</summary>
     public const int WeightTrendWeeks = 4;
 
-    /// <summary>RM-3. "Registro 6 de 7 días".</summary>
+    /// <summary>The logged days count covers seven days.</summary>
     public const int LoggedDaysWindow = 7;
 
     /// <summary>
@@ -115,13 +115,13 @@ public class PatientMonitoringPanelComposer(
         var clinicalSeries = await monitoringContextFacade.GetAnthropometrySeriesPoints(patientId, ct);
         var selfWeighInTrend = await intakeContextFacade.GetWeightTrendPoints(patientId, window, ct);
 
-        // RM-3 (MA-6): PAC-2 "Esta semana · L M M J V S D", Monday to Sunday of the panel day. Days still ahead
-        // are Unlogged ("Sin registro"), never "Por debajo" (DECISIÓN §12-#7).
+        // The "this week" strip, Monday to Sunday of the panel day. Days still ahead are Unlogged,
+        // never "below target".
         var weekFrom = day.AddDays(-(((int)day.DayOfWeek + 6) % 7));
         var weekTo = weekFrom.AddDays(6);
         var week = await monitoringContextFacade.GetComplianceRange(patientId, weekFrom, weekTo, ct);
 
-        // DECISIÓN RM-3: "Registro 6 de 7 días" counts the last seven calendar days up to the panel day, so it
+        // The logged days count covers the last seven calendar days up to the panel day, so it
         // does not shrink at the start of a week.
         var loggedFrom = day.AddDays(-(LoggedDaysWindow - 1));
         var loggedDays = await monitoringContextFacade.GetComplianceSummary(patientId, loggedFrom, day, ct);

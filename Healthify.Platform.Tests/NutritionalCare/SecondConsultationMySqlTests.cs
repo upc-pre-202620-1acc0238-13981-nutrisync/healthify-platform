@@ -15,13 +15,13 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-2/NC-7 acceptance test against a real MySQL server: the same first and second consultation as
+///     Acceptance test against a real MySQL server: the same first and second consultation as
 ///     <see cref="SecondConsultationInMemoryTests" />, with the real repositories, the real transaction, the
 ///     generated column of One Consultation In Progress Per Patient and data that is read back from the
 ///     database. Each test creates its own <c>healthify_it_*</c> database and drops it, pass or fail.
 /// </summary>
 /// <remarks>
-///     Skipped unless <c>HEALTHIFY_IT_MYSQL</c> holds a server connection string (see CLAUDE.md §5):
+///     Skipped unless <c>HEALTHIFY_IT_MYSQL</c> holds a server connection string (see CLAUDE.md):
 ///     <c>dotnet test --filter "Category=MySql"</c>.
 /// </remarks>
 [Collection(MySqlCollection.Name)]
@@ -143,7 +143,7 @@ public class SecondConsultationMySqlTests
             Assert.Equal(1, (await context.Set<ActiveTargetsCache>().SingleAsync()).PlanVersion);
         }
 
-        // "Lo que escribiste no se perdió": the retry publishes.
+        // "Nothing you wrote was lost": the retry publishes.
         var retried = ConsultationFlow.Ok(
             await ConsultationFlow.PublishAsync(db.Consultations, secondId, PractitionerId, "second"), "retry");
         Assert.Equal(2, retried.Plan.Version);
@@ -151,7 +151,7 @@ public class SecondConsultationMySqlTests
     }
 
     /// <summary>
-    ///     IA-6 / NC-4. Accepted Suggestion Is Traceable: the generation of an accepted AI suggestion is stored in
+    ///     Accepted Suggestion Is Traceable: the generation of an accepted AI suggestion is stored in
     ///     <c>nutritional_diagnoses.ai_generation_id</c> and survives the activation of step 4.
     /// </summary>
     [MySqlFact]

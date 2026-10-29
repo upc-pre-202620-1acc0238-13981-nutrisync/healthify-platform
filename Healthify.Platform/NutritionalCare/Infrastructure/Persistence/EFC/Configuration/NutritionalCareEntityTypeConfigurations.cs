@@ -38,14 +38,14 @@ public class NutritionalAssessmentEntityTypeConfiguration : IEntityTypeConfigura
         builder.Property(a => a.PractitionerId).HasColumnName("practitioner_id").IsRequired();
         builder.HasIndex(a => a.PatientId).HasDatabaseName("ix_nutritional_assessments_patient_id");
 
-        // Free text of the original assessment. Nullable since NC-3: the guided consultation records the
+        // Free text of the original assessment. Nullable: the guided consultation records the
         // structured columns below instead, and the historic text of older rows is kept as it was.
         builder.Property(a => a.Habits).HasColumnName("habits").HasMaxLength(4000);
         builder.Property(a => a.MedicalHistory).HasColumnName("medical_history").HasMaxLength(4000);
         builder.Property(a => a.PhysicalActivity).HasColumnName("physical_activity").HasMaxLength(2000);
         builder.Property(a => a.Biochemistry).HasColumnName("biochemistry").HasMaxLength(4000);
 
-        // NC-3: structured assessment of EV-2.
+        // Structured assessment of step 1.
         builder.Property(a => a.ActivityLevel)
             .HasConversion(new ValueConverter<ActivityLevel?, string?>(
                 l => l == null ? null : l.Value,
@@ -135,7 +135,7 @@ public class ClinicalMeasurementEntityTypeConfiguration : IEntityTypeConfigurati
             .HasConversion(protocol => protocol.Value, value => new MeasurementProtocol(value))
             .HasColumnName("protocol").HasMaxLength(300).IsRequired();
 
-        // NC-3: the EV-2 checklist (null on measurements that only have the free text protocol) and the
+        // The step 1 protocol checklist (null on measurements that only have the free text protocol) and the
         // body mass index, stored so the historic value never changes. decimal(5,1) rather than (4,1):
         // the accepted weight and height ranges allow values above 999.9 in theory.
         builder.Property<List<string>?>("_protocolChecks")
@@ -152,7 +152,7 @@ public class ClinicalMeasurementEntityTypeConfiguration : IEntityTypeConfigurati
 
 public class ConsultationEntityTypeConfiguration : IEntityTypeConfiguration<Consultation>
 {
-    /// <summary>NC-2. The EV-5 draft as one JSON object, or null while none was saved.</summary>
+    /// <summary>The step 4 publication draft as one JSON object, or null while none was saved.</summary>
     private static readonly ValueConverter<PublicationDraft?, string?> PublicationDraftConverter = new(
         d => d == null
             ? null
@@ -191,7 +191,7 @@ public class ConsultationEntityTypeConfiguration : IEntityTypeConfiguration<Cons
             .HasColumnName("state").HasMaxLength(20).IsRequired();
         builder.HasIndex(c => new { c.PatientId, c.State }).HasDatabaseName("ix_consultations_patient_id_state");
 
-        // Business rule: One Consultation In Progress Per Patient (NC-2). MySQL has no partial indexes,
+        // Business rule: One Consultation In Progress Per Patient. MySQL has no partial indexes,
         // so a stored generated column holds the patient only while the consultation is in progress;
         // a unique index on it lets any number of NULLs through and rejects a second in-progress row.
         builder.Property<int?>("InProgressPatientId")
@@ -211,7 +211,7 @@ public class ConsultationEntityTypeConfiguration : IEntityTypeConfiguration<Cons
         builder.Property(c => c.PublishedPlanVersion).HasColumnName("published_plan_version");
         builder.Property(c => c.IsFirstConsultation).HasColumnName("is_first_consultation").IsRequired();
 
-        // NC-2. Idempotency of the publication, the EV-5 draft and discarding.
+        // Idempotency of the publication, the publication draft and discarding.
         builder.Property(c => c.IdempotencyKey).HasColumnName("idempotency_key").HasMaxLength(64);
         builder.Property(c => c.PublicationDraft)
             .HasConversion(PublicationDraftConverter, PublicationDraftComparer)
@@ -234,8 +234,8 @@ public class ConsultationEntityTypeConfiguration : IEntityTypeConfiguration<Cons
     }
 
     /// <summary>
-    ///     The shape of <c>publication_draft</c>; the value object rebuilds itself from it. NC-9 adds
-    ///     <c>PatientMessage</c> to the JSON (no column change): drafts saved before it read as null.
+    ///     The shape of <c>publication_draft</c>; the value object rebuilds itself from it.
+    ///     <c>PatientMessage</c> is in the JSON only (no column): drafts saved before it existed read as null.
     /// </summary>
     private sealed record StoredPublicationDraft(
         IReadOnlyList<string>? Restrictions,
@@ -262,7 +262,7 @@ public class PatientBaselineEntityTypeConfiguration : IEntityTypeConfiguration<P
             .ValueGeneratedOnAdd();
 
         // Cross-context reference: plain int, no navigation. Unique: Business rule One Baseline Per
-        // Patient (NC-1), enforced by the database as well as by the command service.
+        // Patient, enforced by the database as well as by the command service.
         builder.Property(b => b.PatientId).HasColumnName("patient_id").IsRequired();
         builder.HasIndex(b => b.PatientId).IsUnique().HasDatabaseName("ix_patient_baselines_patient_id");
 
@@ -322,7 +322,7 @@ public class NutritionalDiagnosisEntityTypeConfiguration : IEntityTypeConfigurat
             .HasConversion(r => r.Value, value => new ClinicalRationale(value))
             .HasColumnName("rationale").HasMaxLength(2000).IsRequired(false);
 
-        // NC-4. Null on historic free text diagnoses.
+        // Null on historic free text diagnoses.
         builder.Property(d => d.Code)
             .HasConversion(new ValueConverter<DiagnosisCode?, string?>(
                 c => c == null ? null : c.Value,
@@ -339,7 +339,7 @@ public class NutritionalDiagnosisEntityTypeConfiguration : IEntityTypeConfigurat
         builder.Property(d => d.IssuedAt).HasColumnName("issued_at").IsRequired();
         builder.Property(d => d.SupersededAt).HasColumnName("superseded_at");
 
-        // NC-7. A diagnosis of a consultation waits here until the consultation publishes its plan. Logical
+        // A diagnosis of a consultation waits here until the consultation publishes its plan. Logical
         // reference to this context's Consultation, no navigation.
         builder.Property(d => d.PendingConsultationId).HasColumnName("pending_consultation_id");
         builder.HasIndex(d => d.PendingConsultationId)
@@ -378,7 +378,7 @@ public class ReviewItemEntityTypeConfiguration : IEntityTypeConfiguration<Review
 
         builder.Property(r => r.Evidence).HasColumnName("evidence").HasMaxLength(2000).IsRequired();
 
-        // NC-11: the same evidence as numbers.
+        // The same evidence as numbers.
         builder.Property(r => r.EvidenceData)
             .HasConversion(
                 v => v == null ? null : ReviewItemEvidenceJsonConverter.Serialize(v),
@@ -391,7 +391,7 @@ public class ReviewItemEntityTypeConfiguration : IEntityTypeConfiguration<Review
 
         builder.Property(r => r.ResolvedWithAdjustment).HasColumnName("resolved_with_adjustment");
         builder.Property(r => r.ResolutionNote).HasColumnName("resolution_note").HasMaxLength(1000);
-        // X-2. Who wrote the note (Custom) or which sentence the system meant, with its parameters.
+        // Who wrote the note (Custom) or which sentence the system meant, with its parameters.
         builder.Property(r => r.ResolutionNoteCode).HasColumnName("resolution_note_code").HasMaxLength(30);
         builder.Property(r => r.ResolutionNoteData)
             .HasConversion(
@@ -400,12 +400,12 @@ public class ReviewItemEntityTypeConfiguration : IEntityTypeConfiguration<Review
             .HasColumnName("resolution_note_data").HasColumnType("json");
         builder.Property(r => r.ResolvedAt).HasColumnName("resolved_at");
 
-        // NC-10: the scheduled recheck ("Revisar de nuevo en N días").
+        // The scheduled recheck (review again in N days).
         builder.Property(r => r.RecheckDueAt).HasColumnName("recheck_due_at");
         builder.Property(r => r.RecheckIssuedAt).HasColumnName("recheck_issued_at");
         builder.HasIndex(r => r.RecheckDueAt).HasDatabaseName("ix_review_items_recheck_due_at");
 
-        // NC-10. Inside the aggregate: EF navigation, one proposal per item at most, cascade delete.
+        // Inside the aggregate: EF navigation, one proposal per item at most, cascade delete.
         builder.HasOne(r => r.Proposal)
             .WithOne()
             .HasForeignKey<PlanAdjustmentProposal>(p => p.ReviewItemId)
@@ -421,7 +421,7 @@ public class ReviewItemEntityTypeConfiguration : IEntityTypeConfiguration<Review
     }
 }
 
-/// <summary>NC-10. <c>review_item_plan_proposals</c>: the AI plan proposal of a review item.</summary>
+/// <summary><c>review_item_plan_proposals</c>: the AI plan proposal of a review item.</summary>
 public class PlanAdjustmentProposalEntityTypeConfiguration : IEntityTypeConfiguration<PlanAdjustmentProposal>
 {
     private static readonly ValueComparer<List<string>> StringListComparer = new(
@@ -477,7 +477,7 @@ public class PlanAdjustmentProposalEntityTypeConfiguration : IEntityTypeConfigur
             .HasConversion(s => s.Value, value => new PlanProposalStatus(value))
             .HasColumnName("status").HasMaxLength(20).IsRequired();
         builder.Property(p => p.AssignedPlanVersion).HasColumnName("assigned_plan_version");
-        // X-2. The language of each part; null on proposals generated before X-2.
+        // The language of each part; null on proposals generated before languages were recorded.
         builder.Property(p => p.PractitionerLanguage).HasColumnName("practitioner_language").HasMaxLength(5);
         builder.Property(p => p.PatientLanguage).HasColumnName("patient_language").HasMaxLength(5);
 

@@ -13,7 +13,7 @@ namespace Healthify.Platform.Iam.Infrastructure.Tokens.JWT;
 /// </summary>
 public class JwtTokenService(IConfiguration configuration) : ITokenService
 {
-    /// <summary>IAM-3. Claim with the preferred language of the account (es or en).</summary>
+    /// <summary>Claim with the preferred language of the account (es or en).</summary>
     public const string LanguageClaimType = "lang";
 
     public string GenerateToken(User user, UserSession session)

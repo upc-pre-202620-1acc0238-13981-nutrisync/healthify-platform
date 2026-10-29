@@ -8,7 +8,7 @@ using static Healthify.Platform.Tests.TestSupport.ProblemResponses;
 
 namespace Healthify.Platform.Tests.FoodCatalog;
 
-/// <summary>X-3. Every FoodCatalog problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
+/// <summary>Every FoodCatalog problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
 public class ErrorCodeExtensionTests
 {
     private readonly IStringLocalizer<FoodCatalogMessages> _localizer = EchoLocalizer<FoodCatalogMessages>();

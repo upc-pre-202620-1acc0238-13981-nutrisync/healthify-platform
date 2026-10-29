@@ -46,7 +46,7 @@ public class EvaluationWindowQueryService(IEvaluationWindowRepository repository
     public async Task<DailyComplianceRange> Handle(GetDailyComplianceRangeQuery query,
         CancellationToken cancellationToken = default)
     {
-        // The windows of every link the patient had: a range can cross a switch of practitioner (CR-1).
+        // The windows of every link the patient had: a range can cross a switch of practitioner.
         var evaluated = await Handle(new GetDailyComplianceByPatientIdQuery(query.PatientId, null),
             cancellationToken);
 
@@ -163,7 +163,7 @@ public class ScheduledFollowUpQueryService(
     }
 
     /// <summary>
-    ///     MA-3. One read of Iam for every visit, never one per row. The facade degrades to an empty dictionary,
+    ///     One read of Iam for every visit, never one per row. The facade degrades to an empty dictionary,
     ///     and the visits are still shown without the name.
     /// </summary>
     private async Task<IReadOnlyList<PatientFollowUpEntry>> WithPractitionerNames(
@@ -179,7 +179,7 @@ public class ScheduledFollowUpQueryService(
     }
 }
 
-/// <summary>MA-4. The check ins, with whether each can still be edited.</summary>
+/// <summary>The check ins, with whether each can still be edited.</summary>
 public class PreVisitCheckInQueryService(
     IPreVisitCheckInRepository checkInRepository,
     IScheduledFollowUpRepository scheduledFollowUpRepository,
@@ -200,7 +200,7 @@ public class PreVisitCheckInQueryService(
         CancellationToken cancellationToken = default)
     {
         // Only a visit still open: the check in of a visit already completed belongs to a previous cycle, and
-        // EV-2 would show it as if the patient had just said it.
+        // the consultation screen would show it as if the patient had just said it.
         var openVisits = (await scheduledFollowUpRepository.ListOpenByPatientAndPractitionerAsync(query.PatientId,
             query.PractitionerId, cancellationToken)).ToList();
         if (openVisits.Count == 0) return null;
@@ -218,7 +218,7 @@ public class PreVisitCheckInQueryService(
     }
 }
 
-/// <summary>IA-2. The weekly summaries.</summary>
+/// <summary>The weekly summaries.</summary>
 public class WeeklySummaryQueryService(IWeeklySummaryRepository repository) : IWeeklySummaryQueryService
 {
     public async Task<WeeklySummary?> Handle(GetLatestWeeklySummaryByPatientIdQuery query,

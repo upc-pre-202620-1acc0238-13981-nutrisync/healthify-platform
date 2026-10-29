@@ -19,7 +19,7 @@ public interface ICareLinkCommandService
     Task<Result<CareLink, CareRelationshipError>> Handle(WithdrawConsentCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>CR-2 - Change AI Processing Consent.</summary>
+    /// <summary>Change AI Processing Consent.</summary>
     Task<Result<CareLink, CareRelationshipError>> Handle(ChangeAiProcessingConsentCommand command,
         CancellationToken cancellationToken = default);
 

@@ -37,14 +37,6 @@ public static class LogMealManuallyCommandAssembler
     }
 }
 
-public static class LogOffPlanMealCommandAssembler
-{
-    public static LogOffPlanMealCommand ToCommand(int patientId, LogOffPlanMealResource resource)
-    {
-        return new LogOffPlanMealCommand(patientId, resource.LocalTimestamp);
-    }
-}
-
 public static class ConfirmEstimateCommandAssembler
 {
     public static ConfirmEstimateCommand ToCommand(int diaryEntryId, int patientId,
@@ -168,7 +160,7 @@ public static class DiaryEntryResourceAssembler
 public static class SelfWeighInResourceAssembler
 {
     /// <param name="weighIn">The reading.</param>
-    /// <param name="protocol">IN-3. The protocol in force; null means the default (fasted only).</param>
+    /// <param name="protocol">The protocol in force; null means the default (fasted only).</param>
     public static SelfWeighInResource ToResource(SelfWeighIn weighIn, SelfWeighInProtocol? protocol = null)
     {
         return new SelfWeighInResource(
@@ -194,7 +186,7 @@ public static class WeightTrendResourceAssembler
             trend.Points.Select(p => new WeightTrendPointResource(p.Date, p.SmoothedValueKg)).ToList());
     }
 
-    /// <summary>IN-5. The series with the summary of its last weeks.</summary>
+    /// <summary>The series with the summary of its last weeks.</summary>
     public static WeightTrendResource ToResource(WeightTrendView view)
     {
         var range = view.Range;
@@ -242,7 +234,7 @@ public static class SyncOutcomeResourceAssembler
     }
 }
 
-/// <summary>IN-7.</summary>
+/// <summary></summary>
 public static class MealPhotoAnalysisResourceAssembler
 {
     public static MealPhotoAnalysisResource ToResource(MealPhotoAnalysisView view)
@@ -256,7 +248,7 @@ public static class MealPhotoAnalysisResourceAssembler
     }
 }
 
-/// <summary>IN-9.</summary>
+/// <summary></summary>
 public static class DailyIntakeResourceAssembler
 {
     public static DailyIntakeResource ToResource(DailyIntake intake)
@@ -268,7 +260,7 @@ public static class DailyIntakeResourceAssembler
     }
 }
 
-/// <summary>IN-8.</summary>
+/// <summary></summary>
 public static class PlanFitResourceAssembler
 {
     public static PlanFitResource? ToResource(PlanFit? fit)
@@ -280,7 +272,7 @@ public static class PlanFitResourceAssembler
     }
 }
 
-/// <summary>IA-3.</summary>
+/// <summary></summary>
 public static class MealIdeasResourceAssembler
 {
     public static GenerateMealIdeasCommand ToCommand(int patientId, GenerateMealIdeasResource? resource)
@@ -301,7 +293,7 @@ public static class MealIdeasResourceAssembler
     }
 }
 
-/// <summary>IN-6.</summary>
+/// <summary></summary>
 public static class LogMealGroupCommandAssembler
 {
     public static LogMealGroupManuallyCommand ToCommand(int patientId, LogMealGroupResource resource)

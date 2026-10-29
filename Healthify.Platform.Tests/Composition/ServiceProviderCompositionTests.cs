@@ -59,7 +59,7 @@ public class ServiceProviderCompositionTests
         Assert.Contains(registrations, d => d.ImplementationType?.Name.EndsWith("Handler") == true);
     }
 
-    /// <summary>IN-7: the multipart photo endpoint is documented (Swashbuckle and <c>IFormFile</c> must agree).</summary>
+    /// <summary>The multipart photo endpoint is documented (Swashbuckle and <c>IFormFile</c> must agree).</summary>
     [Fact]
     public void The_swagger_document_generates_and_documents_the_multipart_meal_photo_endpoint()
     {

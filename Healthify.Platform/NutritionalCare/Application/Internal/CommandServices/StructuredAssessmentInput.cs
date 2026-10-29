@@ -6,7 +6,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandServices;
 
 /// <summary>
-///     NC-3. Step 1 of the command services that receive the structured assessment of EV-2: builds each
+///     Step 1 of the command services that receive the structured assessment of step 1: builds each
 ///     value object and maps its failure to its own error, before anything is loaded.
 /// </summary>
 internal static class StructuredAssessmentInput

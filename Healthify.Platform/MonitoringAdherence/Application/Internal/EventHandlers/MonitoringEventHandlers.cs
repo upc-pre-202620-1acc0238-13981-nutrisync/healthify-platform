@@ -37,7 +37,7 @@ public class OnCareLinkEstablishedHandler(
         // idempotent.
         if (openWindow is not null && openWindow.CareLinkId == notification.CareLinkId) return;
 
-        // CR-1: a window of a previous link is still open, because its Care Link Revoked has not
+        // A window of a previous link is still open, because its Care Link Revoked has not
         // arrived yet or its handler failed. The new link supersedes it, so it is closed here with
         // the same command the revocation policy uses. The outcome no longer depends on the order of
         // the two events.
@@ -142,12 +142,12 @@ public class OnMealLoggedHandler(
 {
     public async Task Handle(MealLogged notification, CancellationToken cancellationToken)
     {
-        // MA-1: the entry was confirmed in the request that created it, and the Estimate Confirmed
+        // The entry was confirmed in the request that created it, and the Estimate Confirmed
         // By Patient of that same request evaluates the day once, with its final totals. Evaluating
         // here as well would only repeat the work.
         if (notification.ConfirmedOnCreation) return;
 
-        // MA-1: an entry that arrived in a synchronisation batch is evaluated with its day when the
+        // An entry that arrived in a synchronisation batch is evaluated with its day when the
         // batch announces it (Diary Batch Synchronized), once per day rather than once per entry.
         if (notification.ViaSynchronization) return;
 
@@ -169,7 +169,7 @@ public class OnEstimateConfirmedByPatientHandler(
 {
     public async Task Handle(EstimateConfirmedByPatient notification, CancellationToken cancellationToken)
     {
-        // IN-6: an entry of a meal logged in a group; Meal Group Logged evaluates the day once for the whole meal.
+        // An entry of a meal logged in a group; Meal Group Logged evaluates the day once for the whole meal.
         if (!notification.EvaluatesDay) return;
 
         await MonitoringDayEvaluation.Evaluate(scopeFactory, logger, notification.PatientId,
@@ -178,10 +178,10 @@ public class OnEstimateConfirmedByPatientHandler(
 }
 
 /// <summary>
-///     Policy "When Meal Group Logged" (Monitoring and Adherence, Subflow 5.4, IN-6).
+///     Policy "When Meal Group Logged" (Monitoring and Adherence, Subflow 5.4).
 /// </summary>
 /// <remarks>
-///     A meal logged in a group («Registrar esta comida» from an idea) is several confirmed entries of one moment.
+///     A meal logged in a group (logging a whole meal idea at once) is several confirmed entries of one moment.
 ///     Their own confirmations leave the day to this policy, which evaluates it once, with the final totals.
 /// </remarks>
 public class OnMealGroupLoggedHandler(
@@ -203,8 +203,9 @@ public class OnMealGroupLoggedHandler(
 ///     carries no detail, so it moves no total, and nothing anywhere computes a deviation from the
 ///     fact that somebody declared one: making that declaration cost nothing is the entire point of
 ///     it existing.
-///     Kept for the legacy one-tap entries (IN-1 deprecated the event); an off-plan meal logged with
-///     a food reaches the day through Meal Logged and Estimate Confirmed By Patient like any other.
+///     Kept for legacy one-tap entries: the one-tap endpoint is gone, but they still arrive from stored rows and
+///     old offline sync batches. An off-plan meal logged with a food reaches the day through Meal Logged and
+///     Estimate Confirmed By Patient like any other.
 /// </remarks>
 public class OnOffPlanEntryLoggedHandler(
     IServiceScopeFactory scopeFactory,
@@ -212,7 +213,7 @@ public class OnOffPlanEntryLoggedHandler(
 {
     public async Task Handle(OffPlanEntryLogged notification, CancellationToken cancellationToken)
     {
-        // MA-1: a legacy entry from a synchronisation batch is evaluated with its batch.
+        // A legacy entry from a synchronisation batch is evaluated with its batch.
         if (notification.ViaSynchronization) return;
 
         await MonitoringDayEvaluation.Evaluate(scopeFactory, logger, notification.PatientId,
@@ -234,7 +235,7 @@ public class OnEntrySynchronizedHandler(
 {
     public async Task Handle(EntrySynchronized notification, CancellationToken cancellationToken)
     {
-        // MA-1: inside a batch, Diary Batch Synchronized re-evaluates each day once.
+        // Inside a batch, Diary Batch Synchronized re-evaluates each day once.
         if (!notification.ReEvaluatesDay) return;
 
         await using var scope = scopeFactory.CreateAsyncScope();
@@ -251,7 +252,7 @@ public class OnEntrySynchronizedHandler(
 }
 
 /// <summary>
-///     Policy "When Diary Batch Synchronized" (Monitoring and Adherence, Subflow 5.5, MA-1).
+///     Policy "When Diary Batch Synchronized" (Monitoring and Adherence, Subflow 5.5).
 /// </summary>
 /// <remarks>
 ///     Business rule: Late Entry Re Evaluates Its Own Day Only. The days are the ones the entries
@@ -438,14 +439,14 @@ public class OnLoggingGapDetectedHandler(
 /// <remarks>
 ///     Integration event 2 of 13. The window stops counting and keeps everything it holds. A care
 ///     relationship that ended is still a care relationship that happened.
-///     CR-4: when the patient switched practitioner (CR-1), the visits still ahead with the previous one are
+///     When the patient switched practitioner, the visits still ahead with the previous one are
 ///     cancelled too, as at a discharge.
 /// </remarks>
 public class OnCareLinkRevokedHandler(
     IServiceScopeFactory scopeFactory,
     ILogger<OnCareLinkRevokedHandler> logger) : IEventHandler<CareLinkRevoked>
 {
-    /// <summary>NOTE: the CR-1 reason as the event carries it, a plain string (RevocationReason stays in its context).</summary>
+    /// <summary>NOTE: the revocation reason as the event carries it, a plain string (RevocationReason stays in its context).</summary>
     public const string SwitchedPractitionerReason = "SwitchedPractitioner";
 
     public async Task Handle(CareLinkRevoked notification, CancellationToken cancellationToken)
@@ -468,7 +469,7 @@ public class OnCareLinkRevokedHandler(
             cancellationToken);
 
         // Not finding an open window of this link is expected when Care Link Established for a new
-        // link arrived first and already closed it (CR-1).
+        // link arrived first and already closed it.
         if (result is Result<EvaluationWindow, MonitoringError>.Failure
             {
                 Error: MonitoringError.EvaluationWindowNotFound
@@ -483,12 +484,12 @@ public class OnCareLinkRevokedHandler(
 }
 
 /// <summary>
-///     CR-4 - Policy "When Treatment Discharged" (Monitoring and Adherence). PR18 "Esto cierra el tratamiento con
-///     este paciente".
+///     Policy "When Treatment Discharged" (Monitoring and Adherence): the practitioner closed the
+///     treatment with this patient.
 /// </summary>
 /// <remarks>
 ///     The evaluation window of the link stops counting (it keeps everything it holds) and the visits still ahead
-///     with that practitioner are cancelled with reason "Discharged", so they leave the agenda (PR17.0-Alta).
+///     with that practitioner are cancelled with reason "Discharged", so they leave the agenda.
 ///     Each step runs in its own scope: one failing does not stop the other, and neither throws.
 /// </remarks>
 public class OnTreatmentDischargedHandler(
@@ -527,7 +528,7 @@ public class OnTreatmentDischargedHandler(
     }
 }
 
-/// <summary>CR-4. What the discharge and the switch of practitioner share: the visits still ahead are cancelled.</summary>
+/// <summary>What the discharge and the switch of practitioner share: the visits still ahead are cancelled.</summary>
 internal static class TreatmentEnd
 {
     public static async Task CancelFutureFollowUps(IServiceScopeFactory scopeFactory, ILogger logger, int patientId,
@@ -587,7 +588,7 @@ internal static class MonitoringDayEvaluation
 }
 
 /// <summary>
-///     MA-2. Policy "When Consultation Completed" (integration event of Nutritional Care, NC-2).
+///     Policy "When Consultation Completed" (integration event of Nutritional Care).
 /// </summary>
 /// <remarks>
 ///     The visit the consultation started from, or the visit of the same pair on the same local day, is
@@ -633,9 +634,8 @@ public class OnConsultationCompletedHandler(
 }
 
 /// <summary>
-///     Policy "When AI Processing Consent Withdrawn" (CR-2, §12-#14), this context's part: purge the AI content it
-///     keeps for the patient (weekly summaries of IA-2, cached suggested questions of IA-4 and monitoring summaries of
-///     IA-5).
+///     Policy "When AI Processing Consent Withdrawn", this context's part: purge the AI content it keeps for the
+///     patient (weekly summaries, cached suggested questions and monitoring summaries).
 /// </summary>
 /// <remarks>
 ///     The technical audit (<c>ai_generations</c>) is purged by Care Relationship. Granting the consent again
@@ -669,12 +669,12 @@ public class OnAiProcessingConsentChangedMonitoringHandler(
 }
 
 /// <summary>
-///     IA-1. A patient function of this context that goes off (weekly summary, IA-2; suggested questions, IA-4) stops
+///     A patient function of this context that goes off (weekly summary or suggested questions) stops
 ///     using the diary, and what it generated is purged.
 /// </summary>
 /// <remarks>
 ///     The event carries the state after the change; purging what is already gone is a no-op. The monitoring
-///     summary (IA-5) is the practitioner's and depends on the consent only, not on these preferences.
+///     summary is the practitioner's and depends on the consent only, not on these preferences.
 /// </remarks>
 public class OnAiPreferencesChangedMonitoringHandler(
     IServiceScopeFactory scopeFactory,

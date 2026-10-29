@@ -7,7 +7,7 @@ using Healthify.Platform.Shared.Domain.Repositories;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     IAM-4. The <c>user_sessions</c> table as EF Core sees it from several requests at once: each request reads
+///     The <c>user_sessions</c> table as EF Core sees it from several requests at once: each request reads
 ///     its own copy of a row, and a save is conditional on the refresh token hash it read (the concurrency token),
 ///     failing with <see cref="ConcurrencyConflictException" /> when another request changed it first.
 /// </summary>

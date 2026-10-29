@@ -24,7 +24,7 @@ public class UserCommandService(
         CancellationToken cancellationToken = default)
     {
         // 1. Value object validation, each one mapped to its own error. The person name first, as the
-        //    registration form asks for it first (IAM-1).
+        //    registration form asks for it first.
         try
         {
             _ = new PersonName(command.GivenNames, command.FamilyNames);
@@ -101,7 +101,7 @@ public class UserCommandService(
         }
     }
 
-    /// <summary>IAM-3 - Change Preferred Language.</summary>
+    /// <summary>Change Preferred Language.</summary>
     public async Task<Result<User, IamError>> Handle(ChangePreferredLanguageCommand command,
         CancellationToken cancellationToken = default)
     {

@@ -12,7 +12,7 @@ using static Healthify.Platform.Tests.TestSupport.ProblemResponses;
 
 namespace Healthify.Platform.Tests.NutritionalCare;
 
-/// <summary>X-3. Every NutritionalCare problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
+/// <summary>Every NutritionalCare problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
 public class ErrorCodeExtensionTests
 {
     private readonly IStringLocalizer<NutritionalCareMessages> _localizer = EchoLocalizer<NutritionalCareMessages>();

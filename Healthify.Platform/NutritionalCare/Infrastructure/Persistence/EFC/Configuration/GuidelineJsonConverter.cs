@@ -5,11 +5,11 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
-///     NC-6. JSON shape of the plan guidelines: <c>[{ "code": "ReduceSalt" }, { "custom": "Caminar 20 min" }]</c>.
+///     JSON shape of the plan guidelines: <c>[{ "code": "ReduceSalt" }, { "custom": "Caminar 20 min" }]</c>.
 /// </summary>
 /// <remarks>
-///     Reading is tolerant: a plain string element, the shape before NC-6, is read as a custom guideline,
-///     exactly what the data migration <c>NutritionalCare_GuidelineCodes</c> turns it into. Stored rows are
+///     Reading is tolerant: a plain string element, the shape before the guideline catalog, is read as a
+///     custom guideline, exactly what the data migration <c>NutritionalCare_GuidelineCodes</c> turns it into. Stored rows are
 ///     rehydrated without validation, so history is read as it was written.
 /// </remarks>
 public static class GuidelineJsonConverter

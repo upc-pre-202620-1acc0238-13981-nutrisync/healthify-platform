@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-3. Current physical activity, chosen from a closed list in EV-2. It replaces the free text
+///     Current physical activity, chosen from a closed list in step 1. It replaces the free text
 ///     physical activity of the original assessment.
 /// </summary>
 /// <remarks>

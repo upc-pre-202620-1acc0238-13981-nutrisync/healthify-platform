@@ -4,7 +4,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Fakes;
 
 /// <summary>
-///     IA-0. A <see cref="ILanguageModelClient" /> that never leaves the process: it answers from a queue of canned
+///     A <see cref="ILanguageModelClient" /> that never leaves the process: it answers from a queue of canned
 ///     outputs or failures and records every request. For tests; Program.cs never registers it, so no test and no
 ///     environment without a configured provider calls Google.
 /// </summary>

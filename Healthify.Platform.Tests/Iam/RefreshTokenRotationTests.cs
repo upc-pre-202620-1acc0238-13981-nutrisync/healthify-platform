@@ -23,7 +23,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-4. Sign-in also issues a refresh token (only its hash is stored); each refresh rotates it; reusing a
+///     Sign-in also issues a refresh token (only its hash is stored); each refresh rotates it; reusing a
 ///     rotated token terminates the session; sign-out deletes it; and a client that ignores it is unaffected.
 /// </summary>
 public class RefreshTokenRotationTests

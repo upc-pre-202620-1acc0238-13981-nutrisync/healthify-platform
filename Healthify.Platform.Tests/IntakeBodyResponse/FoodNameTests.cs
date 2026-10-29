@@ -10,7 +10,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>IN-1. <c>DiaryEntryResource.FoodName</c>, resolved once per food through the catalog.</summary>
+/// <summary><c>DiaryEntryResource.FoodName</c>, resolved once per food through the catalog.</summary>
 public class FoodNameTests
 {
     [Fact]

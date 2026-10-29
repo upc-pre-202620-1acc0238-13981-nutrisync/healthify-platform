@@ -5,7 +5,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     RM-3/RM-4. What Nutritional Care publishes about measurements: the evaluations in force (completed
+///     What Nutritional Care publishes about measurements: the evaluations in force (completed
 ///     consultations, oldest first, the first one flagged) and the active diagnosis for the practitioner's record,
 ///     and the latest clinical measurement without any BMI for everyone else.
 /// </summary>

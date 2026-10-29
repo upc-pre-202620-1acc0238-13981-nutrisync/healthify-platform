@@ -30,18 +30,18 @@ public sealed record MealNutrients(decimal EnergyKcal, decimal ProteinG, decimal
 }
 
 /// <summary>
-///     IA-3. The hard validation of a meal idea, the same before and after the catalog recalculates it: what makes
+///     The hard validation of a meal idea, the same before and after the catalog recalculates it: what makes
 ///     an idea one the patient may see.
 /// </summary>
 public static class MealIdeaRules
 {
-    /// <summary>IA-3: with fewer valid ideas than this, the generation is retried once and then rejected.</summary>
+    /// <summary>With fewer valid ideas than this, the generation is retried once and then rejected.</summary>
     public const int MinimumIdeas = 2;
 
-    /// <summary>PT14.4 shows three ideas.</summary>
+    /// <summary>4 shows three ideas.</summary>
     public const int MaximumIdeasShown = 3;
 
-    /// <summary>IA-3: above this relative difference with the model, the catalog figures are used.</summary>
+    /// <summary>Above this relative difference with the model, the catalog figures are used.</summary>
     public const decimal CatalogToleranceRatio = 0.15m;
 
     /// <summary>
@@ -50,7 +50,7 @@ public static class MealIdeaRules
     /// <param name="name">The name of the idea.</param>
     /// <param name="energyKcal">Its energy (the model's, or the catalog's once recalculated).</param>
     /// <param name="ingredientTexts">Each ingredient as named by the idea and, when resolved, by the catalog.</param>
-    /// <param name="why">«Por qué esta idea».</param>
+    /// <param name="why">"Why this idea".</param>
     /// <param name="remaining">What is left today.</param>
     /// <param name="restrictions">The restriction codes of the plan.</param>
     /// <param name="lexicon">The ingredient map and the forbidden words.</param>
@@ -59,11 +59,11 @@ public static class MealIdeaRules
     {
         var reasons = new List<string>();
 
-        // Business rule: Idea Fits What Is Left (IA-3). energyKcal ≤ remainingKcal.
+        // Business rule: Idea Fits What Is Left. energyKcal ≤ remainingKcal.
         if (energyKcal <= 0m || energyKcal > remaining.EnergyKcal)
             reasons.Add($"'{name}': {energyKcal:0} kcal does not fit the {remaining.EnergyKcal:0} kcal left.");
 
-        // Business rule: Idea Respects The Restrictions (IA-3, NC-6). The name counts too: "Ceviche de langostinos".
+        // Business rule: Idea Respects The Restrictions. The name counts too: "Ceviche de langostinos".
         foreach (var text in ingredientTexts.Prepend(name))
         foreach (var restriction in lexicon.ViolatedRestrictions(text, restrictions))
             reasons.Add($"'{name}': '{text}' breaks {restriction}.");
@@ -77,19 +77,19 @@ public static class MealIdeaRules
     }
 
     /// <summary>
-    ///     Business rule: Unresolved Ingredients Stay Minor (IA-3). The ingredients the catalog cannot resolve (FC-2)
-    ///     may bring at most this share of the energy of the idea; above it, «cabe en lo que te queda» cannot be
+    ///     Business rule: Unresolved Ingredients Stay Minor. The ingredients the catalog cannot resolve
+    ///     may bring at most this share of the energy of the idea; above it, the fit in what is left cannot be
     ///     verified and the idea is discarded.
     /// </summary>
     public const decimal UnresolvedEnergyShareLimit = 0.15m;
 
     /// <summary>
-    ///     IA-3. The share of the idea's energy brought by its unresolved ingredients: what the model declares for the
+    ///     The share of the idea's energy brought by its unresolved ingredients: what the model declares for the
     ///     whole idea minus what the catalog accounts for the resolved ones, over the declared energy. Zero when the
     ///     catalog already accounts for all of it; one when the model declares no energy.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN IA-3: the model gives no energy per ingredient, so the unresolved ingredients of an idea are
+    ///     The model gives no energy per ingredient, so the unresolved ingredients of an idea are
     ///     measured together, by the part of the declared energy the catalog cannot explain. A pinch of salt and a
     ///     clove of garlic are a few kcal; 150 g of an unknown grain is not.
     /// </remarks>
@@ -99,17 +99,17 @@ public static class MealIdeaRules
         return Math.Max(0m, declaredEnergyKcal - resolvedCatalogEnergyKcal) / declaredEnergyKcal;
     }
 
-    /// <summary>Business rule: Unresolved Ingredients Stay Minor (IA-3).</summary>
+    /// <summary>Business rule: Unresolved Ingredients Stay Minor.</summary>
     public static bool UnresolvedIngredientsAreMinor(decimal declaredEnergyKcal, decimal resolvedCatalogEnergyKcal)
     {
         return UnresolvedEnergyShare(declaredEnergyKcal, resolvedCatalogEnergyKcal) <= UnresolvedEnergyShareLimit;
     }
 
     /// <summary>
-    ///     IA-3. The figures shown for an idea. When every ingredient is in the catalog, the catalog sum replaces the
+    ///     The figures shown for an idea. When every ingredient is in the catalog, the catalog sum replaces the
     ///     model's figures if their energies differ by more than 15 %. When some minor ingredient is not (see
     ///     <see cref="UnresolvedIngredientsAreMinor" />, checked before), the macros stay the model's and the energy is
-    ///     the larger of the two, so «cabe en lo que te queda» is never checked against less than what the catalog
+    ///     the larger of the two, so the fit in what is left is never checked against less than what the catalog
     ///     already accounts for.
     /// </summary>
     /// <returns>The figures, rounded, and whether they are the catalog's.</returns>
@@ -124,7 +124,7 @@ public static class MealIdeaRules
             return differs ? (catalog.Rounded(), true) : (declared.Rounded(), false);
         }
 
-        // DECISIÓN IA-3: with a minor unresolved ingredient there is no full catalog figure to compare with.
+        // With a minor unresolved ingredient there is no full catalog figure to compare with.
         return (new MealNutrients(Math.Max(declared.EnergyKcal, catalog.EnergyKcal), declared.ProteinG,
             declared.CarbG, declared.FatG).Rounded(), false);
     }

@@ -10,7 +10,7 @@ public class AiPreferencesEntityTypeConfiguration : IEntityTypeConfiguration<AiP
     {
         builder.ToTable("ai_preferences");
 
-        // One row per patient: the patient is the identity (IA-1). Cross-context reference, no foreign key.
+        // One row per patient: the patient is the identity. Cross-context reference, no foreign key.
         builder.HasKey(p => p.PatientId);
         builder.Property(p => p.PatientId).HasColumnName("patient_id").ValueGeneratedNever();
 
@@ -18,8 +18,8 @@ public class AiPreferencesEntityTypeConfiguration : IEntityTypeConfiguration<AiP
         builder.Property(p => p.MealIdeasEnabled).HasColumnName("meal_ideas_enabled").IsRequired();
         builder.Property(p => p.SuggestedQuestionsEnabled).HasColumnName("suggested_questions_enabled")
             .IsRequired();
-        // IN-7. Rows from before IN-7 stay off (the migration adds it with DEFAULT 0): nobody consented to sending
-        // photos yet.
+        // Rows that predate meal photo recognition stay off (the migration adds it with DEFAULT 0): nobody
+        // consented to sending photos yet.
         builder.Property(p => p.MealPhotoRecognitionEnabled).HasColumnName("meal_photo_recognition_enabled")
             .IsRequired();
 

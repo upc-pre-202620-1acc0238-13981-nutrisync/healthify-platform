@@ -6,7 +6,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-6 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): <c>meal_group_id</c> and
+///     Meal groups against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): <c>meal_group_id</c> and
 ///     <c>origin</c> round-trip, and an entry logged alone keeps both null.
 /// </summary>
 [Collection(MySqlCollection.Name)]

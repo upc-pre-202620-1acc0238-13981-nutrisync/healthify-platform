@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-3. Optional eating habits of EV-2: meals per day, water per day and meals out per week.
+///     Optional eating habits of step 1: meals per day, water per day and meals out per week.
 ///     Every value is optional on its own; with none of them there are no habits at all.
 /// </summary>
 public sealed record EatingHabits
@@ -27,7 +27,7 @@ public sealed record EatingHabits
     public decimal? WaterLitersPerDay { get; }
     public int? MealsOutPerWeek { get; }
 
-    /// <summary>Null when nothing was recorded, which is what "optional" means in EV-2.</summary>
+    /// <summary>Null when nothing was recorded, which is what "optional" means in step 1.</summary>
     public static EatingHabits? From(int? mealsPerDay, decimal? waterLitersPerDay, int? mealsOutPerWeek)
     {
         return mealsPerDay is null && waterLitersPerDay is null && mealsOutPerWeek is null

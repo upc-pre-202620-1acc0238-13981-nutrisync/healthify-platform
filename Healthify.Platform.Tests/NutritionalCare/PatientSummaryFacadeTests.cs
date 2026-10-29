@@ -11,8 +11,8 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     RM-2. What the Nutritional Care facade publishes for PAC-1: the baseline as "Mujer · 31 años · 168 cm ·
-///     hipotiroidismo", where a consultation in progress was left, and when the last one was published. Nothing
+///     What the Nutritional Care facade publishes for the patient summary: the baseline as "woman, 31 years,
+///     168 cm, hypothyroidism", where a consultation in progress was left, and when the last one was published. Nothing
 ///     a step produced crosses, and every method degrades to null.
 /// </summary>
 public class PatientSummaryFacadeTests

@@ -15,12 +15,12 @@ namespace Healthify.Platform.NutritionalCare.Application.Internal.EventHandlers;
 /// <remarks>
 ///     Integration event 12 of 13, and one of the two places where the automation of this platform
 ///     ends on purpose.
-///     Business rule: Signal Notifies Never Modifies The Plan (Subflow 3.7), reformulated by NC-10 as "without an
+///     Business rule: Signal Notifies Never Modifies The Plan (Subflow 3.7), reformulated as "without an
 ///     explicit action of the practitioner", and invariant 3 of Monitoring and Adherence. This handler resolves
 ///     exactly one service and issues exactly one command, and that command opens an item in an inbox. It does not
 ///     resolve the plan command service, and there is no branch in it that could reach one. A signal arrives, a
 ///     review item is created, and the chain dies there until a person picks it up.
-///     NC-10: once the item exists, its AI plan proposal is queued for a background worker. A proposal is a text in
+///     Once the item exists, its AI plan proposal is queued for a background worker. A proposal is a text in
 ///     the inbox; the plan changes only when the practitioner accepts it, on a different endpoint and service.
 ///     That a human takes the next step is not a user experience detail. It is what stops an
 ///     algorithm changing a clinical plan on the strength of an estimate somebody made from a photo.
@@ -47,14 +47,14 @@ public class OnSustainedDeviationDetectedHandler(
             return;
         }
 
-        // NC-10, option A: generated in the background, after the item exists, so this handler never waits for a
+        // Generated in the background, after the item exists, so this handler never waits for a
         // model. Generating it attaches a text to the item and never touches the plan.
         planProposalGenerationQueue.TryEnqueue(opened.Value.Id.Value);
     }
 
     /// <summary>
-    ///     NC-11. The evidence as numbers too, so the client words it in the practitioner's language. Null when the
-    ///     producer predates NC-11 or the numbers do not hold together: the text evidence still opens the item.
+    ///     The evidence as numbers too, so the client words it in the practitioner's language. Null when the
+    ///     producer predates numeric evidence or the numbers do not hold together: the text evidence still opens the item.
     /// </summary>
     private static ReviewItemEvidenceDto? EvidenceDataOf(SustainedDeviationDetected notification)
     {

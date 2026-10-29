@@ -12,13 +12,13 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 /// <param name="FatG">New fat target.</param>
 /// <param name="Guidelines">Catalog codes. Any other text becomes a custom guideline.</param>
 /// <param name="Restrictions">
-///     NC-6. <c>DietaryRestriction</c> codes only. Legacy restrictions of the current version that are not
+///     <c>DietaryRestriction</c> codes only. Legacy restrictions of the current version that are not
 ///     mapped to a code here are left out of the new version and recorded on it.
 /// </param>
 /// <param name="ChangeReason">Why this version exists.</param>
-/// <param name="CustomGuidelines">NC-6. "Otra indicación": 3 to 140 characters, at most 5 per version.</param>
-/// <param name="PatientMessage">NC-9. Optional message for the patient with this version, at most 500 characters.</param>
-/// <remarks>Deprecated by NC-6: free text in <paramref name="Guidelines" />; new clients send codes and custom texts apart.</remarks>
+/// <param name="CustomGuidelines">The "other guideline" texts: 3 to 140 characters, at most 5 per version.</param>
+/// <param name="PatientMessage">Optional message for the patient with this version, at most 500 characters.</param>
+/// <remarks>Older clients still send free text in <paramref name="Guidelines" />; new clients send codes and custom texts apart.</remarks>
 public record AdjustNutritionPlanCommand(
     int PlanId,
     int PractitionerId,

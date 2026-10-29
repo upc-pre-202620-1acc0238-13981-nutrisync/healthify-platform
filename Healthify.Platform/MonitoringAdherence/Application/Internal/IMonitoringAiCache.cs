@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.MonitoringAdherence.Application.Internal;
 
 /// <summary>
-///     IA-4/IA-5. The short-lived cache of generated content of this context (suggested questions per visit,
+///     The short-lived cache of generated content of this context (suggested questions per visit,
 ///     monitoring summaries for six hours), keyed by patient, function and key.
 /// </summary>
 /// <remarks>
@@ -16,7 +16,7 @@ public interface IMonitoringAiCache
 
     void Set<T>(AiFeature feature, int patientId, string key, T value, TimeSpan lifetime) where T : class;
 
-    /// <summary>§12-#14. Removes every entry of the patient, or only those of one function.</summary>
+    /// <summary>Removes every entry of the patient, or only those of one function.</summary>
     /// <returns>Entries removed.</returns>
     int Evict(int patientId, AiFeature? feature = null);
 }

@@ -22,7 +22,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     CR-1. When a patient switches practitioners the evaluation window is handed over from the
+///     When a patient switches practitioners the evaluation window is handed over from the
 ///     previous link to the new one whatever the order of Care Link Revoked and Care Link Established,
 ///     and even if the revocation policy fails: the patient always ends with exactly one open window,
 ///     the new link's.

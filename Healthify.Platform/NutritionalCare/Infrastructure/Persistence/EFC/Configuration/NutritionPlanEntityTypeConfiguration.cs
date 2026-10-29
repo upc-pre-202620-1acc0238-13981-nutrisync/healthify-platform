@@ -90,7 +90,7 @@ public class NutritionPlanEntityTypeConfiguration : IEntityTypeConfiguration<Nut
         builder.Property(p => p.PrescribedOverrideReason)
             .HasColumnName("prescribed_override_reason").HasMaxLength(500);
 
-        // X-2. The reason is three columns: the sentence (legacy fallback, or the practitioner's text when the code
+        // The reason is three columns: the sentence (legacy fallback, or the practitioner's text when the code
         // is Custom), its code and the parameters of the code. ChangeReason is computed from them.
         builder.Ignore(p => p.ChangeReason);
         builder.Property(p => p.ChangeReasonText).HasColumnName("change_reason").HasMaxLength(500);
@@ -103,14 +103,14 @@ public class NutritionPlanEntityTypeConfiguration : IEntityTypeConfiguration<Nut
 
         builder.Property(p => p.PublishedAt).HasColumnName("published_at");
         builder.Property(p => p.SupersededAt).HasColumnName("superseded_at");
-        // NC-2. An unpublished draft left out by its consultation.
+        // An unpublished draft left out by its consultation.
         builder.Property(p => p.DiscardedAt).HasColumnName("discarded_at");
         builder.Property(p => p.IsActive).HasColumnName("is_active").IsRequired();
 
         // Guidelines and restrictions are lists stored as JSON, and mapped through their backing fields
         // because the aggregate exposes them as read-only. The value comparer is not optional: without it
         // EF never notices a change and updates are silently lost.
-        // NC-6: guidelines are objects, a catalog code or a custom text (GuidelineJsonConverter), and
+        // Guidelines are objects, a catalog code or a custom text (GuidelineJsonConverter), and
         // restrictions are DietaryRestriction codes.
         builder.Property<List<Guideline>>("_guidelines")
             .HasConversion(
@@ -129,7 +129,7 @@ public class NutritionPlanEntityTypeConfiguration : IEntityTypeConfiguration<Nut
                 StringListComparer)
             .HasColumnName("restrictions").HasColumnType("json").IsRequired();
 
-        // NC-6: free text restrictions from before the closed list that match no code, and the ones a new
+        // Free text restrictions from before the closed list that match no code, and the ones a new
         // version left out. Both are kept as written.
         builder.Property<List<string>>("_legacyRestrictions")
             .HasConversion(
@@ -145,7 +145,7 @@ public class NutritionPlanEntityTypeConfiguration : IEntityTypeConfiguration<Nut
                 NullableStringListComparer)
             .HasColumnName("dropped_legacy_restrictions").HasColumnType("json");
 
-        // NC-8: "Qué cambió en esta versión", recorded once at publication. NULL for versions published before.
+        // "What changed in this version", recorded once at publication. NULL for older versions.
         builder.Property<List<PlanChange>?>("_changesFromPrevious")
             .HasConversion(
                 v => v == null ? null : PlanChangeJsonConverter.Serialize(v),
@@ -153,7 +153,7 @@ public class NutritionPlanEntityTypeConfiguration : IEntityTypeConfiguration<Nut
                 NullablePlanChangeListComparer)
             .HasColumnName("patient_change_summary").HasColumnType("json");
 
-        // NC-9: the practitioner's message to the patient for this version.
+        // The practitioner's message to the patient for this version.
         builder.Property(p => p.PatientMessage).HasColumnName("patient_message").HasMaxLength(500);
 
         builder.Property(p => p.CreatedAt).HasColumnName("created_at");

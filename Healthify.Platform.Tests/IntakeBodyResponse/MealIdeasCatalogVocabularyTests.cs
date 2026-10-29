@@ -27,11 +27,11 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IA-3, «¿No sabes qué comer? · Ideas con IA» answering 502. The model named ingredients the local catalog does not
+///     The AI meal ideas answering 502. The model named ingredients the local catalog does not
 ///     carry («Pan integral», «Avena», «Pechuga de pollo a la plancha»), every idea was discarded by Unresolved
 ///     Ingredients Stay Minor, the retry did the same and the answer was <see cref="AiError.AiOutputRejected" />.
-///     Since <c>meal-ideas@2</c> the model receives the catalog names (the platform list of IN-7) and uses them. Real
-///     Food Catalog in memory (FC-2 matcher), real shared pipeline, fake model.
+///     Since <c>meal-ideas@2</c> the model receives the catalog names (the platform list of the photo recognition) and uses them. Real
+///     Food Catalog in memory (name matcher), real shared pipeline, fake model.
 /// </summary>
 /// <remarks>The day: 1800 kcal and 100 g of protein, nothing eaten yet, so all of it is left. No restrictions.</remarks>
 public class MealIdeasCatalogVocabularyTests

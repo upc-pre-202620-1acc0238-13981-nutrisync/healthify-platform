@@ -18,7 +18,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-3. Step 1 of the guided consultation (RecordConsultationMeasurementCommand) and the minimal
+///     Step 1 of the guided consultation (RecordConsultationMeasurementCommand) and the minimal
 ///     start of a consultation it needs: order of the guards, the snapshot taken from the baseline, the
 ///     single transaction around both saves and the events published after the final commit.
 /// </summary>

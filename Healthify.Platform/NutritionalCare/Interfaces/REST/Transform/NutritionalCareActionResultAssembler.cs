@@ -62,8 +62,8 @@ public static class NutritionalCareActionResultAssembler
     }
 
     /// <summary>
-    ///     NC-10. 200 with <c>{ reviewItem, planVersion }</c>; the item with the patient's name when
-    ///     <paramref name="entry" /> carries it (NC-11).
+    ///     200 with <c>{ reviewItem, planVersion }</c>; the item with the patient's name when
+    ///     <paramref name="entry" /> carries it.
     /// </summary>
     public static IActionResult ToPlanProposalAcceptanceResult(
         Result<PlanProposalAcceptanceOutcome, NutritionalCareError> result,
@@ -80,7 +80,7 @@ public static class NutritionalCareActionResultAssembler
     }
 
     /// <summary>
-    ///     NC-11. The resolved item with the patient's name and the other inbox fields, as <c>GET /review-items</c>
+    ///     The resolved item with the patient's name and the other inbox fields, as <c>GET /review-items</c>
     ///     shows it; without <paramref name="entry" />, the item alone.
     /// </summary>
     public static IActionResult ToReviewItemResult(
@@ -131,7 +131,7 @@ public static class NutritionalCareActionResultAssembler
     }
 
     /// <summary>
-    ///     NC-2. A step of the consultation: on success, the consultation as it now reads (<paramref name="details" />,
+    ///     A step of the consultation: on success, the consultation as it now reads (<paramref name="details" />,
     ///     read again after the command).
     /// </summary>
     public static IActionResult ToConsultationResult<TOutcome>(
@@ -150,8 +150,8 @@ public static class NutritionalCareActionResultAssembler
     }
 
     /// <summary>
-    ///     NC-2. Start a consultation. The 409 of a second one carries the identifier of the consultation in
-    ///     progress in <c>extensions.consultationId</c>, so the app offers "Continuar consulta".
+    ///     Start a consultation. The 409 of a second one carries the identifier of the consultation in
+    ///     progress in <c>extensions.consultationId</c>, so the app offers to resume it.
     /// </summary>
     /// <param name="result">What the command produced.</param>
     /// <param name="details">The consultation in progress of the patient: the new one, or the one that blocks it.</param>
@@ -176,7 +176,7 @@ public static class NutritionalCareActionResultAssembler
         return ToConsultationResult(result, details, localizer, StatusCodes.Status201Created);
     }
 
-    /// <summary>NC-5. The target proposal of step 3 (EV-4).</summary>
+    /// <summary>The target proposal of step 3.</summary>
     public static IActionResult ToTargetProposalResult(
         Result<ConsultationTargetProposalOutcome, NutritionalCareError> result,
         IStringLocalizer<NutritionalCareMessages> localizer)
@@ -191,7 +191,7 @@ public static class NutritionalCareActionResultAssembler
         };
     }
 
-    /// <summary>NC-2. A command with nothing to return (DELETE).</summary>
+    /// <summary>A command with nothing to return (DELETE).</summary>
     public static IActionResult ToNoContentResult<TOutcome>(
         Result<TOutcome, NutritionalCareError> result,
         IStringLocalizer<NutritionalCareMessages> localizer)
@@ -204,7 +204,7 @@ public static class NutritionalCareActionResultAssembler
         };
     }
 
-    /// <summary>NC-2. An error found by a read endpoint before or without a Result (bad filter, not yours).</summary>
+    /// <summary>An error found by a read endpoint before or without a Result (bad filter, not yours).</summary>
     public static IActionResult ToErrorResult(NutritionalCareError error,
         IStringLocalizer<NutritionalCareMessages> localizer)
     {
@@ -359,7 +359,7 @@ public static class NutritionalCareActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-0. The shared technical AI errors of a generation run by this context (IA-6, IA-7 and IA-8), with the texts of
+    ///     The shared technical AI errors of a generation run by this context, with the texts of
     ///     <see cref="AiMessages" />.
     /// </summary>
     public static IActionResult ToAiFailureResult(AiError error, IStringLocalizer<AiMessages> localizer)

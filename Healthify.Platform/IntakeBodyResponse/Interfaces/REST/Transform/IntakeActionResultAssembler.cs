@@ -60,7 +60,7 @@ public static class IntakeActionResultAssembler
         };
     }
 
-    /// <summary>IN-6. 201 with the entries of the meal.</summary>
+    /// <summary>201 with the entries of the meal.</summary>
     public static IActionResult ToMealGroupResult(Result<MealGroupLogOutcome, IntakeError> result,
         IReadOnlyDictionary<int, string> foodNames, IStringLocalizer<IntakeMessages> localizer)
     {
@@ -74,7 +74,7 @@ public static class IntakeActionResultAssembler
         };
     }
 
-    /// <summary>IN-4. The batch always succeeds as a whole; each reading carries its own outcome.</summary>
+    /// <summary>The batch always succeeds as a whole; each reading carries its own outcome.</summary>
     public static IActionResult ToSelfWeighInSyncResult(
         Result<SelfWeighInSyncOutcome, IntakeError> result,
         IStringLocalizer<IntakeMessages> localizer)
@@ -168,10 +168,10 @@ public static class IntakeActionResultAssembler
                 localizer["UnprocessableEntityTitle"].Value, localizer["ReferenceFoodNotResolved"].Value),
             IntakeError.EstimateNotProposed => Problem(StatusCodes.Status422UnprocessableEntity,
                 localizer["UnprocessableEntityTitle"].Value, localizer["EstimateNotProposed"].Value),
-            // IA-3: not a failure of the patient; the text invites («Ya cubriste tu energía de hoy»).
+            // Not a failure of the patient; the text invites (today's energy is already covered).
             IntakeError.NotEnoughRemaining => Problem(StatusCodes.Status422UnprocessableEntity,
                 localizer["UnprocessableEntityTitle"].Value, localizer["NotEnoughRemaining"].Value),
-            // IN-7: PT7.3, the app offers to log the meal by hand. Never the patient's fault.
+            // The app offers to log the meal by hand. Never the patient's fault.
             IntakeError.PhotoNotRecognized => Problem(StatusCodes.Status422UnprocessableEntity,
                 localizer["UnprocessableEntityTitle"].Value, localizer["PhotoNotRecognized"].Value),
             IntakeError.MealPhotoAnalysisExpired => Problem(StatusCodes.Status422UnprocessableEntity,
@@ -183,7 +183,7 @@ public static class IntakeActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-0. The shared technical AI errors of a generation run by this context (IA-3), with the texts of
+    ///     The shared technical AI errors of a generation run by this context, with the texts of
     ///     <see cref="AiMessages" />.
     /// </summary>
     public static IActionResult ToAiFailureResult(AiError error, IStringLocalizer<AiMessages> localizer)
@@ -206,7 +206,7 @@ public static class IntakeActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-3. An AI function of this context: its business errors with the texts of <see cref="IntakeMessages" />,
+    ///     An AI function of this context: its business errors with the texts of <see cref="IntakeMessages" />,
     ///     the shared technical ones with those of <see cref="AiMessages" />.
     /// </summary>
     public static IActionResult ToAiFunctionResult<T>(Result<T, IntakeAiFailure> result, Func<T, object> toResource,

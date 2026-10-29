@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Configuration;
 
 /// <summary>
-///     IA-0. <see cref="IAiSettings" /> over <c>IConfiguration</c>, read on every call. Defaults in code, never only
+///     <see cref="IAiSettings" /> over <c>IConfiguration</c>, read on every call. Defaults in code, never only
 ///     in appsettings: without configuration, AI is off.
 /// </summary>
 public class ConfiguredAiSettings(IConfiguration configuration, ILogger<ConfiguredAiSettings> logger) : IAiSettings
@@ -20,11 +20,11 @@ public class ConfiguredAiSettings(IConfiguration configuration, ILogger<Configur
     public const int DefaultRetentionDays = 180;
     public const int DefaultMaxOutputTokens = 2048;
 
-    // DECISIÓN IA-0: the MD fixes only the meal ideas quota (10 per day per patient). The other patient functions
+    // The spec fixes only the meal ideas quota (10 per day per patient). The other patient functions
     // get 20 per patient and the practitioner ones 100 per practitioner, both per rolling 24 hours.
     public const int DefaultMealIdeasDailyLimit = 10;
 
-    /// <summary>IN-7: photos of meals per patient per rolling 24 hours (several meals a day, each maybe retaken).</summary>
+    /// <summary>Photos of meals per patient per rolling 24 hours (several meals a day, each maybe retaken).</summary>
     public const int DefaultMealPhotoRecognitionDailyLimit = 30;
     public const int DefaultPatientDailyLimit = 20;
     public const int DefaultPractitionerDailyLimit = 100;

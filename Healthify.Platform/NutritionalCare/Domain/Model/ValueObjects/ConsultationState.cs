@@ -1,6 +1,6 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
-/// <summary>NC-2/NC-3. Whether a consultation can still be resumed. It closes on publication.</summary>
+/// <summary>Whether a consultation can still be resumed. It closes on publication.</summary>
 public sealed record ConsultationState
 {
     public const string InProgress = "InProgress";

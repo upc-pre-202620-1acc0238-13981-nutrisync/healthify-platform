@@ -15,11 +15,11 @@ using Healthify.Platform.Shared.Domain.Repositories;
 namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandServices;
 
 /// <summary>
-///     NC-10 - Accept Plan Proposal (PR14.IA "Resolver asigna este plan tal cual y se lo publica a Ana. Ajustar abre el
-///     plan para que lo edites antes de asignarlo.").
+///     Accept Plan Proposal: assign the proposed plan as is and publish it to the patient, or edit it first and
+///     then assign it.
 /// </summary>
 /// <remarks>
-///     Business rule: No Signal Or Algorithm Modifies The Plan Without An Explicit Action Of The Practitioner (NC-10).
+///     Business rule: No Signal Or Algorithm Modifies The Plan Without An Explicit Action Of The Practitioner.
 ///     This is the explicit action: it is reached from the practitioner's POST only, and no policy, worker or handler
 ///     resolves this service.
 ///     The order is the specification: 1 the edits (each to its error); 2 only a practitioner, the one whose inbox it
@@ -44,7 +44,7 @@ public class PlanProposalCommandService(
     public async Task<Result<PlanProposalAcceptanceOutcome, NutritionalCareError>> Handle(
         AcceptPlanProposalCommand command, CancellationToken cancellationToken = default)
     {
-        // 1. The edits of PR14.IA-A, each to its own error, before anything loads.
+        // 1. The edits of the adjusted plan, each to its own error, before anything loads.
         var edits = command.Edits;
         if (!command.AsIs && edits is null) return Failure(NutritionalCareError.PlanProposalEditsRequired);
         List<Guideline>? editedGuidelines = null;
@@ -95,7 +95,7 @@ public class PlanProposalCommandService(
             var carb = command.AsIs ? proposal.ProposedCarbG : edits!.CarbG;
             var fat = command.AsIs ? proposal.ProposedFatG : edits!.FatG;
 
-            // Business rule: Calorie Floor (NC-10). The only hard rule an edit meets; the ±25 % band and the
+            // Business rule: Calorie Floor. The only hard rule an edit meets; the ±25 % band and the
             // coherence of the macros bound the AI, not the practitioner.
             var diagnosis = await diagnosisRepository.FindActiveByPatientIdAsync(reviewItem.PatientId,
                 cancellationToken);
@@ -105,7 +105,7 @@ public class PlanProposalCommandService(
             if (!PlanAdjustmentSafety.IsAtOrAboveFloor(energy, floor))
                 return Failure(NutritionalCareError.PlanProposalOutOfSafetyBounds);
 
-            // 5. Mutate. Business rule: No Restriction From The AI (NC-10): the restrictions are those in force.
+            // 5. Mutate. Business rule: No Restriction From The AI: the restrictions are those in force.
             var guidelines = GuidelinesOf(current, proposal.AddedGuidelines, proposal.RemovedGuidelines,
                 editedGuidelines);
             var restrictions = current.Restrictions.Select(r => new DietaryRestriction(r)).ToList();
@@ -138,7 +138,7 @@ public class PlanProposalCommandService(
             }, cancellationToken);
 
             // 7. After the commit. NutritionPlanAdjusted fires the existing policy that publishes ActiveTargetsUpdated
-            //    (Intake, Care Relationship, Monitoring), with the message of NC-9.
+            //    (Intake, Care Relationship, Monitoring), with the message for the patient.
             await mediator.PublishAsync(
                 new NutritionPlanAdjusted(adjusted.Id.Value, adjusted.PatientId, adjusted.Version, changeReason.Value),
                 cancellationToken);
@@ -174,7 +174,7 @@ public class PlanProposalCommandService(
     ///     The guidelines of the new version. As is: those in force, minus the removed codes, plus the added ones. With
     ///     edits: the codes the practitioner left. Custom guidelines in force are kept either way.
     /// </summary>
-    /// <remarks>DECISIÓN NC-10: PR14.IA-A edits catalog chips; "Otra indicación" of the version in force stays.</remarks>
+    /// <remarks>The edit screen changes catalog chips only; the custom guidelines of the version in force stay.</remarks>
     private static List<Guideline> GuidelinesOf(NutritionPlan current, IReadOnlyList<string> added,
         IReadOnlyList<string> removed, List<Guideline>? edited)
     {

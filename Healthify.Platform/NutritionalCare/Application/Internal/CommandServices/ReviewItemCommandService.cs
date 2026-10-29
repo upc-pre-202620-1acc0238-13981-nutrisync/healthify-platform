@@ -20,11 +20,11 @@ namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandService
 ///     The inbox. Signals from Monitoring enter here and stop.
 /// </summary>
 /// <remarks>
-///     Business rule: Signal Notifies Never Modifies The Plan (Subflow 3.7), reformulated by NC-10 as "No signal or
+///     Business rule: Signal Notifies Never Modifies The Plan (Subflow 3.7), reformulated as "No signal or
 ///     algorithm modifies the plan without an explicit action of the practitioner". Nothing in this class writes a
 ///     NutritionPlan, and it does not depend on the plan command service at all: the absence of that dependency is
-///     what makes the rule structural rather than a matter of care. NC-10 adds two things that stay on this side of
-///     the line: the AI proposal (IA-8), which reads the version in force to describe it and attaches a text to the
+///     what makes the rule structural rather than a matter of care. Two things that stay on this side of
+///     the line: the AI proposal, which reads the version in force to describe it and attaches a text to the
 ///     item, and the scheduled recheck, which opens another item. Assigning a proposed plan is a different command
 ///     service (<c>PlanProposalCommandService</c>), reached only from the practitioner's POST.
 /// </remarks>
@@ -94,7 +94,7 @@ public class ReviewItemCommandService(
     }
 
     /// <summary>Subflow 3.7 - Resolve Review Item. A person decides, and says what they decided.</summary>
-    /// <remarks>NC-10: unchanged contract. A proposal still waiting is dismissed ("Resolver sin asignar").</remarks>
+    /// <remarks>Unchanged contract. A proposal still waiting is dismissed (resolve without assigning).</remarks>
     public async Task<Result<ReviewItem, NutritionalCareError>> Handle(ResolveReviewItemCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -132,13 +132,13 @@ public class ReviewItemCommandService(
     }
 
     /// <summary>
-    ///     NC-10 - Generate Plan Proposal. Reached only from the background worker queued by the sustained deviation
+    ///     Generate Plan Proposal. Reached only from the background worker queued by the sustained deviation
     ///     policy.
     /// </summary>
     /// <remarks>
     ///     The plan is read to describe it to the model, never written: this command saves the review item and nothing
-    ///     else. When the AI is off, the patient did not consent (§12-#5), the provider fails or the proposal breaks a
-    ///     hard rule, the item stays without a proposal and PR14 shows it without AI.
+    ///     else. When the AI is off, the patient did not consent, the provider fails or the proposal breaks a
+    ///     hard rule, the item stays without a proposal and shows without AI.
     /// </remarks>
     public async Task<Result<ReviewItem, NutritionalCareError>> Handle(GeneratePlanProposalCommand command,
         CancellationToken cancellationToken = default)
@@ -147,7 +147,7 @@ public class ReviewItemCommandService(
         {
             var reviewItem = await reviewItemRepository.FindByIdAsync(command.ReviewItemId, cancellationToken);
             if (reviewItem is null) return Failure(NutritionalCareError.ReviewItemNotFound);
-            // Business rule: Proposal Only For A Sustained Deviation (NC-10, DECISIÓN §12-#11).
+            // Business rule: Proposal Only For A Sustained Deviation.
             if (!reviewItem.SignalType.IsSustainedDeviation)
                 return Failure(NutritionalCareError.ReviewItemNotSustainedDeviation);
             if (!reviewItem.IsOpen) return Failure(NutritionalCareError.ReviewItemNotFound);
@@ -173,7 +173,7 @@ public class ReviewItemCommandService(
             if (!await reviewItemRepository.ExistsOpenWithoutProposalAsync(reviewItem.Id.Value, cancellationToken))
                 return Failure(NutritionalCareError.PlanProposalAlreadyDecided);
 
-            // IA-8. The patient's AI processing may have ended while the model answered; its purge already ran, so
+            // The patient's AI processing may have ended while the model answered; its purge already ran, so
             // the proposal is not attached. NOTE: hotspot. A withdrawal committed between this check and the save
             // below still leaves one proposal behind (no lock spans both contexts); the next withdrawal purges it.
             if (!await aiConsentPolicy.IsAllowedAsync(reviewItem.PatientId, AiFeature.PlanAdjustmentProposal,
@@ -213,8 +213,8 @@ public class ReviewItemCommandService(
     }
 
     /// <summary>
-    ///     NC-10 - Open the scheduled rechecks (DECISIÓN §12-#12). One new <c>ScheduledRecheck</c> item per adjustment
-    ///     whose date arrived, with its evidence read from Monitoring: "Revisión programada tras ajuste del 8 sept.".
+    ///     Open the scheduled rechecks. One new <c>ScheduledRecheck</c> item per adjustment whose date arrived,
+    ///     with its evidence read from Monitoring (a recheck scheduled after the adjustment of a given day).
     /// </summary>
     /// <remarks>
     ///     Each recheck is saved on its own, so one failure does not stop the others. When nobody cares for the patient
@@ -258,13 +258,13 @@ public class ReviewItemCommandService(
     }
 
     /// <summary>
-    ///     IA-8 - Purge the unaccepted AI plan proposals of a patient (policy "When AI Processing Consent Withdrawn",
-    ///     CR-2, §12-#14). A proposal still Proposed or Dismissed is removed; one a practitioner accepted produced a
-    ///     version of the plan and stays as clinical record. The review items are kept as they are: an open one is
-    ///     PR14 without AI.
+    ///     Purge the unaccepted AI plan proposals of a patient (policy "When AI Processing Consent Withdrawn").
+    ///     A proposal still Proposed or Dismissed is removed; one a practitioner accepted produced a
+    ///     version of the plan and stays as clinical record. The review items are kept as they are: an open one
+    ///     shows without AI.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN IA-8: "no aceptadas" includes the Dismissed ones too. They hold the same AI text and are not part
+    ///     "Not accepted" includes the Dismissed ones too. They hold the same AI text and are not part
     ///     of any version; the resolution of their item (with its note) is what the record keeps.
     /// </remarks>
     public async Task<Result<int, NutritionalCareError>> Handle(PurgeUnacceptedPlanProposalsCommand command,
@@ -277,7 +277,7 @@ public class ReviewItemCommandService(
             var items = await reviewItemRepository.ListWithUnacceptedProposalByPatientIdAsync(command.PatientId,
                 cancellationToken);
 
-            // Business rule: Accepted Proposal Is Clinical Record (IA-8), asserted by the aggregate.
+            // Business rule: Accepted Proposal Is Clinical Record, asserted by the aggregate.
             var purged = 0;
             foreach (var item in items)
             {
@@ -298,7 +298,7 @@ public class ReviewItemCommandService(
     }
 
     /// <summary>
-    ///     NC-10 - Recover the plan proposals. The queue lives in memory, so a restart loses what was waiting; this
+    ///     Recover the plan proposals. The queue lives in memory, so a restart loses what was waiting; this
     ///     runs at start-up and every N minutes and queues the open sustained deviations of the last hours that have
     ///     no proposal, as long as the function is on and the patient consented (otherwise the generation could only
     ///     end in a refusal). Queuing is all it does: the worker generates, and generating never touches the plan.
@@ -330,7 +330,7 @@ public class ReviewItemCommandService(
             if (planProposalGenerationQueue.IsPending(item.Id.Value)) continue;
             try
             {
-                // §12-#5: without the patient's AI consent the practitioner function has no proposal.
+                // Without the patient's AI consent the practitioner function has no proposal.
                 if (!await aiConsentPolicy.IsAllowedAsync(item.PatientId, feature, cancellationToken)) continue;
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

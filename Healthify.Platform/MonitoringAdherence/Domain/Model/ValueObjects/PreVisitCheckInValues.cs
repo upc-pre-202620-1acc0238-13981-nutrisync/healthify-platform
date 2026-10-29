@@ -1,10 +1,10 @@
 namespace Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 
 /// <summary>
-///     MA-4. "¿Cómo te sentiste con tu plan?": Bien · Regular · Difícil (PT25.2).
+///     How the patient felt about the plan: Good, Fair or Hard.
 /// </summary>
 /// <remarks>
-///     Business rule: Check In Raises No Signal (MA-4). <c>Hard</c> is what the patient chose to tell their
+///     Business rule: Check In Raises No Signal. <c>Hard</c> is what the patient chose to tell their
 ///     practitioner, not a reading of their adherence: nothing reads it to escalate, evaluate or deviate.
 /// </remarks>
 public sealed record PlanFeeling
@@ -37,7 +37,7 @@ public sealed record PlanFeeling
 }
 
 /// <summary>
-///     MA-4. "¿Qué te costó más? Puedes elegir varias.": Cenas · Fines de semana · Comer fuera · Horarios · Antojos.
+///     What was hardest, several allowed: dinners, weekends, eating out, schedules, cravings.
 /// </summary>
 /// <remarks>A closed list: the app shows each one with a fixed, reviewed wording.</remarks>
 public sealed record CheckInDifficulty
@@ -72,10 +72,10 @@ public sealed record CheckInDifficulty
 }
 
 /// <summary>
-///     MA-4. Where a question of the check in came from: written by the patient, or an AI suggestion the patient
-///     accepted ("Sugerencia de IA · También podrías preguntar").
+///     Where a question of the check in came from: written by the patient, or an AI suggestion the patient
+///     accepted (shown as an AI suggestion).
 /// </summary>
-/// <remarks>Kept so that what came from the AI can be audited (IA-4).</remarks>
+/// <remarks>Kept so that what came from the AI can be audited.</remarks>
 public sealed record QuestionOrigin
 {
     public const string Patient = "Patient";
@@ -107,7 +107,7 @@ public sealed record QuestionOrigin
 }
 
 /// <summary>
-///     MA-4. "¿Algo que quieras preguntarle?": one question for the practitioner, with where it came from.
+///     One question for the practitioner, with where it came from.
 /// </summary>
 /// <remarks>
 ///     Stored as JSON inside the check in, so the constructor parameters carry the property names the serializer
@@ -122,7 +122,7 @@ public sealed record PatientQuestion
     /// <param name="origin">Patient (default) or AiSuggested.</param>
     /// <param name="aiGenerationId">The AI generation it came from, when it was suggested; null otherwise.</param>
     /// <param name="language">
-    ///     X-2. <c>es</c> or <c>en</c>: the language an AI suggestion was generated in. Kept only for AiSuggested; a
+    ///     <c>es</c> or <c>en</c>: the language an AI suggestion was generated in. Kept only for AiSuggested; a
     ///     question the patient wrote is their own text, never translated, and has none.
     /// </param>
     public PatientQuestion(string text, string? origin = null, long? aiGenerationId = null, string? language = null)
@@ -152,8 +152,9 @@ public sealed record PatientQuestion
     public long? AiGenerationId { get; }
 
     /// <summary>
-    ///     X-2. es or en for an AI suggestion; null for the patient's own questions and for suggestions stored before
-    ///     X-2 (they live in the JSON of <c>pre_visit_check_ins.questions</c> and read back without it).
+    ///     Es or en for an AI suggestion; null for the patient's own questions and for suggestions stored before
+    ///     the language was recorded (they live in the JSON of <c>pre_visit_check_ins.questions</c> and read back
+    ///     without it).
     /// </summary>
     public string? Language { get; }
 

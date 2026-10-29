@@ -23,7 +23,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.CareRelationship;
 
 /// <summary>
-///     CR-1 - switching practitioners. Redeeming another practitioner's invitation with the explicit
+///     Switching practitioners. Redeeming another practitioner's invitation with the explicit
 ///     confirmation revokes the current link (reason SwitchedPractitioner) in the same commit; without
 ///     it, the conflict answer is unchanged.
 /// </summary>

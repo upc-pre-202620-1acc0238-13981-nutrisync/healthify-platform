@@ -4,7 +4,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
-/// <summary>MA-2. Preparation is a closed list and the modality is in person unless the practitioner says remote.</summary>
+/// <summary>Preparation is a closed list and the modality is in person unless the practitioner says remote.</summary>
 public class FollowUpPreparationAndModalityTests
 {
     [Theory]

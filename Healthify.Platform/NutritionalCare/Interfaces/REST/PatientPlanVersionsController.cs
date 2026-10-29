@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST;
 
 /// <summary>
-///     NC-8 - The plan versions the patient received (PT4, PT4.1), with "Qué cambió en esta versión".
+///     The plan versions the patient received, with "What changed in this version".
 /// </summary>
 /// <remarks>
 ///     Patient only, and only their own. Separate from <c>GET /patients/{id}/nutrition-plans</c>, which is the

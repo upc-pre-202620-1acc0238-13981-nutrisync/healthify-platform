@@ -1,12 +1,12 @@
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IN-9. What the patient logged on one day of their own, next to the published targets (PT3 «Medidor del día»):
+///     What the patient logged on one day of their own, next to the published targets (the day's gauge):
 ///     energy and macronutrients consumed and what is left of each.
 /// </summary>
 /// <remarks>
 ///     Descriptive only: it never rates the day (no outcome, no flags). Rating a day is MonitoringAdherence's job
-///     (daily-compliance). Only confirmed entries count, as everywhere else (RM-3).
+///     (daily-compliance). Only confirmed entries count, as everywhere else.
 /// </remarks>
 /// <param name="Date">The patient's day.</param>
 /// <param name="EnergyKcal">Energy logged that day.</param>

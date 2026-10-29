@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Healthify.Platform.Tests.NutritionalCare;
 
-/// <summary>NC-3. Activity factors: defaults in code, overridable in NutritionalCare:ActivityFactors.</summary>
+/// <summary>Activity factors: defaults in code, overridable in NutritionalCare:ActivityFactors.</summary>
 public class ActivityFactorProviderTests
 {
     [Fact]

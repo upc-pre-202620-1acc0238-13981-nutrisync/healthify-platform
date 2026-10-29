@@ -21,7 +21,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-9. What the patient logged today next to their targets, for the home gauge: confirmed entries only, what is
+///     What the patient logged today next to their targets, for the home gauge: confirmed entries only, what is
 ///     left never below zero, and the day is described, never rated.
 /// </summary>
 public class DailyIntakeTests

@@ -28,7 +28,7 @@ public record TargetsReadStatusResource(
     public bool HasPendingAcknowledgement { get; init; } = HasPendingAcknowledgement;
 
     /// <summary>
-    ///     CR-3. When the patient acknowledged <see cref="LastAcknowledgedVersion" /> ("Ana las vio el mismo día"),
+    ///     When the patient acknowledged <see cref="LastAcknowledgedVersion" /> ("Ana saw them the same day"),
     ///     or null when unknown (never acknowledged, or acknowledged before the moment was recorded).
     /// </summary>
     public DateTimeOffset? LastAcknowledgedAt { get; init; } = LastAcknowledgedAt;

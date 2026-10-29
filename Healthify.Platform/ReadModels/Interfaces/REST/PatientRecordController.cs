@@ -58,7 +58,7 @@ public class PatientRecordController(
 
         var window = days ?? PatientRecordComposer.DefaultDays;
 
-        // RM-4: one resource per role. The patient's is built by a path that never asks for the diagnosis.
+        // One resource per role. The patient's is built by a path that never asks for the diagnosis.
         if (this.GetAuthenticatedRole() == "Patient")
         {
             var (record, own) = await composer.ComposeForPatient(patientId, window, HttpContext.RequestAborted);

@@ -26,8 +26,8 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-7. Issuing the consistency prompt is not showing it: the alert counts as shown to the patient only when
-///     their app acknowledges it painted the card (PT3), and the practitioner is told only N days after that
+///     Issuing the consistency prompt is not showing it: the alert counts as shown to the patient only when
+///     their app acknowledges it painted the card, and the practitioner is told only N days after that
 ///     (Patient First Always, Patient Prompt Required Before Escalation).
 /// </summary>
 public class ConsistencyPromptAcknowledgementTests

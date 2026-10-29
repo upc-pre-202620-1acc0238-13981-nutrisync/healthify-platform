@@ -4,7 +4,7 @@ using Healthify.Platform.Shared.Infrastructure.Ai.Prompts;
 
 namespace Healthify.Platform.Tests.Ai;
 
-/// <summary>IA-0. The schema check of guard 6 and the versioned prompt catalog.</summary>
+/// <summary>The schema check of guard 6 and the versioned prompt catalog.</summary>
 public class AiSchemaAndPromptCatalogTests
 {
     private const string Schema = """

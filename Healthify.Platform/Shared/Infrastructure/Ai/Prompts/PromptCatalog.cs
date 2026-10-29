@@ -5,7 +5,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Prompts;
 
 /// <summary>
-///     IA-0. The prompts as versioned Markdown files, <c>&lt;feature&gt;@&lt;n&gt;.md</c> (kebab-case feature name,
+///     The prompts as versioned Markdown files, <c>&lt;feature&gt;@&lt;n&gt;.md</c> (kebab-case feature name,
 ///     whole version number). They live in the context that owns the function
 ///     (<c>&lt;Context&gt;/Infrastructure/Ai/Prompts/</c>) and are embedded in the assembly under
 ///     <see cref="ResourcePrefix" /> (see the csproj), so this catalog references no context. The latest version of

@@ -16,7 +16,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-1. Registration requires given names and family names. The name is the first value object
+///     Registration requires given names and family names. The name is the first value object
 ///     validated, and a missing part fails before anything is read or written.
 /// </summary>
 public class RegisterAccountNameTests

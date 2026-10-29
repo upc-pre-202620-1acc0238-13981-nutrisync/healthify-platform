@@ -3,15 +3,15 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.Aggregates;
 
 /// <summary>
-///     IN-7. What the AI recognized in a photo of a meal: the dish resolved to the catalog, the estimated portion, how
+///     What the AI recognized in a photo of a meal: the dish resolved to the catalog, the estimated portion, how
 ///     sure it was and up to three alternatives. Kept for a short time (24 hours by default) so the photo log the
 ///     patient confirms can reference it, then purged.
 /// </summary>
 /// <remarks>
-///     Business rule: Photo Never Stored (IN-7). There is no property here that could hold the image, its name or its
+///     Business rule: Photo Never Stored. There is no property here that could hold the image, its name or its
 ///     metadata; the photo lived in memory for the request that produced this and nowhere else.
-///     Business rule: Analysis Is A Proposal (IN-7). An analysis never becomes intake by itself: it creates no diary
-///     entry. The patient confirms or adjusts it on PT7, and the entry keeps it as its proposal, beside what the
+///     Business rule: Analysis Is A Proposal. An analysis never becomes intake by itself: it creates no diary
+///     entry. The patient confirms or adjusts it, and the entry keeps it as its proposal, beside what the
 ///     patient said (Proposal Kept Alongside Confirmation).
 ///     It carries no field about where the food came from: whether the catalog already had it or the AI created it
 ///     is not something this context knows or shows.

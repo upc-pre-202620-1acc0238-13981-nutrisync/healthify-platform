@@ -2,7 +2,7 @@ using Healthify.Platform.Iam.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Tests.Iam;
 
-/// <summary>IAM-1. The person name is human text: required, trimmed, at most 80 characters, no digits.</summary>
+/// <summary>The person name is human text: required, trimmed, at most 80 characters, no digits.</summary>
 public class PersonNameTests
 {
     [Fact]

@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-3. Optional biochemistry of EV-2, in mg/dL. Each value is optional; the ranges only reject
+///     Optional biochemistry of step 1, in mg/dL. Each value is optional; the ranges only reject
 ///     what cannot be a human laboratory result, they are not clinical reference ranges.
 /// </summary>
 public sealed record BiochemistryPanel

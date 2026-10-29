@@ -17,7 +17,7 @@ public static class RecordReferralCommandAssembler
     }
 }
 
-/// <summary>RM-4 - Close Referral. The practitioner comes from the token.</summary>
+/// <summary>Close Referral. The practitioner comes from the token.</summary>
 public static class CloseReferralCommandAssembler
 {
     public static CloseReferralCommand ToCommand(int referralId, int practitionerId)
@@ -36,14 +36,14 @@ public static class ScheduleFollowUpCommandAssembler
     }
 }
 
-/// <summary>MA-4. The check in of a visit. The patient comes from the token, the visit from the route.</summary>
+/// <summary>The check in of a visit. The patient comes from the token, the visit from the route.</summary>
 public static class SubmitPreVisitCheckInCommandAssembler
 {
     /// <param name="followUpId">The visit, from the route.</param>
     /// <param name="patientId">The patient, from the token.</param>
     /// <param name="resource">The body.</param>
     /// <param name="requestLanguage">
-    ///     X-2. The language of the request (Accept-Language or the <c>lang</c> claim): the one an AI suggestion was
+    ///     The language of the request (Accept-Language or the <c>lang</c> claim): the one an AI suggestion was
     ///     read in when the client does not send it. Only es or en is kept.
     /// </param>
     public static SubmitPreVisitCheckInCommand ToCommand(int followUpId, int patientId,
@@ -57,7 +57,7 @@ public static class SubmitPreVisitCheckInCommandAssembler
     }
 }
 
-/// <summary>MA-5. Cancel and reschedule. The practitioner comes from the token, the visit from the route.</summary>
+/// <summary>Cancel and reschedule. The practitioner comes from the token, the visit from the route.</summary>
 public static class FollowUpChangeCommandAssembler
 {
     public static CancelFollowUpCommand ToCommand(int followUpId, int practitionerId, CancelFollowUpResource? resource)
@@ -73,7 +73,7 @@ public static class FollowUpChangeCommandAssembler
     }
 }
 
-/// <summary>MA-2. The agenda filters of the query string. The practitioner comes from the route.</summary>
+/// <summary>The agenda filters of the query string. The practitioner comes from the route.</summary>
 public static class PractitionerAgendaQueryAssembler
 {
     /// <summary>False when <paramref name="state" /> is not a follow up state.</summary>
@@ -95,7 +95,7 @@ public static class PractitionerAgendaQueryAssembler
     }
 }
 
-/// <summary>MA-3. The state filter of the patient's visits. The patient comes from the route.</summary>
+/// <summary>The state filter of the patient's visits. The patient comes from the route.</summary>
 public static class PatientFollowUpsQueryAssembler
 {
     /// <summary>False when <paramref name="state" /> is not a follow up state.</summary>
@@ -125,7 +125,7 @@ public static class DailyComplianceResourceAssembler
     }
 }
 
-/// <summary>MA-6. <c>?from=&amp;to=</c> of <c>GET /patients/{id}/daily-compliance</c>.</summary>
+/// <summary><c>?from=&amp;to=</c> of <c>GET /patients/{id}/daily-compliance</c>.</summary>
 public static class DailyComplianceRangeQueryAssembler
 {
     /// <summary>
@@ -248,7 +248,7 @@ public static class ScheduledFollowUpResourceAssembler
         return ToResource(followUp, null);
     }
 
-    /// <summary>MA-2. One row of the agenda, with the name read from Iam.</summary>
+    /// <summary>One row of the agenda, with the name read from Iam.</summary>
     public static ScheduledFollowUpResource ToResource(FollowUpAgendaEntry entry)
     {
         return ToResource(entry.FollowUp, entry.PatientFullName);
@@ -263,7 +263,7 @@ public static class ScheduledFollowUpResourceAssembler
     }
 }
 
-/// <summary>MA-3. A visit as the patient reads it.</summary>
+/// <summary>A visit as the patient reads it.</summary>
 public static class PatientFollowUpResourceAssembler
 {
     public static PatientFollowUpResource ToResource(PatientFollowUpEntry entry)
@@ -275,7 +275,7 @@ public static class PatientFollowUpResourceAssembler
     }
 }
 
-/// <summary>MA-4. A check in, without the AI generation it came from (that stays for the audit).</summary>
+/// <summary>A check in, without the AI generation it came from (that stays for the audit).</summary>
 public static class PreVisitCheckInResourceAssembler
 {
     public static PreVisitCheckInResource ToResource(PreVisitCheckInView view)
@@ -288,7 +288,7 @@ public static class PreVisitCheckInResourceAssembler
     }
 }
 
-/// <summary>IA-2. A weekly summary, without its AI generation (that stays for the audit).</summary>
+/// <summary>A weekly summary, without its AI generation (that stays for the audit).</summary>
 public static class WeeklySummaryResourceAssembler
 {
     public static WeeklySummaryResource ToResource(WeeklySummary summary)
@@ -302,7 +302,7 @@ public static class WeeklySummaryResourceAssembler
     }
 }
 
-/// <summary>IA-4. The suggested questions of one generation.</summary>
+/// <summary>The suggested questions of one generation.</summary>
 public static class SuggestedQuestionsResourceAssembler
 {
     public static SuggestedQuestionsResource ToResource(SuggestedQuestionsView view)
@@ -313,7 +313,7 @@ public static class SuggestedQuestionsResourceAssembler
     }
 }
 
-/// <summary>IA-5. The monitoring summary and its facts.</summary>
+/// <summary>The monitoring summary and its facts.</summary>
 public static class MonitoringSummaryResourceAssembler
 {
     public static MonitoringSummaryResource ToResource(MonitoringSummaryView view)

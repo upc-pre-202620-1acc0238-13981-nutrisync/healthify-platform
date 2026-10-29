@@ -12,7 +12,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     IA-2. The facts are computed without AI (MA-6, IN-5); the summary is one per patient and week, needs three
+///     The facts are computed without AI; the summary is one per patient and week, needs three
 ///     logged days, and Generate Weekly Summary follows its order: the week, the AI gates and the care link before
 ///     anything of the diary is read, the existing summary, the facts, the generation, the aggregate.
 /// </summary>
@@ -113,7 +113,7 @@ public class WeeklySummaryTests
         var result = await Generate();
 
         Assert.Equal(AiError.AiConsentRequired, FailureOf(result).AiError);
-        // "Si las desactivas, dejamos de usar tu diario": not a read of the diary, no call, no audit row.
+        // "If you turn them off, we stop using your diary": not a read of the diary, no call, no audit row.
         await _scenario.Intake.DidNotReceiveWithAnyArgs().GetDiaryEntryMoments(default, default, default);
         await _scenario.Intake.DidNotReceiveWithAnyArgs().GetWeightTrendSummaryBetween(default, default, default);
         Assert.Empty(_scenario.Model.Requests);

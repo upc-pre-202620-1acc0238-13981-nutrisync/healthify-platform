@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0. The technical failures of an AI generation, shared by every context that runs one. Each context maps
+///     The technical failures of an AI generation, shared by every context that runs one. Each context maps
 ///     them to HTTP in its own ActionResultAssembler (<c>ToAiFailureResult</c>) with the texts of
 ///     <c>AiMessages</c>. Business failures of a function (not enough data, patient only…) stay in the error enum
 ///     of the context that owns it.

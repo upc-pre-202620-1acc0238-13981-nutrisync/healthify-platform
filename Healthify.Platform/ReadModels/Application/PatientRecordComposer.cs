@@ -66,13 +66,13 @@ public record PatientRecordFollowUpSection(
     IReadOnlyList<ReferralItem> Referrals);
 
 /// <summary>
-///     RM-4. What only the practitioner reads in PAC-3: the active diagnosis, the evaluations with their BMI and
+///     What only the practitioner reads in the patient record: the active diagnosis, the evaluations with their BMI and
 ///     the compliance of the last seven days.
 /// </summary>
-/// <param name="ActiveDiagnosis">"Diagnóstico activo · solo profesional", or null.</param>
-/// <param name="Evaluations">"EVALUACIONES", oldest first.</param>
+/// <param name="ActiveDiagnosis">The active diagnosis, shown to the practitioner only, or null.</param>
+/// <param name="Evaluations">The evaluations, oldest first.</param>
 /// <param name="ComplianceFrom">First of the last seven days.</param>
-/// <param name="Compliance">"Cumplimiento 5 de 7 días", or null.</param>
+/// <param name="Compliance">Compliance as "5 of 7 days", or null.</param>
 public record PractitionerRecordSection(
     ActiveDiagnosisItem? ActiveDiagnosis,
     IReadOnlyList<ClinicalEvaluationItem> Evaluations,
@@ -80,15 +80,15 @@ public record PractitionerRecordSection(
     ComplianceSummaryItem? Compliance);
 
 /// <summary>
-///     RM-4. What the patient reads in PT20 about themselves. Built without any call that returns a diagnosis, a
-///     BMI or a BMI category (§12-#9): the patient record cannot carry them because it never receives them.
+///     What the patient reads in their own record. Built without any call that returns a diagnosis, a
+///     BMI or a BMI category: the patient record cannot carry them because it never receives them.
 /// </summary>
-/// <param name="Practitioner">"Tu nutricionista", or null when the account cannot be read.</param>
-/// <param name="NextFollowUp">"Mis consultas · Próxima", or null.</param>
+/// <param name="Practitioner">Their nutritionist, or null when the account cannot be read.</param>
+/// <param name="NextFollowUp">The next consultation, or null.</param>
 /// <param name="ComplianceFrom">First of the last seven days.</param>
-/// <param name="Compliance">"Mi cumplimiento 5 de 7 días", or null.</param>
-/// <param name="ClinicalWeight">"Peso clínico 74.2 kg · Evaluación del 3 mar.", or null.</param>
-/// <param name="WeightTrend">"Mi tendencia −0,3 kg/sem", or null.</param>
+/// <param name="Compliance">Their compliance as "5 of 7 days", or null.</param>
+/// <param name="ClinicalWeight">The clinical weight and the date of its evaluation, or null.</param>
+/// <param name="WeightTrend">Their weight trend per week, or null.</param>
 public record PatientOwnRecordSection(
     UserIdentityItem? Practitioner,
     NextFollowUpItem? NextFollowUp,
@@ -116,10 +116,10 @@ public class PatientRecordComposer(
     IMonitoringContextFacade monitoringContextFacade,
     TimeProvider timeProvider)
 {
-    /// <summary>RM-4. "Cumplimiento 5 de 7 días · Últimos 7 días".</summary>
+    /// <summary>Compliance covers the last seven days.</summary>
     public const int ComplianceDays = 7;
 
-    /// <summary>RM-4. "Mi tendencia" (PT20), as PAC-2: four weeks.</summary>
+    /// <summary>The patient's weight trend covers four weeks, as on the monitoring panel.</summary>
     public const int WeightTrendWeeks = 4;
 
     /// <summary>How much history the record carries when the caller does not say.</summary>
@@ -167,7 +167,7 @@ public class PatientRecordComposer(
     }
 
     /// <summary>
-    ///     RM-4 - PAC-3. The record plus what only the practitioner reads. Never throws.
+    ///     The record plus what only the practitioner reads. Never throws.
     /// </summary>
     public async Task<(PatientRecordComposition Record, PractitionerRecordSection Practitioner)>
         ComposeForPractitioner(int patientId, int days = DefaultDays, CancellationToken ct = default)
@@ -183,7 +183,7 @@ public class PatientRecordComposer(
     }
 
     /// <summary>
-    ///     RM-4 - PT20. The record plus what the patient reads about themselves. Never throws. It does not call
+    ///     The record plus what the patient reads about themselves. Never throws. It does not call
     ///     GetActiveDiagnosis or GetClinicalEvaluations: a diagnosis, a BMI or a BMI category never reaches it.
     /// </summary>
     public async Task<(PatientRecordComposition Record, PatientOwnRecordSection Own)> ComposeForPatient(
@@ -204,7 +204,7 @@ public class PatientRecordComposer(
             compliance, clinicalWeight, weightTrend));
     }
 
-    /// <summary>The last seven calendar days up to today (DECISIÓN §12-#7: calendar days).</summary>
+    /// <summary>The last seven calendar days up to today (calendar days).</summary>
     private (DateOnly From, DateOnly To) LastDays()
     {
         var today = DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);

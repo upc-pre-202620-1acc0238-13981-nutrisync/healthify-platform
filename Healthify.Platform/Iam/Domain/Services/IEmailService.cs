@@ -2,7 +2,7 @@ using Healthify.Platform.Iam.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Iam.Domain.Services;
 
-/// <summary>IAM-2. Sends the transactional emails of Iam. The adapter lives in the infrastructure layer.</summary>
+/// <summary>Sends the transactional emails of Iam. The adapter lives in the infrastructure layer.</summary>
 public interface IEmailService
 {
     /// <summary>Emails the reset code, in the language of the account.</summary>

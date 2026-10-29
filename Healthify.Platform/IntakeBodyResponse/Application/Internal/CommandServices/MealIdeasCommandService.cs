@@ -13,26 +13,26 @@ using Healthify.Platform.Shared.Application.Patterns;
 namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServices;
 
 /// <summary>
-///     IA-3 - Generate Meal Ideas («Ideas que caben en lo que te queda hoy y respetan tu plan»).
+///     Generate Meal Ideas: ideas that fit what is left today and respect the plan.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
 ///     1. the patient's day (today on their device);
 ///     2. the AI gates before the diary is read (kill switch and flag, then consent and the patient's preference:
-///     «si las desactivas, dejamos de usar tu diario»);
+///     turning them off means the diary is no longer used);
 ///     3. what is left today, computed here without AI: the published targets (<see cref="ActiveTargetsCache" />)
 ///     minus the confirmed entries of the day; Ideas Need Room For A Meal (more than 150 kcal);
 ///     4. the cache: two hours per day, 50 kcal bucket, restrictions, plan version, language and ideas already seen;
 ///     5. the generation through the shared pipeline, validated by <see cref="MealIdeasOutputValidator" />. Since
 ///     <c>meal-ideas@2</c> the input carries the catalog names (<see cref="CatalogNameHintsReader" />) the model must
 ///     use for every ingredient that brings energy: before it, the model named ingredients the local catalog does not
-///     carry («Pan integral», «Avena», «Pechuga de pollo a la plancha»), step 6 discarded every idea and the answer was
+///     carry ("Pan integral", "Avena", "Pechuga de pollo a la plancha"), step 6 discarded every idea and the answer was
 ///     <see cref="AiError.AiOutputRejected" /> (502);
-///     6. the hard validation of each idea with the catalog (FC-2): ingredients resolved (an idea whose unresolved
+///     6. the hard validation of each idea with the catalog: ingredients resolved (an idea whose unresolved
 ///     ingredients bring more than 15 % of its energy is discarded; a minor one, a condiment, stays marked
-///     unresolved), figures recalculated (the catalog's when they differ by more than 15 %), «cabe en lo que te queda» and the restrictions checked
+///     unresolved), figures recalculated (the catalog's when they differ by more than 15 %), the fit in what is left and the restrictions checked
 ///     again, the ideas already seen dropped. With fewer than two ideas left, the generation is retried once, then
-///     answered with <see cref="AiError.AiOutputRejected" /> (PT14.4.E).
+///     answered with <see cref="AiError.AiOutputRejected" />.
 ///     The input carries the targets, what is left, the restriction codes and the guideline codes of the plan. Never
 ///     the diagnosis nor the calculation basis: this context does not have them (Diagnosis And Basis Never Cached).
 ///     Custom guidelines are clinical free text and do not leave either.
@@ -52,19 +52,19 @@ public class MealIdeasCommandService(
     ICatalogNameHintsCache? catalogNameHintsCache = null,
     IConfiguration? configuration = null) : IMealIdeasCommandService
 {
-    /// <summary>IA-3: «Caché … durante 2 h».</summary>
+    /// <summary>Ideas are cached for two hours.</summary>
     public static readonly TimeSpan CacheLifetime = TimeSpan.FromHours(2);
 
-    /// <summary>IA-3: «se reintenta una vez».</summary>
+    /// <summary>A rejected generation is retried once.</summary>
     public const int MaximumAttempts = 2;
 
     /// <summary>How many ideas the model is asked for, so that two or three survive the validation.</summary>
     public const int IdeasRequested = 4;
 
-    /// <summary>«Ver otras ideas» never needs more than this many seen ideas to stay different.</summary>
+    /// <summary>"See other ideas" never needs more than this many seen ideas to stay different.</summary>
     public const int MaximumExcludedIdeas = 30;
 
-    /// <summary>FC-2: distinct ingredient names resolved per generation.</summary>
+    /// <summary>Distinct ingredient names resolved per generation.</summary>
     private const int MaximumIngredientNames = 50;
 
     private static readonly AiFeature Feature = AiFeature.MealIdeas;
@@ -85,7 +85,7 @@ public class MealIdeasCommandService(
             if (!await consentPolicy.IsAllowedAsync(command.PatientId, Feature, cancellationToken))
                 return Failure(AiError.AiConsentRequired);
 
-            // 3. Business rule: Ideas Need Room For A Meal (IA-3). Computed here, never by the AI.
+            // 3. Business rule: Ideas Need Room For A Meal. Computed here, never by the AI.
             var targets = await targetsRepository.FindByPatientIdAsync(command.PatientId, cancellationToken);
             if (targets is null) return Failure(IntakeError.ActiveTargetsCacheNotFound);
 
@@ -174,7 +174,7 @@ public class MealIdeasCommandService(
     }
 
     /// <summary>
-    ///     IA-3, validation 1 to 3 with the catalog: each ingredient resolved (FC-2), the figures recalculated, and
+    ///     Validation 1 to 3 with the catalog: each ingredient resolved, the figures recalculated, and
     ///     the idea screened again with the catalog names and figures. Ideas already seen are dropped.
     /// </summary>
     private async Task<IReadOnlyList<MealIdea>> ValidateWithCatalogAsync(AiGenerationOutcome<MealIdeasOutput> outcome,
@@ -212,7 +212,7 @@ public class MealIdeasCommandService(
 
             if (ingredients.Count == 0) continue;
 
-            // Business rule: Unresolved Ingredients Stay Minor (IA-3). More than 15 % of the energy the catalog cannot
+            // Business rule: Unresolved Ingredients Stay Minor. More than 15 % of the energy the catalog cannot
             // see, and whether the idea fits what is left cannot be verified.
             if (ingredients.Any(i => !i.IsResolved) &&
                 !MealIdeaRules.UnresolvedIngredientsAreMinor(idea.EnergyKcal, catalog.EnergyKcal))
@@ -246,7 +246,7 @@ public class MealIdeasCommandService(
     }
 
     /// <summary>
-    ///     IA-3. The catalog names the ingredients must take (the platform list of IN-7, never the patient's own
+    ///     The catalog names the ingredients must take (the platform list of the photo recognition, never the patient's own
     ///     foods). Empty when the list cannot be read: the ideas are then validated as before.
     /// </summary>
     private Task<IReadOnlyList<string>> CatalogIngredientNamesAsync(CancellationToken cancellationToken)

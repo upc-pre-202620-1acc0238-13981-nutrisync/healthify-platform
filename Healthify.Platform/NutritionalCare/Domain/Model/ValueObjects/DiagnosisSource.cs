@@ -1,8 +1,8 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-4. Who chose the diagnosis code in EV-3: the practitioner accepted the AI suggestion
-///     ("Usar sugerencia") or picked it from the list ("Elegir otro").
+///     Who chose the diagnosis code in step 2: the practitioner accepted the AI suggestion
+///     ("Use suggestion") or picked it from the list ("Choose another").
 /// </summary>
 /// <remarks>
 ///     Accepting the deterministic suggestion (source "Rule", no AI generation behind it) is recorded as

@@ -5,7 +5,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-1. The baseline aggregate and its value objects: the closed medical condition list, the
+///     The baseline aggregate and its value objects: the closed medical condition list, the
 ///     height range, the plausible birth date and the age that updates itself on the birthday.
 /// </summary>
 public class PatientBaselineTests

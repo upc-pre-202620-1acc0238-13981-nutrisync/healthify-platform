@@ -19,8 +19,8 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST;
 
 /// <summary>
-///     NC-2. The guided consultation seen from the patient record: start it (PAC-1 "Iniciar consulta"), resume
-///     it (PAC-1.C "Consulta en curso") and list past ones (PT25 "Anteriores", PAC-3).
+///     The guided consultation seen from the patient record: start it, resume the one in progress and list
+///     past ones.
 /// </summary>
 /// <remarks>Practitioner only: a consultation carries the diagnosis, which never reaches the patient.</remarks>
 [ApiController]

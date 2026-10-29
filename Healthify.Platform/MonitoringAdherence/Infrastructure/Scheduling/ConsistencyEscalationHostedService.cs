@@ -71,7 +71,7 @@ public class ConsistencyEscalationHostedService(
             var due = await queryService.Handle(
                 new GetEscalatableConsistencyIndicesQuery(alertSinceBefore, BatchSize), stoppingToken);
 
-            // MA-7: the patient saw the prompt at least N days ago; the command checks it again.
+            // The patient saw the prompt at least N days ago; the command checks it again.
             var acknowledgementDays = ConsistencyIndexCommandService.AcknowledgementDays(configuration);
             var now = DateTimeOffset.UtcNow;
 

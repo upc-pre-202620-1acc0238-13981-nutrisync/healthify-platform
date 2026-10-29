@@ -26,15 +26,15 @@ public record UserResource(
     /// <summary>Moment the account was created.</summary>
     public DateTimeOffset? CreatedAt { get; init; } = CreatedAt;
 
-    /// <summary>IAM-1. Given names of the person ("María José").</summary>
+    /// <summary>Given names of the person ("María José").</summary>
     public string GivenNames { get; init; } = GivenNames;
 
-    /// <summary>IAM-1. Family names of the person ("Flores Quispe"). Empty on accounts created before IAM-1.</summary>
+    /// <summary>Family names of the person ("Flores Quispe"). Empty on accounts created before names were required.</summary>
     public string FamilyNames { get; init; } = FamilyNames;
 
-    /// <summary>IAM-1. Given names and family names together ("María José Flores Quispe").</summary>
+    /// <summary>Given names and family names together ("María José Flores Quispe").</summary>
     public string FullName { get; init; } = FullName;
 
-    /// <summary>IAM-3. Interface language of the account: es or en.</summary>
+    /// <summary>Interface language of the account: es or en.</summary>
     public string PreferredLanguage { get; init; } = PreferredLanguage;
 }

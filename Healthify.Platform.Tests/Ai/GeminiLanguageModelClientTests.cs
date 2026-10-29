@@ -10,7 +10,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Ai;
 
 /// <summary>
-///     IA-0. The Gemini client against a fake HTTP handler: what it sends (structured output, key or token, model),
+///     The Gemini client against a fake HTTP handler: what it sends (structured output, key or token, model),
 ///     what it reads, and its resilience (one retry, only on 5xx or timeout). Nothing reaches Google.
 /// </summary>
 public class GeminiLanguageModelClientTests

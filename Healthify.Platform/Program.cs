@@ -155,7 +155,7 @@ builder.Services.AddProblemDetails(options =>
             context.ProblemDetails.Detail ??= localizer["UnexpectedErrorProcessingRequest"].Value;
         }
 
-        // X-3: ValidationFailed for model validation, InternalError for 5xx; assembler problems already carry theirs.
+        // ValidationFailed for model validation, InternalError for 5xx; assembler problems already carry theirs.
         ProblemDetailsErrorCodes.ApplyDefault(context.ProblemDetails);
     };
 });
@@ -276,7 +276,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 // ---------------------------------------------------------------------------------------------
-// 8b. Request rate limiting (D-RL). Policies "auth" (per IP), "ai-photo" (per user) and the global limiter (per
+// 8b. Request rate limiting. Policies "auth" (per IP), "ai-photo" (per user) and the global limiter (per
 //     user, or per IP without a session); limits in the RateLimiting section, RateLimiting:Enabled switches it off.
 //     The client IP is the connection's RemoteIpAddress: there is no UseForwardedHeaders yet, so behind a reverse
 //     proxy every client shares the proxy IP.
@@ -297,8 +297,8 @@ builder.Services.AddCortexMediator(
 // ---------------------------------------------------------------------------------------------
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Shared AI module (IA-0). Technical only: no business rule and no reference to any context. Each AI function
-// lives in the context that owns its data; the consent policy is implemented by CareRelationship (IA-1).
+// Shared AI module. Technical only: no business rule and no reference to any context. Each AI function
+// lives in the context that owns its data; the consent policy is implemented by CareRelationship.
 // Off unless Ai:Enabled is true (default in code). Gemini is the only provider; tests use
 // FakeLanguageModelClient and never reach Google.
 builder.Services.AddSingleton<IAiSettings, ConfiguredAiSettings>();
@@ -342,7 +342,7 @@ builder.Services.AddScoped<IInvitationQueryService, InvitationQueryService>();
 builder.Services.AddScoped<ICareLinkQueryService, CareLinkQueryService>();
 builder.Services.AddScoped<IAiPreferencesQueryService, AiPreferencesQueryService>();
 builder.Services.AddScoped<ICareRelationshipContextFacade, CareRelationshipContextFacade>();
-// IA-1: consent lives here, so this context answers the AI pipeline's consent question (port in Shared).
+// Consent lives here, so this context answers the AI pipeline's consent question (port in Shared).
 builder.Services.AddScoped<IAiConsentPolicy, CareRelationshipAiConsentPolicy>();
 
 // NutritionalCare Bounded Context
@@ -360,8 +360,6 @@ builder.Services.AddScoped<ICalorieFloorPolicy, ConfiguredCalorieFloorPolicy>();
 builder.Services.AddSingleton<IPatientMessageLexicon>(EmbeddedPatientMessageLexicon.Instance);
 builder.Services.TryAddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IClinicalDateProvider, ClinicalTimeZoneDateProvider>();
-builder.Services.AddScoped<INutritionalAssessmentCommandService, NutritionalAssessmentCommandService>();
-builder.Services.AddScoped<INutritionalDiagnosisCommandService, NutritionalDiagnosisCommandService>();
 builder.Services.AddScoped<INutritionPlanCommandService, NutritionPlanCommandService>();
 builder.Services.AddScoped<IReviewItemCommandService, ReviewItemCommandService>();
 builder.Services.AddScoped<IPatientBaselineCommandService, PatientBaselineCommandService>();
@@ -393,12 +391,12 @@ builder.Services.AddScoped<ISelfWeighInRepository, SelfWeighInRepository>();
 builder.Services.AddScoped<IWeightTrendRepository, WeightTrendRepository>();
 builder.Services.AddScoped<IMealPhotoAnalysisRepository, MealPhotoAnalysisRepository>();
 builder.Services.AddScoped<ISelfWeighInProtocolProvider, ConfiguredSelfWeighInProtocolProvider>();
-// IN-7: the metadata of a meal photo is removed in memory before it reaches the AI.
+// The metadata of a meal photo is removed in memory before it reaches the AI.
 builder.Services.AddSingleton<IPhotoMetadataStripper, PhotoMetadataStripper>();
-// IA-3: the ingredient -> restriction map and the two-hour cache of meal ideas.
+// The ingredient -> restriction map and the two-hour cache of meal ideas.
 builder.Services.AddSingleton<IRestrictionLexicon>(EmbeddedRestrictionLexicon.Instance);
 builder.Services.AddSingleton<IMealIdeasCache, InMemoryMealIdeasCache>();
-// IN-7: the catalog names of the photo recognition prompt, one hour in memory.
+// The catalog names of the photo recognition prompt, one hour in memory.
 builder.Services.AddSingleton<ICatalogNameHintsCache, InMemoryCatalogNameHintsCache>();
 builder.Services.AddScoped<IActiveTargetsCacheCommandService, ActiveTargetsCacheCommandService>();
 builder.Services.AddScoped<IDiaryEntryCommandService, DiaryEntryCommandService>();
@@ -410,9 +408,9 @@ builder.Services.AddScoped<IActiveTargetsCacheQueryService, ActiveTargetsCacheQu
 builder.Services.AddScoped<IDiaryEntryQueryService, DiaryEntryQueryService>();
 builder.Services.AddScoped<ISelfWeighInQueryService, SelfWeighInQueryService>();
 builder.Services.AddScoped<IWeightTrendQueryService, WeightTrendQueryService>();
-// IN-8: «¿Estaba en tu plan?» suggested from the plan's restrictions and what is left today, without AI.
+// The "was it in your plan?" answer, suggested from the plan's restrictions and what is left today, without AI.
 builder.Services.AddScoped<IPlanFitQueryService, PlanFitQueryService>();
-// IN-9: what the patient logged today and what is left of their targets (home gauge), without rating the day.
+// What the patient logged today and what is left of their targets (home gauge), without rating the day.
 builder.Services.AddScoped<IDailyIntakeQueryService, DailyIntakeQueryService>();
 builder.Services.AddScoped<IIntakeContextFacade, IntakeContextFacade>();
 builder.Services.AddScoped<WeightTrendRecalculationJob>();
@@ -426,7 +424,8 @@ builder.Services.AddScoped<IScheduledFollowUpRepository, ScheduledFollowUpReposi
 builder.Services.AddScoped<IPreVisitCheckInRepository, PreVisitCheckInRepository>();
 builder.Services.AddScoped<IWeeklySummaryRepository, WeeklySummaryRepository>();
 builder.Services.AddSingleton<IFollowUpCalendar, ClinicalTimeZoneFollowUpCalendar>();
-// IA-2/IA-4/IA-5: the words a generated text must not contain, and the in-memory cache of IA-4 and IA-5.
+// The words a generated text must not contain, and the in-memory cache of the suggested questions and the
+// practitioner monitoring summary.
 builder.Services.AddSingleton<IAiLanguageLexicon>(EmbeddedAiLanguageLexicon.Instance);
 builder.Services.AddSingleton<IMonitoringAiCache, InMemoryMonitoringAiCache>();
 builder.Services.AddScoped<MonitoringFactsReader>();
@@ -506,25 +505,25 @@ builder.Services.AddHostedService<ConsistencyEscalationHostedService>();
 // Policy "When Scheduled Date Passed Without Visit" - MonitoringAdherence, Subflow 5.10
 builder.Services.AddHostedService<MissedFollowUpHostedService>();
 
-// Policy "When The Week Ends" (IA-2) - MonitoringAdherence: weekly summaries, Ai:Features:WeeklySummary:Cron
+// Policy "When The Week Ends" - MonitoringAdherence: weekly summaries, Ai:Features:WeeklySummary:Cron
 builder.Services.AddHostedService<WeeklySummaryHostedService>();
 
-// Retention of ai_generations (IA-0, §12-#14) - Shared AI module
+// Retention of ai_generations - Shared AI module
 builder.Services.AddHostedService<AiGenerationPurgeHostedService>();
 
-// Policy "When A Photo Analysis Expires" (IN-7) - IntakeBodyResponse: the 24-hour meal photo analyses
+// Policy "When A Photo Analysis Expires" - IntakeBodyResponse: the 24-hour meal photo analyses
 builder.Services.AddHostedService<MealPhotoAnalysisPurgeHostedService>();
 
-// NC-10: the AI plan proposals queued by the sustained deviation policy, and the scheduled rechecks.
+// The AI plan proposals queued by the sustained deviation policy, and the scheduled rechecks.
 builder.Services.AddHostedService<PlanProposalGenerationHostedService>();
 builder.Services.AddHostedService<ReviewItemRecheckHostedService>();
-// NC-10: the queue is in memory; at start-up and every N minutes the lost proposals are queued again.
+// The queue is in memory; at start-up and every N minutes the lost proposals are queued again.
 builder.Services.AddHostedService<PlanProposalRecoveryHostedService>();
 
 var app = builder.Build();
 
 // ---------------------------------------------------------------------------------------------
-// 12a. One-shot maintenance, only when asked for on the command line (IN-3):
+// 12a. One-shot maintenance, only when asked for on the command line:
 //      dotnet Healthify.Platform.dll recalculate-weight-trends
 //      It does not migrate and does not serve: it refuses to run while migrations are pending, runs
 //      Recalculate Weight Trend once per patient with readings, and exits.
@@ -572,7 +571,7 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
-// IAM-3: last provider, so query string, cookie and Accept-Language keep precedence; it answers only when
+// Last provider, so query string, cookie and Accept-Language keep precedence; it answers only when
 // the request carries no Accept-Language, from the lang claim of the session token.
 localizationOptions.RequestCultureProviders.Add(new LanguageClaimRequestCultureProvider());
 
@@ -586,10 +585,10 @@ app.UseSwaggerUI(options =>
 if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseCors(frontendCorsPolicy); // before authentication, so preflight and Authorization survive
 app.UseAuthentication();
-// IAM-3: after authentication, so the lang claim is readable; before authorization, so the 401/403
+// After authentication, so the lang claim is readable; before authorization, so the 401/403
 // problem details and every controller already run in the request culture.
 app.UseRequestLocalization(localizationOptions);
-// D-RL: after authentication (user partitions) and localization (429 texts); before authorization, so an anonymous
+// After authentication (user partitions) and localization (429 texts); before authorization, so an anonymous
 // flood is counted by IP before the 401.
 app.UseRateLimiter();
 app.UseAuthorization();

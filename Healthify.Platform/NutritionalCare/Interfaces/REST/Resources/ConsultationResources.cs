@@ -1,17 +1,17 @@
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Resources;
 
 // ---------------------------------------------------------------------------------------------
-// NC-2. Payloads of the guided consultation (EV-2 to EV-5)
+// Payloads of the guided consultation
 // ---------------------------------------------------------------------------------------------
 
-/// <summary>Payload of PAC-1 "Iniciar consulta". The body may be empty.</summary>
+/// <summary>Payload to start a consultation. The body may be empty.</summary>
 public record StartConsultationResource(int? ScheduledFollowUpId)
 {
-    /// <summary>The appointment of the agenda the consultation starts from, if any (MA-2).</summary>
+    /// <summary>The appointment of the agenda the consultation starts from, if any.</summary>
     public int? ScheduledFollowUpId { get; init; } = ScheduledFollowUpId;
 }
 
-/// <summary>Payload of step 1, EV-2 "Medición de hoy". The height comes from the baseline.</summary>
+/// <summary>Payload of step 1, today's measurement. The height comes from the baseline.</summary>
 public record RecordConsultationMeasurementResource(
     decimal WeightKg,
     decimal? WaistCm,
@@ -30,20 +30,20 @@ public record RecordConsultationMeasurementResource(
     /// <summary>Body fat percentage, 3 to 70. Optional.</summary>
     public decimal? BodyFatPercentage { get; init; } = BodyFatPercentage;
 
-    /// <summary>"Protocolo utilizado": Fasting, NoShoes, LightClothing, EmptyBladder, SameScale. At least one.</summary>
+    /// <summary>Protocol used: Fasting, NoShoes, LightClothing, EmptyBladder, SameScale. At least one.</summary>
     public IReadOnlyList<string>? ProtocolChecks { get; init; } = ProtocolChecks;
 
-    /// <summary>"Actividad física actual": Sedentary, Light, Moderate or Intense.</summary>
+    /// <summary>Current physical activity: Sedentary, Light, Moderate or Intense.</summary>
     public string? ActivityLevel { get; init; } = ActivityLevel;
 
-    /// <summary>OPTIONAL "Hábitos alimentarios".</summary>
+    /// <summary>OPTIONAL eating habits.</summary>
     public EatingHabitsResource? Habits { get; init; } = Habits;
 
-    /// <summary>OPTIONAL "Datos bioquímicos".</summary>
+    /// <summary>OPTIONAL biochemistry.</summary>
     public BiochemistryPanelResource? Biochemistry { get; init; } = Biochemistry;
 }
 
-/// <summary>Payload of step 2, EV-3: "Usar sugerencia" or "Elegir otro".</summary>
+/// <summary>Payload of step 2: use the suggestion or choose another diagnosis.</summary>
 public record IssueConsultationDiagnosisResource(
     string Code,
     string Source,
@@ -68,7 +68,7 @@ public record IssueConsultationDiagnosisResource(
     public string? Rationale { get; init; } = Rationale;
 }
 
-/// <summary>The parameters "Cambiar parámetros" changes in EV-4. Each one is optional: the rest keep their default.</summary>
+/// <summary>The parameters the practitioner changes in step 3. Each one is optional: the rest keep their default.</summary>
 public record ConsultationTargetParametersResource(
     string? Equation,
     string? ReferenceWeightKind,
@@ -107,11 +107,11 @@ public record ConsultationTargetParametersResource(
 /// <summary>Payload of the target proposal of step 3. An empty body uses the defaults.</summary>
 public record ProposeConsultationTargetsResource(ConsultationTargetParametersResource? Parameters)
 {
-    /// <summary>"Cambiar parámetros"; null keeps every default.</summary>
+    /// <summary>The changed parameters; null keeps every default.</summary>
     public ConsultationTargetParametersResource? Parameters { get; init; } = Parameters;
 }
 
-/// <summary>Payload of step 3, EV-4: "Aceptar metas" or "Escribir mis propios valores".</summary>
+/// <summary>Payload of step 3: accept the targets or write custom values.</summary>
 public record PrescribeConsultationTargetsResource(
     string Outcome,
     decimal? EnergyKcal,
@@ -139,7 +139,7 @@ public record PrescribeConsultationTargetsResource(
     public string? OverrideReason { get; init; } = OverrideReason;
 }
 
-/// <summary>Payload of step 4, EV-5: the publication, and the draft saved before it.</summary>
+/// <summary>Payload of step 4: the publication, and the draft saved before it.</summary>
 public record ConsultationPublicationResource(
     IReadOnlyList<string>? Restrictions,
     IReadOnlyList<string>? Guidelines,
@@ -158,45 +158,45 @@ public record ConsultationPublicationResource(
     /// </summary>
     public IReadOnlyList<string>? Guidelines { get; init; } = Guidelines;
 
-    /// <summary>"Otra indicación": 3 to 140 characters each, at most 5.</summary>
+    /// <summary>Custom guidelines: 3 to 140 characters each, at most 5.</summary>
     public IReadOnlyList<string>? CustomGuidelines { get; init; } = CustomGuidelines;
 
     /// <summary>
-    ///     NC-9. Optional message for the patient with this version (PT4), at most 500 characters. Never the
-    ///     diagnosis. The publication draft keeps it too, and EV-5 reads it back from <c>publicationDraft</c>.
+    ///     Optional message for the patient with this version, at most 500 characters. Never the
+    ///     diagnosis. The publication draft keeps it too, and step 4 reads it back from <c>publicationDraft</c>.
     /// </summary>
     public string? PatientMessage { get; init; } = PatientMessage;
 }
 
 // ---------------------------------------------------------------------------------------------
-// NC-2. Read resources of the guided consultation. Practitioner only.
+// Read resources of the guided consultation. Practitioner only.
 // ---------------------------------------------------------------------------------------------
 
-/// <summary>MA-4. One question of the check in, with where it came from.</summary>
+/// <summary>One question of the check in, with where it came from.</summary>
 /// <param name="Text">The question.</param>
 /// <param name="Origin">Patient or AiSuggested.</param>
-/// <param name="Language">X-2. es or en for an AI suggestion; null for the patient's own questions.</param>
+/// <param name="Language">Es or en for an AI suggestion; null for the patient's own questions.</param>
 public record ConsultationCheckInQuestionResource(string Text, string Origin, string? Language = null)
 {
-    /// <summary>"Pregunta: ¿Puedo comer fuera los viernes?".</summary>
+    /// <summary>A question the patient asks, such as whether they can eat out on Fridays.</summary>
     public string Text { get; init; } = Text;
 
     /// <summary>Patient or AiSuggested.</summary>
     public string Origin { get; init; } = Origin;
 
-    /// <summary>X-2. es or en: the language an AI suggestion was generated in. Null for the patient's own questions.</summary>
+    /// <summary>Es or en: the language an AI suggestion was generated in. Null for the patient's own questions.</summary>
     public string? Language { get; init; } = Language;
 }
 
 /// <summary>
-///     MA-4. EV-2 "Antes de la consulta, Ana contó: Se sintió regular con el plan. Le costaron las cenas…". Same
+///     What the patient told before the visit, shown in step 1 (how the plan went, what was hard). Same
 ///     shape as the check in resource of Monitoring, which owns it.
 /// </summary>
 /// <param name="FollowUpId">The visit it was sent for.</param>
 /// <param name="Feeling">Good, Fair or Hard.</param>
 /// <param name="Difficulties">Dinners, Weekends, EatingOut, Schedules, Cravings; may be empty.</param>
 /// <param name="Questions">The questions; may be empty.</param>
-/// <param name="SubmittedAt">"Enviado el 15 sept. desde su app".</param>
+/// <param name="SubmittedAt">When the patient sent it from their app.</param>
 /// <param name="EditedAt">When it was last edited, if it was.</param>
 /// <param name="IsLocked">True once the patient can no longer edit it.</param>
 public record ConsultationPatientCheckInResource(
@@ -231,8 +231,8 @@ public record ConsultationPatientCheckInResource(
 }
 
 /// <summary>
-///     A consultation with what each saved step produced: PAC-1.C "Consulta en curso · Paso 1 de 4 · se guardó
-///     hoy", and the data to rehydrate EV-2 to EV-5.
+///     A consultation with what each saved step produced: the in progress banner (current step, last saved),
+///     and the data to rehydrate the four steps.
 /// </summary>
 public record ConsultationResource(
     int ConsultationId,
@@ -268,13 +268,13 @@ public record ConsultationResource(
     /// <summary>Measurement, Diagnosis, Targets or Publication: the step to continue on.</summary>
     public string CurrentStep { get; init; } = CurrentStep;
 
-    /// <summary>1 to 4, as in "PASO n DE 4".</summary>
+    /// <summary>1 to 4, as in "Step n of 4".</summary>
     public int StepNumber { get; init; } = StepNumber;
 
     /// <summary>When it started.</summary>
     public DateTimeOffset StartedAt { get; init; } = StartedAt;
 
-    /// <summary>"Se guardó hoy": the last time a step was saved.</summary>
+    /// <summary>The last time a step was saved.</summary>
     public DateTimeOffset LastSavedAt { get; init; } = LastSavedAt;
 
     /// <summary>Step 1, once saved.</summary>
@@ -290,7 +290,7 @@ public record ConsultationResource(
     public ConsultationPublicationDraftResource? PublicationDraft { get; init; } = PublicationDraft;
 
     /// <summary>
-    ///     EV-2 "Antes de la consulta, … contó" (MA-4): what the patient sent before the visit, while the
+    ///     The pre-visit check in shown in step 1: what the patient sent before the visit, while the
     ///     consultation is in progress. Null when the patient did not answer, or once the consultation is closed.
     /// </summary>
     public ConsultationPatientCheckInResource? PatientCheckIn { get; init; } = PatientCheckIn;
@@ -298,13 +298,13 @@ public record ConsultationResource(
     /// <summary>When the publication closed it.</summary>
     public DateTimeOffset? CompletedAt { get; init; } = CompletedAt;
 
-    /// <summary>"Evaluación y nuevo plan (versión 3)": the version it published.</summary>
+    /// <summary>The version it published.</summary>
     public int? PublishedPlanVersion { get; init; } = PublishedPlanVersion;
 
-    /// <summary>"Primera consulta".</summary>
+    /// <summary>The first consultation of the patient.</summary>
     public bool IsFirstConsultation { get; init; } = IsFirstConsultation;
 
-    /// <summary>The appointment it started from, if any (MA-2).</summary>
+    /// <summary>The appointment it started from, if any.</summary>
     public int? ScheduledFollowUpId { get; init; } = ScheduledFollowUpId;
 }
 
@@ -339,7 +339,7 @@ public record ConsultationMeasurementResource(
     /// <summary>Body fat percentage, if measured.</summary>
     public decimal? BodyFatPercentage { get; init; } = BodyFatPercentage;
 
-    /// <summary>"IMC calculado 26.3 kg/m²".</summary>
+    /// <summary>The calculated body mass index, kg/m².</summary>
     public decimal Bmi { get; init; } = Bmi;
 
     /// <summary>WHO category of the index. Professional information only.</summary>
@@ -418,7 +418,7 @@ public record ConsultationTargetsResource(
     /// <summary>The version number it will have, or has.</summary>
     public int Version { get; init; } = Version;
 
-    /// <summary>"Calculado con": equation, factors and results. Never leaves this context.</summary>
+    /// <summary>"Calculated with": equation, factors and results. Never leaves this context.</summary>
     public CalculationBasisResource CalculationBasis { get; init; } = CalculationBasis;
 
     /// <summary>The calculated proposal.</summary>
@@ -437,20 +437,20 @@ public record ConsultationTargetsResource(
     public bool IsPublished { get; init; } = IsPublished;
 
     /// <summary>
-    ///     NC-6. Free text restrictions of the version in force that match no code; EV-5 maps them before
+    ///     Free text restrictions of the version in force that match no code; step 4 maps them before
     ///     publishing.
     /// </summary>
     public IReadOnlyList<string> ActivePlanLegacyRestrictions { get; init; } = ActivePlanLegacyRestrictions;
 }
 
-/// <summary>Step 4 before publishing: what EV-5 had chosen.</summary>
+/// <summary>Step 4 before publishing: what the practitioner had chosen.</summary>
 public record ConsultationPublicationDraftResource(
     IReadOnlyList<string> Restrictions,
     IReadOnlyList<string> Guidelines,
     IReadOnlyList<string> CustomGuidelines,
     string? PatientMessage = null)
 {
-    /// <summary>NC-9. The message for the patient being written, or null.</summary>
+    /// <summary>The message for the patient being written, or null.</summary>
     public string? PatientMessage { get; init; } = PatientMessage;
 
     /// <summary>Restriction codes.</summary>
@@ -459,11 +459,11 @@ public record ConsultationPublicationDraftResource(
     /// <summary>Guideline catalog codes.</summary>
     public IReadOnlyList<string> Guidelines { get; init; } = Guidelines;
 
-    /// <summary>Custom guidelines ("Otra indicación").</summary>
+    /// <summary>Custom guidelines.</summary>
     public IReadOnlyList<string> CustomGuidelines { get; init; } = CustomGuidelines;
 }
 
-/// <summary>The suggestion card of EV-3. Professional information: never reaches the patient.</summary>
+/// <summary>The diagnosis suggestion card of step 2. Professional information: never reaches the patient.</summary>
 public record DiagnosisSuggestionResource(
     long? AiGenerationId,
     string Code,
@@ -477,10 +477,10 @@ public record DiagnosisSuggestionResource(
     /// <summary>The suggested code.</summary>
     public string Code { get; init; } = Code;
 
-    /// <summary>"Fundamento clínico".</summary>
+    /// <summary>The clinical rationale.</summary>
     public string Rationale { get; init; } = Rationale;
 
-    /// <summary>"Ai" (IA-6) or "Rule" for the category of the body mass index.</summary>
+    /// <summary>"Ai" or "Rule" for the category of the body mass index.</summary>
     public string Source { get; init; } = Source;
 
     /// <summary>The decision stays with the practitioner.</summary>
@@ -488,22 +488,22 @@ public record DiagnosisSuggestionResource(
 }
 
 /// <summary>
-///     IA-7. The guideline chips EV-5 pre-selects for the diagnosis of step 2. Professional information: never
+///     The guideline chips step 4 pre-selects for the diagnosis of step 2. Professional information: never
 ///     reaches the patient until the practitioner publishes the guidelines they choose.
 /// </summary>
 public record GuidelineSuggestionsResource(IReadOnlyList<string> Suggested, long? AiGenerationId, string Source)
 {
-    /// <summary>Codes of the guideline catalog (NC-6), in the order of EV-5; never free text.</summary>
+    /// <summary>Codes of the guideline catalog, in the order step 4 shows them; never free text.</summary>
     public IReadOnlyList<string> Suggested { get; init; } = Suggested;
 
     /// <summary>The AI generation, or null for the fixed table.</summary>
     public long? AiGenerationId { get; init; } = AiGenerationId;
 
-    /// <summary>"Ai" (IA-7) or "Rule" (NutritionalCare:DefaultGuidelinesByDiagnosis).</summary>
+    /// <summary>"Ai" or "Rule" (NutritionalCare:DefaultGuidelinesByDiagnosis).</summary>
     public string Source { get; init; } = Source;
 }
 
-/// <summary>"Calculado con: Mujer · 31 años · 168 cm · 74.2 kg · actividad moderada".</summary>
+/// <summary>The "Calculated with" line: sex, age, height, weight and activity level.</summary>
 public record TargetInputsSummaryResource(string Sex, int AgeYears, decimal HeightCm, decimal WeightKg,
     string ActivityLevel)
 {
@@ -523,7 +523,7 @@ public record TargetInputsSummaryResource(string Sex, int AgeYears, decimal Heig
     public string ActivityLevel { get; init; } = ActivityLevel;
 }
 
-/// <summary>The target proposal of step 3 (EV-4).</summary>
+/// <summary>The target proposal of step 3.</summary>
 public record ConsultationTargetProposalResource(
     int PlanId,
     CalculationBasisResource CalculationBasis,
@@ -543,11 +543,11 @@ public record ConsultationTargetProposalResource(
     /// <summary>What the equations read.</summary>
     public TargetInputsSummaryResource InputsSummary { get; init; } = InputsSummary;
 
-    /// <summary>NC-6. Free text restrictions of the version in force that match no code.</summary>
+    /// <summary>Free text restrictions of the version in force that match no code.</summary>
     public IReadOnlyList<string> ActivePlanLegacyRestrictions { get; init; } = ActivePlanLegacyRestrictions;
 }
 
-/// <summary>One past consultation: PT25 "Anteriores" and PAC-3 "EVALUACIONES".</summary>
+/// <summary>One past consultation, for the patient's history and the evaluations list.</summary>
 public record ConsultationSummaryResource(
     int ConsultationId,
     string State,
@@ -574,7 +574,7 @@ public record ConsultationSummaryResource(
     /// <summary>The version it published, if completed.</summary>
     public int? PlanVersion { get; init; } = PlanVersion;
 
-    /// <summary>"Primera consulta".</summary>
+    /// <summary>The first consultation of the patient.</summary>
     public bool IsFirstConsultation { get; init; } = IsFirstConsultation;
 
     /// <summary>Weight of step 1, if saved.</summary>

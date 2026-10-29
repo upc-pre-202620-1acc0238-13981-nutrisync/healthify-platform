@@ -12,7 +12,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-4. Submit Pre Visit Check In follows the order of the specification: answers first, each to its own
+///     Submit Pre Visit Check In follows the order of the specification: answers first, each to its own
 ///     error, before the visit is read; then the visit (another patient's does not exist), its state, the hour;
 ///     then one row per visit, created or edited, and one internal event after the commit.
 /// </summary>

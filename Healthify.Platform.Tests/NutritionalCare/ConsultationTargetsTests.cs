@@ -18,12 +18,12 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-5. Step 3 of the guided consultation with the real arithmetic and the default parameters: the
+///     Step 3 of the guided consultation with the real arithmetic and the default parameters: the
 ///     inputs come from the assessment of the consultation, the draft is recalculated in place until it is
-///     prescribed, and DECISIÓN §12-#1 keeps the override reason required.
+///     prescribed, and the override reason stays required.
 /// </summary>
 /// <remarks>
-///     The case of EV-4 ("Mujer · 31 años · 168 cm · 74.2 kg · actividad moderada → 1 796 kcal") does not
+///     The case of step 3 ("woman, 31 years, 168 cm, 74.2 kg, moderate activity → 1 796 kcal") does not
 ///     hold with Mifflin-St Jeor: 31 years give 1 787.80 kcal; 1 796 is the result for 30 years. Both are
 ///     asserted, with the platform rounding (two decimals).
 /// </remarks>
@@ -162,7 +162,7 @@ public class ConsultationTargetsTests
     [Fact]
     public async Task The_draft_shows_the_legacy_restrictions_of_the_version_in_force()
     {
-        // NC-6: the practitioner sees them in EV-5 and chooses the equivalent code for the new version.
+        // The practitioner sees them in step 4 and chooses the equivalent code for the new version.
         _plans.FindActiveByPatientIdAsync(PatientId, Arg.Any<CancellationToken>()).Returns(
             PlanScenario.PublishedBeforeNc6(1, PatientId, PractitionerId, 1, 1, [], ["Sin cerdo", "Sin lactosa"]));
 
@@ -224,7 +224,7 @@ public class ConsultationTargetsTests
     [Fact]
     public async Task Writing_own_values_without_a_reason_is_rejected_before_loading()
     {
-        // DECISIÓN §12-#1: the override reason stays required in the consultation.
+        // The override reason stays required in the consultation.
         var result = await CreateService().Handle(new PrescribeConsultationTargetsCommand(ConsultationId,
             PractitionerId, PrescriptionOutcome.Overridden, 1700m));
 

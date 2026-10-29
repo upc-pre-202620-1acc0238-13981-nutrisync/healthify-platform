@@ -18,10 +18,10 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.ReadModels;
 
 /// <summary>
-///     RM-4 acceptance: <c>GET /patients/{id}/record</c> returns one resource per role. The practitioner's (PAC-3)
-///     carries the active diagnosis, the evaluations with their BMI and the clinical weight; the patient's (PT20)
-///     never carries a diagnosis, a calculation basis, a BMI or a BMI category (§12-#9), and is built without even
-///     asking for them. Both keep every field of the original record. Referrals carry Open/Closed (§12-#8).
+///     Acceptance: <c>GET /patients/{id}/record</c> returns one resource per role. The practitioner's
+///     carries the active diagnosis, the evaluations with their BMI and the clinical weight; the patient's
+///     never carries a diagnosis, a calculation basis, a BMI or a BMI category, and is built without even
+///     asking for them. Both keep every field of the original record. Referrals carry Open/Closed.
 /// </summary>
 public class PatientRecordByRoleTests
 {

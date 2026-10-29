@@ -9,7 +9,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-2/NC-7. What stays active when the practitioner goes back and repeats a step, or discards the
+///     What stays active when the practitioner goes back and repeats a step, or discards the
 ///     consultation. The diagnosis of step 2 is pending until step 4, so the active diagnosis and version of the
 ///     first consultation change only when the second one publishes, and never when it is discarded.
 /// </summary>

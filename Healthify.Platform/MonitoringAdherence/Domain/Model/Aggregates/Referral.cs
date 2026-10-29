@@ -12,15 +12,15 @@ namespace Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 ///     that does not say where to or why is a dead end for whoever receives it.
 ///     A referral is a record that something was decided on a date, not a workflow this platform then
 ///     manages: what happens at the other end happens outside.
-///     RM-4 (DECISIÓN §12-#8): it carries one state of its own, Open or Closed, closed by hand by the practitioner
-///     who issued it, so PAC-3 can say "en curso" and PT20 "Sin derivaciones activas". Nothing else changes it.
+///     It carries one state of its own, Open or Closed, closed by hand by the practitioner who issued it, so the
+///     apps can tell an ongoing referral from none at all. Nothing else changes it.
 /// </remarks>
 public partial class Referral
 {
-    /// <summary>RM-4. Still in course ("en curso").</summary>
+    /// <summary>Still in course.</summary>
     public const string Open = "Open";
 
-    /// <summary>RM-4. Closed by the practitioner.</summary>
+    /// <summary>Closed by the practitioner.</summary>
     public const string Closed = "Closed";
 
     /// <summary>Required by EF Core.</summary>
@@ -57,15 +57,15 @@ public partial class Referral
 
     public DateTimeOffset IssuedAt { get; private set; }
 
-    /// <summary>RM-4. Open or Closed. Referrals recorded before RM-4 are Open.</summary>
+    /// <summary>Open or Closed. Referrals recorded before the state existed are Open.</summary>
     public string Status { get; private set; } = Open;
 
-    /// <summary>RM-4. When it was closed, or null while it is open.</summary>
+    /// <summary>When it was closed, or null while it is open.</summary>
     public DateTimeOffset? ClosedAt { get; private set; }
 
     public bool IsOpen => Status == Open;
 
-    /// <summary>RM-4 - Close Referral. Business rule: A Referral Is Closed Once (RM-4).</summary>
+    /// <summary>Close Referral. Business rule: A Referral Is Closed Once.</summary>
     /// <exception cref="InvalidOperationException">When it is already closed.</exception>
     public void Close(DateTimeOffset at)
     {

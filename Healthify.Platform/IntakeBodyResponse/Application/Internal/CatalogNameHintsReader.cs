@@ -5,20 +5,20 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Repositories;
 namespace Healthify.Platform.IntakeBodyResponse.Application.Internal;
 
 /// <summary>
-///     IN-7 and IA-3. Up to <c>FoodCatalog:PromptCatalogNamesCount</c> (100) names of the catalog the model uses
+///     Up to <c>FoodCatalog:PromptCatalogNamesCount</c> (100) names of the catalog the model uses
 ///     verbatim: the dish of a photo (<c>catalogDishNames</c>) and the ingredients of a meal idea
-///     (<c>catalogIngredientNames</c>), so what the AI names is what FC-2 resolves.
+///     (<c>catalogIngredientNames</c>), so what the AI names is what the catalog resolves.
 /// </summary>
 /// <remarks>
-///     DECISIÓN IN-7: first the most logged foods of the whole platform (among those logged by at least
+///     First the most logged foods of the whole platform (among those logged by at least
 ///     <see cref="MealPhotoAnalysisCommandService.MinimumPatientsPerHint" /> patients), then, until the count is
 ///     reached, verified foods of the catalog (local overrides first, then by name). Never the patient's own dishes:
-///     they would be data of their diary sent to the AI, which IN-7 forbids («la IA recibe la imagen sin ningún dato
-///     del paciente»).
+///     they would be data of their diary sent to the AI, which the photo recognition forbids (the AI receives the
+///     image without any patient data).
 ///     The list names nobody, so it is cached for the whole platform for
 ///     <c>FoodCatalog:PromptCatalogNamesCacheMinutes</c> (60) instead of aggregating <c>diary_entries</c> on every
 ///     call. A failure only leaves the list empty, and an empty list is not cached.
-///     DECISIÓN IA-3: meal ideas use the same list as IN-7: one platform vocabulary, one cache.
+///     Meal ideas use the same list as the photo recognition: one platform vocabulary, one cache.
 /// </remarks>
 public sealed class CatalogNameHintsReader(
     IDiaryEntryRepository diaryEntryRepository,

@@ -1,7 +1,7 @@
 namespace Healthify.Platform.FoodCatalog.Domain.Model.Commands;
 
 /// <summary>
-///     IN-7 - Create AI Estimated Food. Issued through the ACL by Intake when a dish recognized in a photo is in
+///     Create AI Estimated Food. Issued through the ACL by Intake when a dish recognized in a photo is in
 ///     neither the local catalog nor the external providers. Never by an endpoint.
 /// </summary>
 /// <remarks>Idempotent: the same name (normalized) always yields the same food, also when two requests race.</remarks>

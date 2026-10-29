@@ -2,7 +2,7 @@ namespace Healthify.Platform.CareRelationship.Domain.Model.ValueObjects;
 
 /// <summary>
 ///     Why a care link was revoked. A closed set: a link is revoked either because the patient
-///     withdrew consent (Subflow 2.5) or because the patient switched practitioners (CR-1).
+///     withdrew consent (Subflow 2.5) or because the patient switched practitioners.
 /// </summary>
 /// <remarks>
 ///     It records which path ended the link, never a justification from the patient: the rule No
@@ -21,7 +21,7 @@ public sealed record RevocationReason
     /// <summary>The patient withdrew consent (Subflow 2.5).</summary>
     public static readonly RevocationReason ConsentWithdrawn = new(ConsentWithdrawnValue);
 
-    /// <summary>The patient redeemed another practitioner's invitation and confirmed the switch (CR-1).</summary>
+    /// <summary>The patient redeemed another practitioner's invitation and confirmed the switch.</summary>
     public static readonly RevocationReason SwitchedPractitioner = new(SwitchedPractitionerValue);
 
     public RevocationReason(string value)

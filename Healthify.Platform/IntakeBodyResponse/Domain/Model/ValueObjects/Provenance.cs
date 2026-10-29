@@ -8,13 +8,13 @@ namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 ///     metadata, it is part of the reading. A number that came from a photo estimate and a number the
 ///     patient typed carry different weight, and every read model of this context shows which is
 ///     which so that nobody has to guess.
-///     <c>OffPlan</c> is not a lesser value. It exists so that declaring a meal outside the plan
-///     costs one tap, because selective omission is the largest source of measurement error and the
+///     <c>OffPlan</c> is not a lesser value. It existed so that declaring a meal outside the plan
+///     cost one tap, because selective omission is the largest source of measurement error and the
 ///     antidote is making it cost nothing to say.
-///     Since IN-1, <c>OffPlan</c> is a legacy value: whether a meal was in the plan is answered by
+///     <c>OffPlan</c> is now a legacy value: whether a meal was in the plan is answered by
 ///     <see cref="PlanAdherence" />, and provenance describes only how the entry was logged. Rows
-///     stored with it are still read, and only the deprecated off-plan endpoint and the legacy
-///     synchronisation path still create them (see <c>DiaryEntry.LegacyOffPlan</c>).
+///     stored with it are still read, and only the synchronisation path of old offline clients still
+///     creates them (see <c>DiaryEntry.LegacyOffPlan</c>).
 /// </remarks>
 public sealed record Provenance
 {
@@ -91,11 +91,11 @@ public sealed record SyncState
 }
 
 /// <summary>
-///     The patient's answer to «¿Esta comida estaba en tu plan?»: in the plan, off the plan, or not
+///     The patient's answer to "was this meal in your plan?": in the plan, off the plan, or not
 ///     answered yet.
 /// </summary>
 /// <remarks>
-///     IN-1. Being off the plan is an attribute of an ordinary entry with a food and a portion, and
+///     Being off the plan is an attribute of an ordinary entry with a food and a portion, and
 ///     that entry counts towards the day's intake like any other. The answer is descriptive: it helps
 ///     the practitioner understand the week, and nothing computes a deviation or a penalty from it.
 ///     <c>NotAnswered</c> exists only for entries still waiting for the patient's confirmation and
@@ -134,8 +134,8 @@ public sealed record PlanAdherence
 }
 
 /// <summary>
-///     IN-6. Where an entry logged in a group came from: today only <c>MealIdea</c>, an idea of IA-3 the patient
-///     chose to log («Registrar esta comida»). Null for every other entry.
+///     Where an entry logged in a group came from: today only <c>MealIdea</c>, a meal idea the patient
+///     chose to log ("Log this meal"). Null for every other entry.
 /// </summary>
 /// <remarks>Descriptive only: it qualifies nothing and changes nothing the day adds up to.</remarks>
 public sealed record EntryOrigin

@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Shared.Interfaces.REST.RateLimiting;
 
 /// <summary>
-///     D-RL. Names of the request rate limiting policies. A context only marks its endpoints with
+///     Names of the request rate limiting policies. A context only marks its endpoints with
 ///     <c>[EnableRateLimiting(RateLimitingPolicies.X)]</c>; the limits live in Shared
 ///     (<c>Shared/Infrastructure/Interfaces/ASP/RateLimiting</c>) and in the <c>RateLimiting</c> configuration section.
 /// </summary>

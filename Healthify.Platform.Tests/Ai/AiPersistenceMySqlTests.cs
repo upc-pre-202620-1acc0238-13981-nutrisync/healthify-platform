@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Healthify.Platform.Tests.Ai;
 
 /// <summary>
-///     IA-0, CR-2 and IA-1 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the audit
+///     The AI tables against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the audit
 ///     table with its quota count and both purges, the AI columns of the consent (and their default on a row written
 ///     without them), and the preferences keyed by patient.
 /// </summary>
@@ -60,7 +60,7 @@ public class AiPersistenceMySqlTests
         await using var db = await MySqlIntegrationDatabase.CreateAsync(DateOnly.FromDateTime(DateTime.UtcNow));
         await using (var context = db.NewContext())
         {
-            // A link written without the CR-2 columns, as every link before it was.
+            // A link written without the AI consent columns, as every link before them was.
             await context.Database.ExecuteSqlRawAsync(
                 "INSERT INTO care_links (patient_id, practitioner_id, established_at, consent_granted, consent_scope, " +
                 "consent_granted_at) VALUES (30, 20, UTC_TIMESTAMP(), 1, 'diary', UTC_TIMESTAMP())");

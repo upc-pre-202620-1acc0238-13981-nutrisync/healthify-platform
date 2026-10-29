@@ -6,7 +6,7 @@ using static Healthify.Platform.Tests.TestSupport.ProblemResponses;
 
 namespace Healthify.Platform.Tests.ReadModels;
 
-/// <summary>X-3. The one refusal of the composite reads carries <c>extensions.code</c>.</summary>
+/// <summary>The one refusal of the composite reads carries <c>extensions.code</c>.</summary>
 public class ErrorCodeExtensionTests
 {
     [Fact]

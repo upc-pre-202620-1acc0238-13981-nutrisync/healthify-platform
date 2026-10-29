@@ -75,7 +75,7 @@ public class IntakeContextFacade(
     {
         try
         {
-            // IN-5: the same range the weight trend endpoint shows, so PAC-1 and PT20 agree.
+            // The same range the weight trend endpoint shows, so every reader of the trend agrees.
             var view = await weightTrendQueryService.Handle(
                 new GetWeightTrendRangeByPatientIdQuery(patientId, weeks), ct);
             if (view is null) return null;
@@ -148,7 +148,7 @@ public class IntakeContextFacade(
                     entry.ConfirmedPortionGrams,
                     entry.ConfirmedAt,
                     entry.PlanAdherence.Value,
-                    // RM-3: as the diary resource of IN-1 shows them. Only a confirmed entry is intake.
+                    // As the diary resource shows them. Only a confirmed entry is intake.
                     entry.HasConfirmedEstimate,
                     confirmedName ?? proposedName));
             }

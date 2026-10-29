@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Scheduling;
 
 /// <summary>
-///     IA-0, retention (§12-#14). Deletes the <c>ai_generations</c> rows whose <c>expires_at</c> has passed. Runs even
+///     Retention. Deletes the <c>ai_generations</c> rows whose <c>expires_at</c> has passed. Runs even
 ///     with AI off, so rows written while it was on still expire.
 /// </summary>
 /// <remarks>

@@ -59,7 +59,7 @@ public class ReferralCommandService(
         }
     }
 
-    /// <summary>RM-4 - Close Referral (DECISIÓN §12-#8: Open/Closed with manual closure).</summary>
+    /// <summary>Close Referral (Open/Closed with manual closure).</summary>
     public async Task<Result<Referral, MonitoringError>> Handle(CloseReferralCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -70,7 +70,7 @@ public class ReferralCommandService(
             if (referral is null || referral.IssuedBy != command.PractitionerId)
                 return Failure(MonitoringError.ReferralNotFound);
 
-            // 4. State guard. Business rule: A Referral Is Closed Once (RM-4).
+            // 4. State guard. Business rule: A Referral Is Closed Once.
             if (!referral.IsOpen) return Failure(MonitoringError.ReferralAlreadyClosed);
 
             // 5-6. Mutate and persist.
@@ -120,8 +120,8 @@ public class ScheduledFollowUpCommandService(
     public async Task<Result<ScheduledFollowUp, MonitoringError>> Handle(ScheduleFollowUpCommand command,
         CancellationToken cancellationToken = default)
     {
-        // 1. Value objects, each one to its own error (MA-2, MA-5). The aggregate validates the moment again.
-        // Business rule: A Visit Is Scheduled For The Future (MA-5).
+        // 1. Value objects, each one to its own error. The aggregate validates the moment again.
+        // Business rule: A Visit Is Scheduled For The Future.
         if (command.ScheduledFor <= DateTimeOffset.UtcNow) return Failure(MonitoringError.ScheduledForMustBeInFuture);
 
         try
@@ -170,7 +170,7 @@ public class ScheduledFollowUpCommandService(
         }
         catch (ArgumentException)
         {
-            // MA-5: the moment passed between the check above and the aggregate. It used to report 404.
+            // The moment passed between the check above and the aggregate. It used to report 404.
             return Failure(MonitoringError.ScheduledForMustBeInFuture);
         }
         catch (Exception ex)
@@ -211,7 +211,7 @@ public class ScheduledFollowUpCommandService(
         }
     }
 
-    /// <summary>MA-5 - Cancel Follow Up. Only the practitioner whose agenda the visit is on.</summary>
+    /// <summary>Cancel Follow Up. Only the practitioner whose agenda the visit is on.</summary>
     /// <remarks>
     ///     No care link is asked: the visit is on this practitioner's agenda, and a visit has to stay cancellable
     ///     after the link ended.
@@ -233,7 +233,7 @@ public class ScheduledFollowUpCommandService(
             if (followUp is null || followUp.PractitionerId != command.PractitionerId)
                 return Failure(MonitoringError.ScheduledFollowUpNotFound);
 
-            // 4. State guard. Business rule: Only A Scheduled Visit Changes (MA-5).
+            // 4. State guard. Business rule: Only A Scheduled Visit Changes.
             if (!followUp.IsScheduled) return Failure(MonitoringError.FollowUpNotScheduled);
 
             // 5-6. Mutate and persist.
@@ -257,16 +257,16 @@ public class ScheduledFollowUpCommandService(
         }
     }
 
-    /// <summary>MA-5 - Reschedule Follow Up. Only the practitioner whose agenda the visit is on.</summary>
+    /// <summary>Reschedule Follow Up. Only the practitioner whose agenda the visit is on.</summary>
     /// <remarks>
-    ///     The pre-visit check in (MA-4) is a separate row keyed by the visit, so it is kept; whether it can still
+    ///     The pre-visit check in is a separate row keyed by the visit, so it is kept; whether it can still
     ///     be edited follows the new moment.
     /// </remarks>
     public async Task<Result<ScheduledFollowUp, MonitoringError>> Handle(RescheduleFollowUpCommand command,
         CancellationToken cancellationToken = default)
     {
         // 1. Value objects, each one to its own error.
-        // Business rule: A Visit Is Scheduled For The Future (MA-5).
+        // Business rule: A Visit Is Scheduled For The Future.
         if (command.ScheduledFor <= DateTimeOffset.UtcNow) return Failure(MonitoringError.ScheduledForMustBeInFuture);
         try
         {
@@ -284,7 +284,7 @@ public class ScheduledFollowUpCommandService(
             if (followUp is null || followUp.PractitionerId != command.PractitionerId)
                 return Failure(MonitoringError.ScheduledFollowUpNotFound);
 
-            // 4. State guard. Business rule: Only A Scheduled Visit Changes (MA-5).
+            // 4. State guard. Business rule: Only A Scheduled Visit Changes.
             if (!followUp.IsScheduled) return Failure(MonitoringError.FollowUpNotScheduled);
 
             // 5-6. Mutate and persist.
@@ -314,7 +314,7 @@ public class ScheduledFollowUpCommandService(
     }
 
     /// <summary>
-    ///     MA-2 - Complete Follow Up. The visit a published consultation started from, or else the visit of
+    ///     Complete Follow Up. The visit a published consultation started from, or else the visit of
     ///     the same patient with the same practitioner on the same local day, becomes Completed. That is
     ///     what keeps the missed-visit policy from flagging a visit that did happen.
     /// </summary>
@@ -368,8 +368,8 @@ public class ScheduledFollowUpCommandService(
     }
 
     /// <summary>
-    ///     CR-4 - The treatment ended (discharge, PR18) or moved to another practitioner (CR-1): its visits still
-    ///     ahead leave the agenda (PR17.0-Alta). Past visits are history and stay as they are.
+    ///     The treatment ended (discharge) or moved to another practitioner: its visits still
+    ///     ahead leave the agenda. Past visits are history and stay as they are.
     /// </summary>
     public async Task<Result<IReadOnlyList<ScheduledFollowUp>, MonitoringError>> Handle(
         CancelFollowUpsForPatientCommand command, CancellationToken cancellationToken = default)
@@ -390,7 +390,7 @@ public class ScheduledFollowUpCommandService(
                     practitionerId, cancellationToken)
                 : await scheduledFollowUpRepository.ListByPatientIdAsync(command.PatientId,
                     new FollowUpState(FollowUpState.Scheduled), cancellationToken);
-            // 4. State guard. Business rule: Only A Scheduled Visit Changes (MA-5).
+            // 4. State guard. Business rule: Only A Scheduled Visit Changes.
             var future = candidates.Where(f => f.IsScheduled && f.ScheduledFor > now).ToList();
             if (future.Count == 0) return new Result<IReadOnlyList<ScheduledFollowUp>, MonitoringError>.Success([]);
 
@@ -430,10 +430,10 @@ public class ScheduledFollowUpCommandService(
 }
 
 /// <summary>
-///     MA-4 - Submit Pre Visit Check In.
+///     Submit Pre Visit Check In.
 /// </summary>
 /// <remarks>
-///     Business rule: Check In Raises No Signal (MA-4). This service injects no window, deviation or consistency
+///     Business rule: Check In Raises No Signal. This service injects no window, deviation or consistency
 ///     index, and the event it publishes has no subscriber: a check in that says "Hard" is a message to a person,
 ///     not evidence against the patient.
 /// </remarks>
@@ -477,12 +477,12 @@ public class PreVisitCheckInCommandService(
             return Failure(MonitoringError.InvalidCheckInQuestion);
         }
 
-        // Business rule: At Most Three Questions (MA-4).
+        // Business rule: At Most Three Questions.
         if (PreVisitCheckIn.ExceedsQuestionLimit(questions)) return Failure(MonitoringError.TooManyQuestions);
 
         try
         {
-            // 3. Load. Business rule: Only The Patient Writes (MA-4). The visit of another patient does not exist
+            // 3. Load. Business rule: Only The Patient Writes. The visit of another patient does not exist
             //    for this one.
             var followUp = await scheduledFollowUpRepository.FindByIdAsync(command.FollowUpId, cancellationToken);
             if (followUp is null || followUp.PatientId != command.PatientId)
@@ -491,10 +491,10 @@ public class PreVisitCheckInCommandService(
             // 4. State guards: the visit is on the calendar, and its hour has not arrived.
             if (!followUp.IsScheduled) return Failure(MonitoringError.FollowUpNotScheduled);
             var now = timeProvider.GetUtcNow();
-            // Business rule: Check In Editable Until The Visit (MA-4).
+            // Business rule: Check In Editable Until The Visit.
             if (!followUp.AcceptsCheckInAt(now)) return Failure(MonitoringError.CheckInLocked);
 
-            // 5. Mutate. Business rule: One Check In Per Visit (MA-4): the second answer edits the first.
+            // 5. Mutate. Business rule: One Check In Per Visit: the second answer edits the first.
             var checkIn = await checkInRepository.FindByFollowUpIdAsync(followUp.Id.Value, cancellationToken);
             if (checkIn is null)
             {

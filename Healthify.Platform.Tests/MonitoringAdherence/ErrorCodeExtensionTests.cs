@@ -10,7 +10,7 @@ using static Healthify.Platform.Tests.TestSupport.ProblemResponses;
 
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
-/// <summary>X-3. Every Monitoring problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
+/// <summary>Every Monitoring problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
 public class ErrorCodeExtensionTests
 {
     private readonly IStringLocalizer<MonitoringMessages> _localizer = EchoLocalizer<MonitoringMessages>();

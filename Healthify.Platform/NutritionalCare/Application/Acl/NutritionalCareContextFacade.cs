@@ -244,7 +244,7 @@ public class NutritionalCareContextFacade(
         try
         {
             var diagnosis = await diagnosisQueryService.Handle(new GetActiveDiagnosisByPatientIdQuery(patientId), ct);
-            // Pending and discarded diagnoses are not active (NC-7); the query already leaves them out.
+            // Pending and discarded diagnoses are not active; the query already leaves them out.
             return diagnosis is null || !diagnosis.IsActive
                 ? null
                 : new ActiveDiagnosisItem(diagnosis.Id.Value, diagnosis.Code?.Value, diagnosis.Statement,
@@ -257,7 +257,7 @@ public class NutritionalCareContextFacade(
     }
 
     /// <summary>
-    ///     RM-4. The evaluations in force, oldest first: a closed stand-alone assessment, or the assessment of a
+    ///     The evaluations in force, oldest first: a closed assessment recorded outside a consultation, or the assessment of a
     ///     completed consultation (one in progress or discarded is not an evaluation yet), without the ones a later
     ///     assessment corrected; each with its latest measurement.
     /// </summary>

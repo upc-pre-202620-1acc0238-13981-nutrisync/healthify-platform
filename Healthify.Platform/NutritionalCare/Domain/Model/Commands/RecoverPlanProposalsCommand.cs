@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
 /// <summary>
-///     NC-10 - Recover the plan proposals the in-memory queue lost (a restart) or never got: queue the generation for
+///     Recover the plan proposals the in-memory queue lost (a restart) or never got: queue the generation for
 ///     the open sustained deviations without a proposal, opened in the last <paramref name="MaxAge" />, whose patient
 ///     consented to AI processing. Issued by the clock (at start-up and every N minutes), never by a user.
 /// </summary>

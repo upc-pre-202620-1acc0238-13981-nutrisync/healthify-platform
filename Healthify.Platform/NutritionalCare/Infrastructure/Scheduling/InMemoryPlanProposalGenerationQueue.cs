@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Application.Internal;
 
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Scheduling;
 
-/// <summary>NC-10. <see cref="IPlanProposalGenerationQueue" /> over an unbounded channel. Singleton.</summary>
+/// <summary><see cref="IPlanProposalGenerationQueue" /> over an unbounded channel. Singleton.</summary>
 public sealed class InMemoryPlanProposalGenerationQueue : IPlanProposalGenerationQueue
 {
     private readonly Channel<int> _channel = Channel.CreateUnbounded<int>(new UnboundedChannelOptions

@@ -156,7 +156,7 @@ public class NutritionalDiagnosisRepository(AppDbContext context)
         CancellationToken cancellationToken = default)
     {
         return await Context.Set<NutritionalDiagnosis>()
-            // NC-7: the pending diagnosis of a consultation and a discarded one are not active; neither leaves
+            // The pending diagnosis of a consultation and a discarded one are not active; neither leaves
             // the consultation through this read.
             .Where(d => d.PatientId == patientId && d.SupersededAt == null && d.PendingConsultationId == null &&
                         d.DiscardedAt == null)
@@ -205,7 +205,7 @@ public class NutritionPlanRepository(AppDbContext context)
         CancellationToken cancellationToken = default)
     {
         // Superseded versions included: Plan Version History is only useful because nothing is
-        // ever deleted. NC-2: a discarded draft never was a version, so it is not history.
+        // ever deleted. A discarded draft never was a version, so it is not history.
         return await Context.Set<NutritionPlan>()
             .Where(p => p.PatientId == patientId && p.DiscardedAt == null)
             .OrderByDescending(p => p.Version)
@@ -214,7 +214,7 @@ public class NutritionPlanRepository(AppDbContext context)
 
     public async Task<int> GetLatestVersionAsync(int patientId, CancellationToken cancellationToken = default)
     {
-        // NC-2: a discarded draft gives its number back, so the versions the patient receives have no gaps.
+        // A discarded draft gives its number back, so the versions the patient receives have no gaps.
         var versions = await Context.Set<NutritionPlan>()
             .Where(p => p.PatientId == patientId && p.DiscardedAt == null)
             .Select(p => p.Version)

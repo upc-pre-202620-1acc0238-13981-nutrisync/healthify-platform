@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-5. The parameters EV-4 calculates with by default, their configuration override and
-///     DECISIÓN §12-#2 (no deficit for Underweight and NormalWeight).
+///     The parameters step 3 calculates with by default, their configuration override and
+///     no deficit for Underweight and NormalWeight.
 /// </summary>
 public class DefaultTargetParametersPolicyTests
 {

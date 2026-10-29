@@ -29,9 +29,9 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-11. The review inbox carries the patient's name, whether a plan proposal is attached, and the evidence as
-///     numbers (PR14: "registró en promedio 40 % menos de su meta de energía en 5 de sus últimos 9 días registrados"),
-///     besides the original sentence; and it can be read open or resolved (PR13.1).
+///     The review inbox carries the patient's name, whether a plan proposal is attached, and the evidence as
+///     numbers ("logged on average 40 % below their energy target on 5 of their last 9 logged days"),
+///     besides the original sentence; and it can be read open or resolved.
 /// </summary>
 public class ReviewInboxEvidenceTests
 {
@@ -172,7 +172,7 @@ public class ReviewInboxEvidenceTests
 
         var resolvedEntry = Assert.Single(resolvedEntries);
         Assert.Equal(2, resolvedEntry.ReviewItem.Id.Value);
-        // An account without a name (before IAM-1) shows no name rather than an empty one.
+        // An account created before names were required shows no name rather than an empty one.
         Assert.Null(resolvedEntry.PatientFullName);
     }
 

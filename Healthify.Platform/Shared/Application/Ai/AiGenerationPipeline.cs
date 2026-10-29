@@ -12,7 +12,7 @@ namespace Healthify.Platform.Shared.Application.Ai;
 /// <param name="Input">The aggregates the function needs. Pseudonymized before it leaves (guard 3).</param>
 /// <param name="KnownIdentifiers">Names of the people involved, masked if they appear in a text of the input.</param>
 /// <param name="Images">
-///     IN-7. Images the function sends with its input (a photo of a dish), without metadata. They are not
+///     Images the function sends with its input (a photo of a dish), without metadata. They are not
 ///     pseudonymized (they carry no text of the platform); the audit keeps only their SHA-256.
 /// </param>
 public record AiGenerationRequest(
@@ -31,7 +31,7 @@ public record AiGenerationRequest(
 /// <param name="Model">The model id that answered.</param>
 public record AiGenerationOutcome<T>(T Output, long GenerationId, string PromptVersion, string Model);
 
-/// <summary>Runs every AI generation of the platform through the IA-0 guards.</summary>
+/// <summary>Runs every AI generation of the platform through the AI guards.</summary>
 public interface IAiGenerationPipeline
 {
     Task<Result<AiGenerationOutcome<T>, AiError>> GenerateAsync<T>(AiGenerationRequest request,
@@ -39,7 +39,7 @@ public interface IAiGenerationPipeline
 }
 
 /// <summary>
-///     IA-0. The guards every generation passes, in this order (the order is the specification):
+///     The guards every generation passes, in this order (the order is the specification):
 ///     1. kill switch and feature flag → <see cref="AiError.AiFeatureDisabled" />;
 ///     2. consent (<see cref="IAiConsentPolicy" />) → <see cref="AiError.AiConsentRequired" />;
 ///     3. minimization and pseudonymization (<see cref="AiInputPseudonymizer" />);
@@ -91,7 +91,7 @@ public class AiGenerationPipeline(
             trace.Processing = true;
             var input = AiInputPseudonymizer.Pseudonymize(request.Input, request.KnownIdentifiers);
             trace.InputHash = input.Hash;
-            // IN-7: an image is audited by its digest alone, never by its bytes.
+            // An image is audited by its digest alone, never by its bytes.
             var images = request.Images is { Count: > 0 } parts ? parts : null;
             trace.InputImageHash = AiImagePart.CombinedHash(images);
 

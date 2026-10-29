@@ -28,13 +28,13 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IA-3. Meal ideas: what is left computed by the server, the catalog recalculating the figures (FC-2), the
-///     restrictions of the plan through the lexicon, «cabe en lo que te queda», one retry, the two-hour cache and its
+///     Meal ideas: what is left computed by the server, the catalog recalculating the figures, the
+///     restrictions of the plan through the lexicon, "fits in what you have left", one retry, the two-hour cache and its
 ///     purge. The real shared pipeline with the fake model.
 /// </summary>
 /// <remarks>
 ///     The day: targets 1800 kcal and 100 g of protein, 1210 kcal and 52 g already confirmed, so 590 kcal and 48 g
-///     are left (PT14.4). The plan is ShellfishFree.
+///     are left. The plan is ShellfishFree.
 /// </remarks>
 public class MealIdeasTests
 {

@@ -23,7 +23,7 @@ public class PatientBaselineCommandService(
     ILogger<PatientBaselineCommandService> logger,
     IMediator mediator) : IPatientBaselineCommandService
 {
-    /// <summary>NC-1 - Record the patient baseline (EV-1).</summary>
+    /// <summary>Record the patient baseline.</summary>
     public async Task<Result<PatientBaseline, NutritionalCareError>> Handle(
         RecordPatientBaselineCommand command, CancellationToken cancellationToken = default)
     {
@@ -40,7 +40,7 @@ public class PatientBaselineCommandService(
             var denied = await AuthorizeAsync(command.PatientId, command.PractitionerId, cancellationToken);
             if (denied is not null) return Failure(denied.Value);
 
-            // 3. Business rule: One Baseline Per Patient (NC-1). The unique index on patient_id backs
+            // 3. Business rule: One Baseline Per Patient. The unique index on patient_id backs
             //    this check when two requests race; the loser ends as an unexpected error.
             if (await baselineRepository.FindByPatientIdAsync(command.PatientId, cancellationToken) is not null)
                 return Failure(NutritionalCareError.BaselineAlreadyRecorded);
@@ -61,7 +61,7 @@ public class PatientBaselineCommandService(
         }
     }
 
-    /// <summary>NC-1 - Edit the patient baseline. Past assessments keep their own snapshot.</summary>
+    /// <summary>Edit the patient baseline. Past assessments keep their own snapshot.</summary>
     public async Task<Result<PatientBaseline, NutritionalCareError>> Handle(
         UpdatePatientBaselineCommand command, CancellationToken cancellationToken = default)
     {

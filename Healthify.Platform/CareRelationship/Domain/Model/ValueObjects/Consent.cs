@@ -7,8 +7,8 @@ namespace Healthify.Platform.CareRelationship.Domain.Model.ValueObjects;
 /// <remarks>
 ///     Enforces the business rule "Consent Scope Recorded" (Subflow 2.3): a consent without a
 ///     recorded scope is not a consent, it is an assumption.
-///     CR-2 adds the consent to AI processing, given separately inside the same consent (PT2 "INTELIGENCIA
-///     ARTIFICIAL"): processing the patient's data with an AI provider is a different permission from sharing it
+///     It also holds the consent to AI processing, given separately inside the same consent (its own section on
+///     the consent screen): processing the patient's data with an AI provider is a different permission from sharing it
 ///     with the practitioner, and saying no to it changes nothing else.
 /// </remarks>
 public sealed record Consent
@@ -27,7 +27,7 @@ public sealed record Consent
         if (withdrawnAt is not null && withdrawnAt < grantedAt)
             throw new ArgumentException("Consent cannot be withdrawn before it was granted.", nameof(withdrawnAt));
 
-        // Business rule: AI Processing Needs Live Consent (CR-2). AI consent lives inside the consent: without a
+        // Business rule: AI Processing Needs Live Consent. AI consent lives inside the consent: without a
         // live consent there is nothing to process, and withdrawing consent also withdraws it.
         if (aiProcessingGranted && !isGranted)
             throw new ArgumentException("AI processing cannot be granted without a live consent.",
@@ -52,18 +52,18 @@ public sealed record Consent
     public DateTimeOffset GrantedAt { get; }
     public DateTimeOffset? WithdrawnAt { get; }
 
-    /// <summary>CR-2. Whether the patient allows their data to be processed by the AI functions.</summary>
+    /// <summary>Whether the patient allows their data to be processed by the AI functions.</summary>
     public bool AiProcessingGranted { get; }
 
     /// <summary>
-    ///     CR-2. When the patient last turned AI processing on or off. Null while they never decided: AI is off by
+    ///     When the patient last turned AI processing on or off. Null while they never decided: AI is off by
     ///     default, and a consent given without touching the switch is not a decision about AI.
     /// </summary>
     public DateTimeOffset? AiProcessingDecidedAt { get; }
 
     /// <summary>
-    ///     Business rule: Consent Always Revocable (Subflow 2.3). Withdrawing consent also turns AI processing off
-    ///     (CR-2); the moment is recorded as the AI decision only if it was on.
+    ///     Business rule: Consent Always Revocable (Subflow 2.3). Withdrawing consent also turns AI processing off;
+    ///     the moment is recorded as the AI decision only if it was on.
     /// </summary>
     public Consent Withdraw(DateTimeOffset withdrawnAt)
     {
@@ -71,7 +71,7 @@ public sealed record Consent
             AiProcessingGranted ? withdrawnAt : AiProcessingDecidedAt);
     }
 
-    /// <summary>CR-2. The same consent with AI processing turned on or off at <paramref name="decidedAt" />.</summary>
+    /// <summary>The same consent with AI processing turned on or off at <paramref name="decidedAt" />.</summary>
     /// <exception cref="ArgumentException">Turning it on without a live consent.</exception>
     public Consent WithAiProcessing(bool granted, DateTimeOffset decidedAt)
     {

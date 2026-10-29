@@ -4,8 +4,8 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
-///     NC-6. JSON shape of the cached guidelines: <c>[{ "code": "ReduceSalt" }, { "custom": "Caminar 20 min" }]</c>.
-///     A plain string element, the shape before NC-6, is read as a custom text.
+///     JSON shape of the cached guidelines: <c>[{ "code": "ReduceSalt" }, { "custom": "Caminar 20 min" }]</c>.
+///     A plain string element, the shape before the closed list of restrictions, is read as a custom text.
 /// </summary>
 public static class CachedGuidelineJson
 {
@@ -41,7 +41,7 @@ public static class CachedGuidelineJson
         return result;
     }
 
-    /// <summary>NC-8. <c>[{ "type": "GuidelineAdded", "code": "ReduceSalt" }, …]</c>, absent properties omitted.</summary>
+    /// <summary><c>[{ "type": "GuidelineAdded", "code": "ReduceSalt" }, …]</c>, absent properties omitted.</summary>
     public static string SerializeChanges(List<CachedPlanChange> changes)
     {
         var array = new JsonArray();

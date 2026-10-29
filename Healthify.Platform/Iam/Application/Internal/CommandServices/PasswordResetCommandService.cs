@@ -14,7 +14,7 @@ using Healthify.Platform.Shared.Domain.Repositories;
 namespace Healthify.Platform.Iam.Application.Internal.CommandServices;
 
 /// <summary>
-///     IAM-2. Password recovery without a session: a six-digit code goes to the account email, its verification
+///     Password recovery without a session: a six-digit code goes to the account email, its verification
 ///     hands out a single-use reset token, and the token sets the new password.
 /// </summary>
 public class PasswordResetCommandService(
@@ -36,7 +36,7 @@ public class PasswordResetCommandService(
     private static readonly Result<bool, IamError> TokenInvalid =
         new Result<bool, IamError>.Failure(IamError.PasswordResetTokenInvalid);
 
-    /// <summary>IAM-2 - Request Password Reset.</summary>
+    /// <summary>Request Password Reset.</summary>
     public async Task<Result<bool, IamError>> Handle(RequestPasswordResetCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -53,7 +53,7 @@ public class PasswordResetCommandService(
 
         try
         {
-            // 2. Business rule: Recovery Does Not Reveal Accounts (IAM-2).
+            // 2. Business rule: Recovery Does Not Reveal Accounts.
             var user = await userRepository.FindByEmailAsync(email, cancellationToken);
             if (user is null) return Accepted;
 
@@ -62,7 +62,7 @@ public class PasswordResetCommandService(
             var latest = await resetCodeRepository.FindLatestByUserIdAsync(user.Id.Value, cancellationToken);
             if (latest is not null && latest.IssuedAt + resetCodeService.ResendCooldown() > now) return Accepted;
 
-            // 4. Business rule: One Reset Code Per Account (IAM-2). The previous codes go in the same save.
+            // 4. Business rule: One Reset Code Per Account. The previous codes go in the same save.
             await resetCodeRepository.RemoveByUserIdAsync(user.Id.Value, cancellationToken);
             var issued = resetCodeService.Issue(user.Id.Value);
             await resetCodeRepository.AddAsync(
@@ -85,7 +85,7 @@ public class PasswordResetCommandService(
         }
     }
 
-    /// <summary>IAM-2 - Verify Password Reset Code.</summary>
+    /// <summary>Verify Password Reset Code.</summary>
     public async Task<Result<PasswordResetVerification, IamError>> Handle(VerifyPasswordResetCodeCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -113,7 +113,7 @@ public class PasswordResetCommandService(
             var resetCode = await resetCodeRepository.FindLatestByUserIdAsync(user.Id.Value, cancellationToken);
             if (resetCode is null || !resetCode.IsUsableAt(now)) return VerificationInvalid;
 
-            // 3. Business rule: Reset Code Attempts Are Limited (IAM-2).
+            // 3. Business rule: Reset Code Attempts Are Limited.
             if (!resetCodeService.Matches(user.Id.Value, command.Code.Trim(), resetCode.CodeHash))
             {
                 resetCode.RegisterFailedAttempt();
@@ -122,7 +122,7 @@ public class PasswordResetCommandService(
                 return VerificationInvalid;
             }
 
-            // 4. Business rule: A Reset Code Is Verified Once (IAM-2). Only the hash of the token is kept.
+            // 4. Business rule: A Reset Code Is Verified Once. Only the hash of the token is kept.
             var token = resetCodeService.IssueResetToken();
             resetCode.Verify(now, token.Hash, token.ExpiresAt);
             resetCodeRepository.Update(resetCode);
@@ -139,7 +139,7 @@ public class PasswordResetCommandService(
         }
     }
 
-    /// <summary>IAM-2 - Reset Password.</summary>
+    /// <summary>Reset Password.</summary>
     public async Task<Result<bool, IamError>> Handle(ResetPasswordCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -167,7 +167,7 @@ public class PasswordResetCommandService(
             var user = await userRepository.FindByIdAsync(resetCode.UserId, cancellationToken);
             if (user is null) return TokenInvalid;
 
-            // 3. Business rule: New Password Differs From The Current One (IAM-2). The token stays valid, so another
+            // 3. Business rule: New Password Differs From The Current One. The token stays valid, so another
             //    password can be tried.
             if (hashingService.Verify(password.Value, user.PasswordHash))
                 return new Result<bool, IamError>.Failure(IamError.PasswordReuseNotAllowed);
@@ -178,7 +178,7 @@ public class PasswordResetCommandService(
             resetCode.MarkAsUsed(now);
             resetCodeRepository.Update(resetCode);
 
-            // 5. Business rule: Password Reset Ends Every Session (IAM-2). Whoever knew the old password loses the
+            // 5. Business rule: Password Reset Ends Every Session. Whoever knew the old password loses the
             //    sessions and refresh tokens opened with it.
             var terminated = await TerminateOpenSessionsAsync(user.Id.Value, cancellationToken);
 
@@ -200,7 +200,7 @@ public class PasswordResetCommandService(
 
     /// <summary>
     ///     Terminates the open sessions and commits, together with the changes already tracked. A refresh that
-    ///     rotates one of them in between is a concurrency conflict (IAM-4): the sessions are read again and the
+    ///     rotates one of them in between is a concurrency conflict: the sessions are read again and the
     ///     save is retried once.
     /// </summary>
     private async Task<IReadOnlyList<UserSession>> TerminateOpenSessionsAsync(int userId,

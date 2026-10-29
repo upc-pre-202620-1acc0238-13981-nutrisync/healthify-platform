@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Calculators;
 
 /// <summary>
-///     IA-8/NC-10. <see cref="ICalorieFloorPolicy" /> from <c>NutritionalCare:CalorieFloorKcal:Female</c> (1 200) and
+///     <see cref="ICalorieFloorPolicy" /> from <c>NutritionalCare:CalorieFloorKcal:Female</c> (1 200) and
 ///     <c>NutritionalCare:CalorieFloorKcal:Male</c> (1 500), defaults in code.
 /// </summary>
 public class ConfiguredCalorieFloorPolicy(IConfiguration configuration) : ICalorieFloorPolicy
@@ -20,7 +20,7 @@ public class ConfiguredCalorieFloorPolicy(IConfiguration configuration) : ICalor
 
         if (string.Equals(biologicalSex, BiologicalSex.Female, StringComparison.OrdinalIgnoreCase)) return female;
         if (string.Equals(biologicalSex, BiologicalSex.Male, StringComparison.OrdinalIgnoreCase)) return male;
-        // DECISIÓN IA-8: without a recorded sex, the higher floor (the MD gives one per sex and none for unknown).
+        // Without a recorded sex, the higher floor (the design gives one per sex and none for unknown).
         return Math.Max(female, male);
     }
 }

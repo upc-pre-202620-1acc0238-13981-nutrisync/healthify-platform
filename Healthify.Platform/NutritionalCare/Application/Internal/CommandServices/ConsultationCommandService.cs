@@ -29,7 +29,7 @@ public class ConsultationCommandService(
     ILogger<ConsultationCommandService> logger,
     IMediator mediator) : IConsultationCommandService
 {
-    /// <summary>NC-2 (minimal) - Start a consultation (PAC-1 "Iniciar consulta").</summary>
+    /// <summary>Start a consultation.</summary>
     public async Task<Result<Consultation, NutritionalCareError>> Handle(StartConsultationCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -43,18 +43,18 @@ public class ConsultationCommandService(
                 return new Result<Consultation, NutritionalCareError>.Failure(
                     NutritionalCareError.ActiveCareLinkRequired);
 
-            // Business rule: Baseline Required (NC-2). The consultation reads age, sex and height from it.
+            // Business rule: Baseline Required. The consultation reads age, sex and height from it.
             if (await baselineRepository.FindByPatientIdAsync(command.PatientId, cancellationToken) is null)
                 return new Result<Consultation, NutritionalCareError>.Failure(NutritionalCareError.BaselineRequired);
 
-            // Business rule: One Consultation In Progress Per Patient (NC-2). The unique index on the
+            // Business rule: One Consultation In Progress Per Patient. The unique index on the
             // generated column in_progress_patient_id backs this check when two requests race.
             if (await consultationRepository.FindInProgressByPatientIdAsync(command.PatientId,
                     cancellationToken) is not null)
                 return new Result<Consultation, NutritionalCareError>.Failure(
                     NutritionalCareError.ConsultationAlreadyInProgress);
 
-            // "Primera consulta": no consultation was completed and no assessment predates this one.
+            // First consultation: no consultation was completed and no assessment predates this one.
             var isFirst = !await consultationRepository.ExistsCompletedForPatientAsync(command.PatientId,
                               cancellationToken)
                           && !await assessmentRepository.ExistsForPatientAsync(command.PatientId, cancellationToken);
@@ -78,7 +78,7 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-3 - Step 1 of the consultation (EV-2 "Continuar a diagnóstico"). Creates a new assessment,
+    ///     Step 1 of the consultation, before moving on to the diagnosis. Creates a new assessment,
     ///     takes its measurement with the baseline height, closes it and attaches it to the consultation.
     /// </summary>
     public async Task<Result<ConsultationMeasurementOutcome, NutritionalCareError>> Handle(
@@ -123,11 +123,11 @@ public class ConsultationCommandService(
             var baseline = await baselineRepository.FindByPatientIdAsync(consultation.PatientId, cancellationToken);
             if (baseline is null) return Failure(NutritionalCareError.BaselineRequired);
 
-            // NC-7: a diagnosis issued on the previous assessment of this consultation is left out; step 2 is
+            // A diagnosis issued on the previous assessment of this consultation is left out; step 2 is
             // issued again on the new one. It was pending, so the active diagnosis was never touched.
             var stalePending = await PendingDiagnosisOf(consultation, cancellationToken);
 
-            // 5. Mutate. DECISIÓN §12-#13: age, sex, height and medical history are a snapshot of the
+            // 5. Mutate. Age, sex, height and medical history are a snapshot of the
             //    baseline on the practice's date. Business rule: Correction Creates A New Assessment (Subflow 3.1): going
             //    back to step 1 supersedes the assessment already attached, it never edits it.
             var today = clinicalDate.Today();
@@ -153,7 +153,7 @@ public class ConsultationCommandService(
                 return assessment.Id.Value;
             }, cancellationToken);
 
-            // 7. Events after the final commit, the same ones the stand-alone endpoints publish.
+            // 7. Events after the final commit.
             await mediator.PublishAsync(
                 new NutritionalAssessmentRecorded(assessment.Id.Value, assessment.PatientId,
                     assessment.PractitionerId), cancellationToken);
@@ -181,8 +181,8 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-4 - Step 2 of the consultation (EV-3 "Continuar a metas"). Issues the coded diagnosis on the
-    ///     assessment of step 1, pending until step 4 publishes the plan (NC-7).
+    ///     Step 2 of the consultation, before moving on to the targets. Issues the coded diagnosis on the
+    ///     assessment of step 1, pending until step 4 publishes the plan.
     /// </summary>
     public async Task<Result<ConsultationDiagnosisOutcome, NutritionalCareError>> Handle(
         IssueConsultationDiagnosisCommand command, CancellationToken cancellationToken = default)
@@ -208,7 +208,7 @@ public class ConsultationCommandService(
             return DiagnosisFailure(NutritionalCareError.InvalidDiagnosisSource);
         }
 
-        // Business rule: Accepted Suggestion Is Traceable (NC-4).
+        // Business rule: Accepted Suggestion Is Traceable.
         if (source.IsAiSuggestionAccepted &&
             (command.AiGenerationId is null or <= 0 || string.IsNullOrWhiteSpace(command.Rationale)))
             return DiagnosisFailure(NutritionalCareError.InvalidDiagnosisSource);
@@ -244,7 +244,7 @@ public class ConsultationCommandService(
                     command.PractitionerId, cancellationToken))
                 return DiagnosisFailure(NutritionalCareError.ActiveCareLinkRequired);
 
-            // 4. State guards. Business rule: Steps In Order (NC-2): the diagnosis reads step 1.
+            // 4. State guards. Business rule: Steps In Order: the diagnosis reads step 1.
             if (!consultation.IsInProgress) return DiagnosisFailure(NutritionalCareError.ConsultationNotInProgress);
             if (consultation.AssessmentId is null)
                 return DiagnosisFailure(NutritionalCareError.ConsultationStepOutOfOrder);
@@ -257,8 +257,8 @@ public class ConsultationCommandService(
             // Business rule: Closed Assessment Required (Subflow 3.2). Step 1 closes it; asserted anyway.
             if (!assessment.IsClosed) return DiagnosisFailure(NutritionalCareError.ClosedAssessmentRequired);
 
-            // 5. Mutate. Business rule: Consultation Supersedes Previous Diagnosis (NC-4), applied at step 4
-            //    (NC-7): the diagnosis of this consultation stays pending and the active one is untouched until
+            // 5. Mutate. Business rule: Consultation Supersedes Previous Diagnosis, applied at step 4:
+            //    the diagnosis of this consultation stays pending and the active one is untouched until
             //    the plan is published, so the active diagnosis and the active plan always change together and a
             //    discarded consultation leaves nothing behind. One pending diagnosis per consultation: repeating
             //    the step discards the previous one (the row is kept).
@@ -282,8 +282,8 @@ public class ConsultationCommandService(
                 return diagnosis.Id.Value;
             }, cancellationToken);
 
-            // 7. No event: NutritionalDiagnosisIssued and NutritionalDiagnosisSuperseded follow the commit of step 4
-            //    (NC-7), when this diagnosis becomes the active one.
+            // 7. No event: NutritionalDiagnosisIssued and NutritionalDiagnosisSuperseded follow the commit of step 4,
+            //    when this diagnosis becomes the active one.
             return new Result<ConsultationDiagnosisOutcome, NutritionalCareError>.Success(
                 new ConsultationDiagnosisOutcome(consultation, diagnosis));
         }
@@ -304,7 +304,7 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-5 - Step 3 of the consultation (EV-4), ProposeTargetsForConsultation. Calculates the draft plan
+    ///     Step 3 of the consultation, ProposeTargetsForConsultation. Calculates the draft plan
     ///     version with the default parameters, or the ones the practitioner changed, on the assessment of
     ///     step 1 (age, sex, height and weight) and the diagnosis of step 2.
     /// </summary>
@@ -331,20 +331,20 @@ public class ConsultationCommandService(
                     command.PractitionerId, cancellationToken))
                 return ProposalFailure(NutritionalCareError.ActiveCareLinkRequired);
 
-            // 4. State guards. Business rule: Steps In Order (NC-2): targets read steps 1 and 2.
+            // 4. State guards. Business rule: Steps In Order: targets read steps 1 and 2.
             if (!consultation.IsInProgress) return ProposalFailure(NutritionalCareError.ConsultationNotInProgress);
             if (consultation.AssessmentId is null || consultation.DiagnosisId is null)
                 return ProposalFailure(NutritionalCareError.ConsultationStepOutOfOrder);
 
             // Business rule: Active Diagnosis Required (Subflow 3.3), the one of this consultation: pending until
-            // step 4 publishes the plan (NC-7), or active when it was issued before NC-7.
+            // step 4 publishes the plan, or active when it was issued before step 4 existed.
             var diagnosis = await diagnosisRepository.FindByIdAsync(consultation.DiagnosisId.Value,
                 cancellationToken);
             if (diagnosis is null || !(diagnosis.IsActive || diagnosis.IsPendingFor(consultation.Id.Value)))
                 return ProposalFailure(NutritionalCareError.ActiveDiagnosisRequired);
 
-            // NC-5: age, sex and height come from the assessment of this consultation (step 1), explicitly,
-            // not from "the assessment behind the active diagnosis" as the stand-alone endpoint reads them.
+            // Age, sex and height come from the assessment of this consultation (step 1), explicitly,
+            // not from "the assessment behind the active diagnosis".
             var assessment = await assessmentRepository.FindByIdAsync(consultation.AssessmentId.Value,
                 cancellationToken);
             var measurement = assessment?.LatestMeasurement;
@@ -366,7 +366,7 @@ public class ConsultationCommandService(
                 ? null
                 : await planRepository.FindByIdAsync(consultation.PlanId.Value, cancellationToken);
             NutritionPlan plan;
-            // NC-2: the draft was prescribed on a diagnosis this consultation has since replaced (step 1 or 2
+            // The draft was prescribed on a diagnosis this consultation has since replaced (step 1 or 2
             // repeated). Its signed numbers read stale steps, so it is discarded and a new draft takes its place
             // with the same version number: a discarded draft never was a version.
             var staleDraft = draft is { IsPrescribed: true, IsPublished: false } &&
@@ -375,7 +375,7 @@ public class ConsultationCommandService(
                 : null;
             if (draft is not null && staleDraft is null)
             {
-                // NC-5: only an unprescribed draft can be recalculated (NutritionPlan.Recalculate).
+                // Only an unprescribed draft can be recalculated (NutritionPlan.Recalculate).
                 if (draft.IsPrescribed || draft.IsPublished)
                     return ProposalFailure(NutritionalCareError.PlanNotInExpectedState);
                 draft.Recalculate(diagnosis.Id.Value, basis!, proposal!);
@@ -417,7 +417,7 @@ public class ConsultationCommandService(
 
             var inputs = new TargetInputsSummary(assessment.BiologicalSex.Value, assessment.AgeYears,
                 measurement.HeightCm, measurement.WeightKg, assessment.ActivityLevel.Value);
-            // NC-6: the draft shows the legacy restrictions of the version in force, so the practitioner can
+            // The draft shows the legacy restrictions of the version in force, so the practitioner can
             // map them to a code before publishing.
             var active = await planRepository.FindActiveByPatientIdAsync(consultation.PatientId, cancellationToken);
             return new Result<ConsultationTargetProposalOutcome, NutritionalCareError>.Success(
@@ -441,7 +441,7 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-5 - Step 3 of the consultation (EV-4): "Aceptar metas" or "Escribir mis propios valores" on the
+    ///     Step 3 of the consultation: accept the targets or write custom values on the
     ///     draft plan version.
     /// </summary>
     public async Task<Result<ConsultationTargetsOutcome, NutritionalCareError>> Handle(
@@ -458,8 +458,8 @@ public class ConsultationCommandService(
             return TargetsFailure(NutritionalCareError.PlanNotInExpectedState);
         }
 
-        // DECISIÓN §12-#1: the override reason stays required in the consultation too (Override Requires
-        // Reason, Subflow 3.4). EV-4 gets a short mandatory field; it is clinical traceability.
+        // The override reason stays required in the consultation too (Override Requires
+        // Reason, Subflow 3.4). Step 3 gets a short mandatory field; it is clinical traceability.
         if (outcome.IsOverridden && string.IsNullOrWhiteSpace(command.OverrideReason))
             return TargetsFailure(NutritionalCareError.OverrideReasonRequired);
 
@@ -497,7 +497,7 @@ public class ConsultationCommandService(
             consultationRepository.Update(consultation);
             await unitOfWork.CompleteAsync(cancellationToken);
 
-            // 7. Exactly one of the two events, never both, as on the stand-alone endpoint.
+            // 7. Exactly one of the two events, never both.
             if (outcome.IsOverridden)
                 await mediator.PublishAsync(
                     new TargetsOverridden(plan.Id.Value, plan.PatientId, prescribed.EnergyKcal,
@@ -527,15 +527,15 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-7 - Step 4 of the consultation (EV-5 "Publicar y cerrar consulta"), PublishFromConsultation. In one
+    ///     Step 4 of the consultation, publish and close: PublishFromConsultation. In one
     ///     transaction: the diagnosis of the consultation replaces the active one, the prescribed draft replaces
-    ///     the version in force, and the consultation closes. The stand-alone publication keeps its 409.
+    ///     the version in force, and the consultation closes.
     /// </summary>
     public async Task<Result<ConsultationPublicationOutcome, NutritionalCareError>> Handle(
         PublishFromConsultationCommand command, CancellationToken cancellationToken = default)
     {
-        // 1. Value objects, each to its own error, before anything is loaded: the Idempotency-Key (NC-2) and the
-        //    NC-6 catalogs.
+        // 1. Value objects, each to its own error, before anything is loaded: the Idempotency-Key and the
+        //    guideline and restriction catalogs.
         IdempotencyKey? idempotencyKey = null;
         if (command.IdempotencyKey is not null)
             try
@@ -551,7 +551,7 @@ public class ConsultationCommandService(
             { } badGuideline) return PublicationFailure(badGuideline);
         if (PlanCatalogInput.TryRestrictions(command.Restrictions, out var restrictions) is { } badRestriction)
             return PublicationFailure(badRestriction);
-        // NC-9: the optional message for the patient.
+        // The optional message for the patient.
         if (!NutritionPlanCommandService.TryPatientMessage(command.PatientMessage, out var patientMessage))
             return PublicationFailure(NutritionalCareError.InvalidPatientMessage);
 
@@ -570,11 +570,11 @@ public class ConsultationCommandService(
                     command.PractitionerId, cancellationToken))
                 return PublicationFailure(NutritionalCareError.ActiveCareLinkRequired);
 
-            // NC-2, EV-5.E "Volver a intentarlo": the same key repeats the publication already done. Same result,
+            // Retry: the same key repeats the publication already done. Same result,
             // nothing written and nothing published again, so a retry after a timeout never creates another version.
             if (consultation.IsReplayOf(idempotencyKey)) return await Replay(consultation, cancellationToken);
 
-            // 4. State guards. Business rule: Steps In Order (NC-2): the publication reads steps 1 to 3, and
+            // 4. State guards. Business rule: Steps In Order: the publication reads steps 1 to 3, and
             //    each one is grounded on the previous one.
             if (!consultation.IsInProgress)
                 return PublicationFailure(NutritionalCareError.ConsultationNotInProgress);
@@ -601,8 +601,8 @@ public class ConsultationCommandService(
             // 5. Mutate. Business rules: One Active Diagnosis Per Patient (Subflow 3.2) and One Active Version Per
             //    Patient (Subflow 3.5), read as "never two active at once": from a consultation the active ones are
             //    replaced, never rejected, inside one transaction. MySQL has no partial index; One Consultation In
-            //    Progress Per Patient (unique generated column) serializes the consultations of a patient, which
-            //    leaves only the stand-alone endpoints racing against this one, the window info/00 §12.3 documents.
+            //    Progress Per Patient (unique generated column) serializes the consultations of a patient, so
+            //    no other path races against this one.
             var previousDiagnosis = isPending
                 ? await diagnosisRepository.FindActiveByPatientIdAsync(consultation.PatientId, cancellationToken)
                 : null;
@@ -619,7 +619,7 @@ public class ConsultationCommandService(
             if (plan.Version > 1) plan.SetChangeReason(ChangeReason.NewConsultation(clinicalDate.Today()));
             plan.SetPatientMessage(patientMessage);
             plan.PublishWith(guidelines, restrictions);
-            // NC-8: "Qué cambió en esta versión", against the version this one replaces.
+            // "What changed in this version", against the version this one replaces.
             plan.RecordChangesFromPrevious(previousPlan);
             if (previousPlan is not null)
             {
@@ -648,7 +648,7 @@ public class ConsultationCommandService(
 
             // 7. Events after the commit. The diagnosis events stay inside this context; NutritionPlanPublished
             //    fires the existing policy that publishes ActiveTargetsUpdated (Intake, Care Relationship,
-            //    Monitoring); ConsultationCompleted is the integration event of NC-2.
+            //    Monitoring); ConsultationCompleted is the integration event of the consultation.
             if (previousDiagnosis is not null)
                 await mediator.PublishAsync(
                     new NutritionalDiagnosisSuperseded(previousDiagnosis.Id.Value, previousDiagnosis.PatientId),
@@ -688,7 +688,7 @@ public class ConsultationCommandService(
         }
     }
 
-    /// <summary>NC-2. The result of a completed publication, read again for a request that repeats it.</summary>
+    /// <summary>The result of a completed publication, read again for a request that repeats it.</summary>
     private async Task<Result<ConsultationPublicationOutcome, NutritionalCareError>> Replay(Consultation consultation,
         CancellationToken cancellationToken)
     {
@@ -700,18 +700,18 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-2 - EV-5 before publishing: keep the chosen restrictions and guidelines with the consultation, so
-    ///     "Lo que escribiste no se perdió" holds even if the app closes (EV-5.E).
+    ///     Step 4 before publishing: keep the chosen restrictions and guidelines with the consultation, so
+    ///     what the practitioner wrote is not lost even if the app closes.
     /// </summary>
     public async Task<Result<Consultation, NutritionalCareError>> Handle(
         SaveConsultationPublicationDraftCommand command, CancellationToken cancellationToken = default)
     {
-        // 1. Value objects: the same NC-6 catalogs the publication checks, each to its own error.
+        // 1. Value objects: the same catalogs the publication checks, each to its own error.
         if (PlanCatalogInput.TryGuidelineCodes(command.Guidelines, command.CustomGuidelines, out _) is
             { } badGuideline) return ConsultationFailure(badGuideline);
         if (PlanCatalogInput.TryRestrictions(command.Restrictions, out var restrictions) is { } badRestriction)
             return ConsultationFailure(badRestriction);
-        // NC-9: the message for the patient, kept with the draft as the publication would take it.
+        // The message for the patient, kept with the draft as the publication would take it.
         if (!NutritionPlanCommandService.TryPatientMessage(command.PatientMessage, out var patientMessage))
             return ConsultationFailure(NutritionalCareError.InvalidPatientMessage);
 
@@ -733,7 +733,7 @@ public class ConsultationCommandService(
                     command.PractitionerId, cancellationToken))
                 return ConsultationFailure(NutritionalCareError.ActiveCareLinkRequired);
 
-            // 4. State guards. Business rule: Steps In Order (NC-2): the publication follows the targets.
+            // 4. State guards. Business rule: Steps In Order: the publication follows the targets.
             if (!consultation.IsInProgress) return ConsultationFailure(NutritionalCareError.ConsultationNotInProgress);
             if (consultation.PlanId is null) return ConsultationFailure(NutritionalCareError.ConsultationStepOutOfOrder);
 
@@ -761,9 +761,9 @@ public class ConsultationCommandService(
     }
 
     /// <summary>
-    ///     NC-2 (P2) - "Descartar" a consultation in progress. What it saved stays as history; its pending diagnosis
+    ///     Discard a consultation in progress. What it saved stays as history; its pending diagnosis
     ///     and its unpublished draft are discarded in the same transaction. The active diagnosis and the version in
-    ///     force are not touched: they change only when a consultation publishes (NC-7).
+    ///     force are not touched: they change only when a consultation publishes.
     /// </summary>
     public async Task<Result<Consultation, NutritionalCareError>> Handle(AbandonConsultationCommand command,
         CancellationToken cancellationToken = default)
@@ -817,7 +817,7 @@ public class ConsultationCommandService(
         }
     }
 
-    /// <summary>NC-7. The pending diagnosis this consultation issued in step 2, if it still has one.</summary>
+    /// <summary>The pending diagnosis this consultation issued in step 2, if it still has one.</summary>
     private async Task<NutritionalDiagnosis?> PendingDiagnosisOf(Consultation consultation,
         CancellationToken cancellationToken)
     {
@@ -826,7 +826,7 @@ public class ConsultationCommandService(
         return diagnosis is not null && diagnosis.IsPendingFor(consultation.Id.Value) ? diagnosis : null;
     }
 
-    /// <summary>Validates, one by one, the parameters "Cambiar parámetros" changed.</summary>
+    /// <summary>Validates, one by one, the parameters the practitioner changed.</summary>
     private static NutritionalCareError? CheckChangedParameters(TargetParametersDto? p)
     {
         if (p is null) return null;

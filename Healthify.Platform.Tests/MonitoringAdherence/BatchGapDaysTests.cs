@@ -19,7 +19,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-1. A synchronised batch marks Unlogged the empty days before its most recent day, gaps
+///     A synchronised batch marks Unlogged the empty days before its most recent day, gaps
 ///     between its own days included, and a later batch that brings one of those days re-evaluates it
 ///     once.
 /// </summary>

@@ -83,7 +83,7 @@ public static class CareRelationshipActionResultAssembler
         };
     }
 
-    /// <summary>CR-2 - Change AI Processing Consent. Success carries no body.</summary>
+    /// <summary>Change AI Processing Consent. Success carries no body.</summary>
     public static IActionResult ToNoContentResult(
         Result<CareLink, CareRelationshipError> result,
         IStringLocalizer<CareRelationshipMessages> localizer)
@@ -91,7 +91,7 @@ public static class CareRelationshipActionResultAssembler
         return ToWithdrawConsentResult(result, localizer);
     }
 
-    /// <summary>IA-1 - Update AI Preferences. Answers with the preferences as they now are.</summary>
+    /// <summary>Update AI Preferences. Answers with the preferences as they now are.</summary>
     public static IActionResult ToAiPreferencesResult(
         Result<AiPreferencesStatus, CareRelationshipError> result,
         IStringLocalizer<CareRelationshipMessages> localizer)
@@ -148,7 +148,7 @@ public static class CareRelationshipActionResultAssembler
                 localizer["ConflictTitle"].Value, localizer["PendingVersionAlreadyExists"].Value),
             CareRelationshipError.RedeemedInvitationCannotExpire => Problem(StatusCodes.Status409Conflict,
                 localizer["ConflictTitle"].Value, localizer["RedeemedInvitationCannotExpire"].Value),
-            // IA-1: a conflict with the state of the consent, which the app resolves by offering it first.
+            // A conflict with the state of the consent, which the app resolves by offering it first.
             CareRelationshipError.AiConsentRequiredToEnableFeature => Problem(StatusCodes.Status409Conflict,
                 localizer["ConflictTitle"].Value, localizer["AiConsentRequiredToEnableFeature"].Value),
 
@@ -176,7 +176,7 @@ public static class CareRelationshipActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-0. The shared technical AI errors of a generation run by this context (CR-2 and IA-1), with the texts of
+    ///     The shared technical AI errors of a generation run by this context, with the texts of
     ///     <see cref="AiMessages" />.
     /// </summary>
     public static IActionResult ToAiFailureResult(AiError error, IStringLocalizer<AiMessages> localizer)

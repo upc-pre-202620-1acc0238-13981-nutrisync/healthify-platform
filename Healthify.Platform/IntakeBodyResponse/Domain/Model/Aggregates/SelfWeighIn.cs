@@ -25,7 +25,7 @@ public partial class SelfWeighIn
     /// <param name="valueKg">The reading.</param>
     /// <param name="localTimestamp">The moment the patient declared.</param>
     /// <param name="protocolCompliance">What the patient declared about the protocol.</param>
-    /// <param name="clientEntryId">IN-4. The identifier the device generated offline; null when recorded online.</param>
+    /// <param name="clientEntryId">The identifier the device generated offline; null when recorded online.</param>
     public SelfWeighIn(int patientId, WeightKg valueKg, LocalTimestamp localTimestamp,
         ProtocolCompliance protocolCompliance, Guid? clientEntryId = null)
     {
@@ -52,7 +52,7 @@ public partial class SelfWeighIn
     public decimal ValueKg { get; private set; }
 
     /// <summary>
-    ///     IN-4. The identifier the device generated while offline. Business rule: Idempotency By Aggregate
+    ///     The identifier the device generated while offline. Business rule: Idempotency By Aggregate
     ///     Id (Subflow 4.6), unique per patient. Null for readings recorded online.
     /// </summary>
     public Guid? ClientEntryId { get; private set; }
@@ -63,7 +63,7 @@ public partial class SelfWeighIn
     /// <remarks>
     ///     Stored the same way as on a diary entry, and for the same reason: the day a reading
     ///     belongs to is the day the patient was living, not the day it was in UTC. Same time of day
-    ///     was one of the protocol conditions before IN-3, and could be again by configuration, so
+    ///     was one of the protocol conditions before the protocol became fasted only, and could be again by configuration, so
     ///     losing the local hour would make the protocol unverifiable after the fact.
     /// </remarks>
     public DateTime LocalTimestamp { get; private set; }
@@ -81,10 +81,10 @@ public partial class SelfWeighIn
     // Persisted projection of the ProtocolCompliance value object.
     public bool ProtocolFastedState { get; private set; }
 
-    /// <summary>IN-3: no longer asked; null on readings recorded after IN-3.</summary>
+    /// <summary>No longer asked; null on readings recorded since the protocol became fasted only.</summary>
     public bool? ProtocolSameTimeOfDay { get; private set; }
 
-    /// <summary>IN-3: no longer asked; null on readings recorded after IN-3.</summary>
+    /// <summary>No longer asked; null on readings recorded since the protocol became fasted only.</summary>
     public bool? ProtocolSameScale { get; private set; }
 
     /// <summary>Rebuilt from the stored columns.</summary>
@@ -93,11 +93,11 @@ public partial class SelfWeighIn
 
     /// <summary>
     ///     Business rule: Only Protocol Compliant Weigh Ins Smooth The Trend (Subflow 4.5), under the default
-    ///     protocol (IN-3: fasted).
+    ///     protocol (fasted).
     /// </summary>
     public bool FollowsProtocol => ProtocolCompliance.FollowsProtocol;
 
-    /// <summary>IN-3. Whether this reading smooths the trend under the configured protocol.</summary>
+    /// <summary>Whether this reading smooths the trend under the configured protocol.</summary>
     public bool FollowsProtocolUnder(SelfWeighInProtocol protocol)
     {
         return ProtocolCompliance.FollowsUnder(protocol);

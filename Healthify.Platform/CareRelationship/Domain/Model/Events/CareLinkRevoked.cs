@@ -8,7 +8,7 @@ namespace Healthify.Platform.CareRelationship.Domain.Model.Events;
 ///     closes the evaluation window (Subflow 5.11).
 /// </summary>
 /// <remarks>
-///     Reason (CR-1): the revocation reason as a plain string, ConsentWithdrawn or SwitchedPractitioner, so
+///     Reason: the revocation reason as a plain string, ConsentWithdrawn or SwitchedPractitioner, so
 ///     consumers in other contexts never depend on the value object.
 /// </remarks>
 public record CareLinkRevoked(

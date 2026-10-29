@@ -32,7 +32,7 @@ public class ReferenceFoodCommandService(
 {
     private const int MaxRecordsPerProvider = 100;
 
-    /// <summary>IN-7. Significant words of a recognized dish searched when looking for a similar entry.</summary>
+    /// <summary>Significant words of a recognized dish searched when looking for a similar entry.</summary>
     private const int SimilarSearchWords = 4;
 
     /// <summary>Subflow 6.1 - Import Catalog Snapshot.</summary>
@@ -149,7 +149,7 @@ public class ReferenceFoodCommandService(
 
             if (existing is not null)
             {
-                // IN-7: neither a local override nor an AI-estimated food follows an upstream record.
+                // Neither a local override nor an AI-estimated food follows an upstream record.
                 if (existing.IsProtectedFromImport) return Success(existing);
 
                 existing.RefreshFromUpstream(localName, nutrients);
@@ -284,7 +284,7 @@ public class ReferenceFoodCommandService(
         }
     }
 
-    /// <summary>IN-7 - Create AI Estimated Food.</summary>
+    /// <summary>Create AI Estimated Food.</summary>
     /// <remarks>
     ///     The order is the specification:
     ///     1. the name (No External Id Enters The Domain, Local Name) and the nutrients (AI Estimated Nutrients
@@ -315,7 +315,7 @@ public class ReferenceFoodCommandService(
         NutrientsPer100g nutrients;
         try
         {
-            // Business rule: AI Estimated Nutrients Coherent (IN-7)
+            // Business rule: AI Estimated Nutrients Coherent
             nutrients = new NutrientsPer100g(command.EnergyKcalPer100g, command.ProteinGPer100g,
                 command.CarbGPer100g, command.FatGPer100g);
             if (!NutrientCoherence.IsCoherent(nutrients.EnergyKcal, nutrients.ProteinG, nutrients.CarbG,
@@ -335,7 +335,7 @@ public class ReferenceFoodCommandService(
             var existing = await referenceFoodRepository.FindBySourceHashAsync(sourceHash, cancellationToken);
             if (existing is not null) return Success(existing);
 
-            // Business rule: Similar Dish Reused, Not Duplicated (IN-7)
+            // Business rule: Similar Dish Reused, Not Duplicated
             var candidates = new List<ReferenceFood>();
             foreach (var term in FoodNameMatcher.SearchTermsOf(localName.Value, SimilarSearchWords))
                 candidates.AddRange(await referenceFoodRepository.SearchByLocalNameAsync(term,
@@ -381,10 +381,10 @@ public class ReferenceFoodCommandService(
         }
     }
 
-    /// <summary>IN-7 - the dish resolved with the external providers' help.</summary>
+    /// <summary>The dish resolved with the external providers' help.</summary>
     /// <remarks>
     ///     Search Food (Subflow 6.3) asks the providers for the name and caches whatever translates (Subflow 6.2,
-    ///     idempotent by source hash); FC-2's matcher then picks the entry the name stands for among the local
+    ///     idempotent by source hash); the ingredient matcher then picks the entry the name stands for among the local
     ///     catalog, now topped up. A provider that fails degrades to the local catalog, as search always does.
     /// </remarks>
     public async Task<Result<FoodNameResolution, FoodCatalogError>> Handle(ResolveFoodWithProvidersCommand command,
@@ -416,7 +416,7 @@ public class ReferenceFoodCommandService(
     }
 
     /// <summary>
-    ///     IN-7. <c>FoodCatalog:AiEstimatedNutrients:EnergyTolerancePercent</c> (15) and <c>…:EnergyToleranceKcal</c>
+    ///     <c>FoodCatalog:AiEstimatedNutrients:EnergyTolerancePercent</c> (15) and <c>…:EnergyToleranceKcal</c>
     ///     (20): the larger of the two is allowed between the energy and 4P + 4C + 9G.
     /// </summary>
     private NutrientTolerance Tolerance => new(
@@ -427,7 +427,7 @@ public class ReferenceFoodCommandService(
             ? kcal
             : NutrientTolerance.DefaultKcal);
 
-    /// <summary>IN-7. The name as the catalog shows it: trimmed, single spaces, first letter in upper case.</summary>
+    /// <summary>The name as the catalog shows it: trimmed, single spaces, first letter in upper case.</summary>
     private static string DisplayNameOf(string? name)
     {
         var compact = string.Join(' ', (name ?? string.Empty).Split(' ', '\t', '\n', '\r')
@@ -435,7 +435,7 @@ public class ReferenceFoodCommandService(
         return compact.Length == 0 ? compact : char.ToUpperInvariant(compact[0]) + compact[1..];
     }
 
-    /// <summary>IN-7. Catalog entries read before choosing the one a recognized dish stands for (as FC-2).</summary>
+    /// <summary>Catalog entries read before choosing the one a recognized dish stands for (as for ingredients).</summary>
     private const int CandidatesPerResolution = 50;
 
     /// <summary>

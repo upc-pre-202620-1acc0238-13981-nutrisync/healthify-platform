@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     IA-0. <see cref="IAiGenerationLog" /> in memory, with the same counting and purging rules as the EF one
+///     <see cref="IAiGenerationLog" /> in memory, with the same counting and purging rules as the EF one
 ///     (Blocked rows do not count towards the quota; a requester, when given, is counted instead of the patient).
 /// </summary>
 public sealed class InMemoryAiGenerationLog : IAiGenerationLog

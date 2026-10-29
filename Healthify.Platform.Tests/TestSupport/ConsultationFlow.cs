@@ -10,8 +10,8 @@ using Xunit.Sdk;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     NC-2. Drives a guided consultation through its endpoints' command services, step by step, as EV-2 to EV-5
-///     do. Each step must succeed; a failure stops the test with the step and its error.
+///     Drives a guided consultation through its endpoints' command services, step by step, as the
+///     consultation screens do. Each step must succeed; a failure stops the test with the step and its error.
 /// </summary>
 public static class ConsultationFlow
 {
@@ -49,7 +49,7 @@ public static class ConsultationFlow
             [DietaryRestriction.LactoseFree], [Guideline.ReduceSalt], ["Caminar 20 minutos"], idempotencyKey));
     }
 
-    /// <summary>A whole consultation, from "Iniciar consulta" to "Publicar y cerrar consulta".</summary>
+    /// <summary>A whole consultation, from "Start consultation" to "Publish and close consultation".</summary>
     public static async Task<ConsultationPublicationOutcome> CompleteAsync(IConsultationCommandService service,
         int patientId, int practitionerId, decimal weightKg, string diagnosisCode, string idempotencyKey)
     {

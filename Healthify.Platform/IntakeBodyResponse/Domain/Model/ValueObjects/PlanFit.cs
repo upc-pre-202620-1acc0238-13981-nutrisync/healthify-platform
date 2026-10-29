@@ -1,7 +1,7 @@
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IN-8. A suggestion for «¿Esta comida estaba en tu plan?», computed by this server from the published contract
+///     A suggestion for "was this meal in your plan?", computed by this server from the published contract
 ///     (<c>ActiveTargetsCache</c>) and the day's diary, never by the AI. The app preselects it and the patient may
 ///     change it: what is logged is always the patient's own answer (<see cref="PlanAdherence" />).
 /// </summary>
@@ -10,7 +10,7 @@ namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 ///     meal was wrong, and nothing computes a deviation or a penalty from it.
 /// </remarks>
 /// <param name="SuggestedAdherence"><see cref="PlanAdherence.InPlan" /> or <see cref="PlanAdherence.OffPlan" />.</param>
-/// <param name="ViolatedRestrictions">The restriction codes of the plan the food seems to break (NC-6); empty when none.</param>
+/// <param name="ViolatedRestrictions">The restriction codes of the plan the food seems to break; empty when none.</param>
 /// <param name="Reason">Why: one of <see cref="PlanFitReason" />.</param>
 /// <param name="EnergyKcal">The energy of the portion, rounded.</param>
 /// <param name="RemainingKcal">What was left today before this meal, or null when the day was not given.</param>
@@ -24,7 +24,7 @@ public sealed record PlanFit(
     public bool SuggestsInPlan => SuggestedAdherence == PlanAdherence.InPlan;
 }
 
-/// <summary>IN-8. Why a <see cref="PlanFit" /> suggests what it suggests. The app turns each code into its own text.</summary>
+/// <summary>Why a <see cref="PlanFit" /> suggests what it suggests. The app turns each code into its own text.</summary>
 public static class PlanFitReason
 {
     /// <summary>Nothing in the plan speaks against it.</summary>
@@ -37,7 +37,7 @@ public static class PlanFitReason
     public const string ExceedsRemaining = "ExceedsRemaining";
 }
 
-/// <summary>IN-8. One food the patient is about to log: a catalog entry, a portion and the other names it goes by.</summary>
+/// <summary>One food the patient is about to log: a catalog entry, a portion and the other names it goes by.</summary>
 /// <param name="ReferenceFoodId">The catalog entry.</param>
 /// <param name="Grams">The portion.</param>
 /// <param name="AlsoKnownAs">

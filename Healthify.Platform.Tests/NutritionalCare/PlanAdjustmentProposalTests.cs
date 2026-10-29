@@ -18,11 +18,11 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     IA-8. The plan adjustment proposal, engine of NC-10: through the shared pipeline (real settings, prompts and
+///     The plan adjustment proposal: through the shared pipeline (real settings, prompts and
 ///     audit, fake model) and the hard validation of the server: energy within ±25 % of the version in force, the
 ///     calorie floor by sex, macros coherent within 2 %, no new restriction, catalog guidelines only, and a message for
 ///     the patient without accusation or diagnosis. The version in force: 1 796 kcal, 90 g protein, 225 g carbohydrate,
-///     60 g fat (PR14.IA "Energía diaria 1 796 → 1 650 kcal").
+///     60 g fat ("daily energy 1 796 → 1 650 kcal").
 /// </summary>
 public class PlanAdjustmentProposalTests
 {
@@ -60,7 +60,7 @@ public class PlanAdjustmentProposalTests
 
         Assert.Equal(1650m, outcome.Output.EnergyKcal);
         Assert.Equal(["ProteinAndVegetablesAtDinner"], outcome.Output.AddedGuidelines);
-        // X-2: @2 asks for each part in the language of its reader.
+        // @2 asks for each part in the language of its reader.
         Assert.Equal("plan-adjustment-proposal@2", outcome.PromptVersion);
         var row = Assert.Single(_log.Rows);
         Assert.Equal(AiGenerationStatus.Succeeded, row.Status);
@@ -118,7 +118,7 @@ public class PlanAdjustmentProposalTests
         Assert.Empty(_model.Requests);
     }
 
-    // ---- The hard validation (NC-10) ----
+    // ---- The hard validation ----
 
     [Theory]
     [InlineData(1347, true)] // exactly 25 % below, rounded up

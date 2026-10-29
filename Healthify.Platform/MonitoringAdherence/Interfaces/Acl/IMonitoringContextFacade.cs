@@ -52,7 +52,7 @@ public record AnthropometryPointItem(DateOnly Date, decimal ValueKg, string Sour
 ///     Subflow 5.10 names Patient Record as the read model of Record Referral, and Patient Record is
 ///     composed exclusively through ACL contracts, so the referral has to be readable through one.
 ///     It is a record that something was decided on a date, not a workflow: what happens at the other end of a
-///     referral happens outside this platform. RM-4 (DECISIÓN §12-#8) gives it one state, Open or Closed, closed
+///     referral happens outside this platform. It has one state, Open or Closed, closed
 ///     by hand by the practitioner.
 /// </remarks>
 /// <param name="ReferralId">Identifier of the referral.</param>
@@ -60,8 +60,8 @@ public record AnthropometryPointItem(DateOnly Date, decimal ValueKg, string Sour
 /// <param name="Reason">Why, in the practitioner's own words.</param>
 /// <param name="IssuedBy">The practitioner who issued it.</param>
 /// <param name="IssuedAt">When it was issued.</param>
-/// <param name="Status">RM-4. Open ("en curso") or Closed.</param>
-/// <param name="ClosedAt">RM-4. When it was closed, or null.</param>
+/// <param name="Status">Open (still in course) or Closed.</param>
+/// <param name="ClosedAt">When it was closed, or null.</param>
 public record ReferralItem(
     int ReferralId,
     string Specialty,
@@ -72,7 +72,7 @@ public record ReferralItem(
     DateTimeOffset? ClosedAt = null);
 
 /// <summary>
-///     MA-2/RM-1/RM-2. The visit on the calendar of a patient (PAC-1 "Próxima consulta", PR1). Primitives only;
+///     The visit on the calendar of a patient (the next visit). Primitives only;
 ///     no clinical note travels with it.
 /// </summary>
 /// <param name="FollowUpId">Identifier of the visit.</param>
@@ -81,7 +81,7 @@ public record ReferralItem(
 /// <param name="Modality">InPerson or Remote.</param>
 /// <param name="Preparation">Preparation codes; empty when none.</param>
 /// <param name="ScheduledAt">When it was put on the calendar.</param>
-/// <param name="PractitionerId">RM-5. Whose agenda it is on; 0 only where a caller builds it without one.</param>
+/// <param name="PractitionerId">Whose agenda it is on; 0 only where a caller builds it without one.</param>
 public record NextFollowUpItem(
     int FollowUpId,
     int PatientId,
@@ -92,7 +92,7 @@ public record NextFollowUpItem(
     int PractitionerId = 0);
 
 /// <summary>
-///     RM-2. How the days of a range went, counted. Primitives only.
+///     How the days of a range went, counted. Primitives only.
 /// </summary>
 /// <remarks>
 ///     The denominator is the calendar days of the range, and a day nobody wrote in counts as Unlogged, never as
@@ -107,24 +107,24 @@ public record NextFollowUpItem(
 public record ComplianceSummaryItem(int Met, int Exceeded, int Short, int Unlogged, int Logged, int TotalDays);
 
 /// <summary>
-///     MA-6. A range of calendar days, day by day (a day never evaluated is Unlogged) and counted. Primitives only.
+///     A range of calendar days, day by day (a day never evaluated is Unlogged) and counted. Primitives only.
 /// </summary>
 /// <param name="Days">Every calendar day of the range, oldest first.</param>
 /// <param name="Summary">The same days counted by outcome.</param>
 public record ComplianceRangeItem(IReadOnlyList<DailyComplianceItem> Days, ComplianceSummaryItem Summary);
 
-/// <summary>MA-4. One question of a check in. Primitives only; the AI generation it came from is not published.</summary>
+/// <summary>One question of a check in. Primitives only; the AI generation it came from is not published.</summary>
 /// <param name="Text">The question.</param>
 /// <param name="Origin">Patient or AiSuggested.</param>
-/// <param name="Language">X-2. es or en for an AI suggestion; null for the patient's own questions.</param>
+/// <param name="Language">Es or en for an AI suggestion; null for the patient's own questions.</param>
 public record CheckInQuestionItem(string Text, string Origin, string? Language = null);
 
 /// <summary>
-///     MA-4. What the patient told their practitioner before the visit (EV-2 "Antes de la consulta, … contó").
+///     What the patient told their practitioner before the visit, as the consultation shows it.
 ///     Primitives only.
 /// </summary>
 /// <remarks>
-///     Business rule: Check In Raises No Signal (MA-4). It is a message for a person to read, so it travels as
+///     Business rule: Check In Raises No Signal. It is a message for a person to read, so it travels as
 ///     the patient wrote it, with no score and no interpretation.
 /// </remarks>
 /// <param name="FollowUpId">The visit it is for.</param>
@@ -233,7 +233,7 @@ public interface IMonitoringContextFacade
     Task<IReadOnlyList<ReferralItem>> GetReferrals(int patientId, CancellationToken ct = default);
 
     /// <summary>
-    ///     MA-2/RM-1/RM-2. The visit on the calendar of each patient, keyed by patient, in one query so that a
+    ///     The visit on the calendar of each patient, keyed by patient, in one query so that a
     ///     roster does not read one patient at a time. A patient without one is absent; empty when the lookup
     ///     fails.
     /// </summary>
@@ -241,22 +241,22 @@ public interface IMonitoringContextFacade
         CancellationToken ct = default);
 
     /// <summary>
-    ///     RM-2. The days from <paramref name="from" /> to <paramref name="to" /> (both included) counted by
+    ///     The days from <paramref name="from" /> to <paramref name="to" /> (both included) counted by
     ///     outcome, or null when the range is empty or the lookup fails.
     /// </summary>
-    /// <remarks>MA-6: the same range as <see cref="GetComplianceRange" />, counted only.</remarks>
+    /// <remarks>The same range as <see cref="GetComplianceRange" />, counted only.</remarks>
     Task<ComplianceSummaryItem?> GetComplianceSummary(int patientId, DateOnly from, DateOnly to,
         CancellationToken ct = default);
 
     /// <summary>
-    ///     MA-6. Every calendar day from <paramref name="from" /> to <paramref name="to" /> (both included, at most 31)
-    ///     and their summary, for PAC-2 "Esta semana". Null when the range is not valid or the lookup fails.
+    ///     Every calendar day from <paramref name="from" /> to <paramref name="to" /> (both included, at most 31)
+    ///     and their summary, for the patient's week card. Null when the range is not valid or the lookup fails.
     /// </summary>
     Task<ComplianceRangeItem?> GetComplianceRange(int patientId, DateOnly from, DateOnly to,
         CancellationToken ct = default);
 
     /// <summary>
-    ///     MA-4. The check in of the visit of this patient with this practitioner that is still open (Scheduled or
+    ///     The check in of the visit of this patient with this practitioner that is still open (Scheduled or
     ///     Missed), or null when there is none, the patient has not answered, or the lookup fails. A check in of a
     ///     visit already completed belongs to a previous cycle and is not returned.
     /// </summary>

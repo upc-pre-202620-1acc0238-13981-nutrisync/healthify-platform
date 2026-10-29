@@ -14,7 +14,7 @@ namespace Healthify.Platform.ReadModels.Application;
 /// <remarks>
 ///     Format: UTF-8 with BOM (so that Excel reads the accents), comma separator, CRLF line ends and fields escaped as
 ///     RFC 4180 says; ISO 8601 dates; numbers with a decimal point. Headers and the words of coded values are in the
-///     patient's preferred language (IAM-3), from <see cref="DataExportMessages" />; an unknown code is written as is.
+///     patient's preferred language, from <see cref="DataExportMessages" />; an unknown code is written as is.
 ///     Text the patient or the catalog wrote is never translated.
 /// </remarks>
 public class PatientDataExportWriter(IStringLocalizer<DataExportMessages> localizer, TimeProvider timeProvider)
@@ -155,7 +155,7 @@ public class PatientDataExportWriter(IStringLocalizer<DataExportMessages> locali
     }
 
     /// <summary>
-    ///     X-2. A system reason is worded here from its code and parameters, in the reader's language. A Custom reason
+    ///     A system reason is worded here from its code and parameters, in the reader's language. A Custom reason
     ///     is the practitioner's clinical text and is not published by Nutritional Care: only a neutral sentence.
     /// </summary>
     private string? ChangeReason(PlanVersionHistoryItem version)
@@ -186,7 +186,7 @@ public class PatientDataExportWriter(IStringLocalizer<DataExportMessages> locali
         return T(value ? "Yes" : "No");
     }
 
-    /// <summary>The word for a code (InPerson → Presencial), or the code itself when there is none.</summary>
+    /// <summary>The word for a code (InPerson → "in person"), or the code itself when there is none.</summary>
     private string Word(string code, string prefix = "Value_")
     {
         var word = localizer[prefix + code];

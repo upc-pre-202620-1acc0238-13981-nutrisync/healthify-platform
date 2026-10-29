@@ -23,15 +23,15 @@ public record ActiveTargetsCacheRefreshed(int PatientId, int PlanVersion) : Doma
 /// <param name="ProposedReferenceFoodId">What the on-device estimator proposed, when it ran.</param>
 /// <param name="ProposedPortionGrams">The portion the on-device estimator proposed, when it ran.</param>
 /// <param name="ProposedConfidence">How sure the on-device estimator was, when it ran.</param>
-/// <param name="PlanAdherence">IN-1. InPlan, OffPlan or NotAnswered while the entry waits to be confirmed.</param>
+/// <param name="PlanAdherence">InPlan, OffPlan or NotAnswered while the entry waits to be confirmed.</param>
 /// <param name="ConfirmedOnCreation">
-///     MA-1. True when the entry was confirmed in the same request that created it (a manual log, or
+///     True when the entry was confirmed in the same request that created it (a manual log, or
 ///     a photo log confirmed on the device). An <see cref="EstimateConfirmedByPatient" /> for the same
 ///     entry follows in that request, so subscribers that only need the day's final totals, or that
 ///     would store a proposal, can leave the work to it.
 /// </param>
 /// <param name="ViaSynchronization">
-///     MA-1. True when the entry arrived in an offline synchronisation batch. The batch announces the
+///     True when the entry arrived in an offline synchronisation batch. The batch announces the
 ///     days it touched once, with <see cref="DiaryBatchSynchronized" />, and that is where the day is
 ///     evaluated.
 /// </param>
@@ -69,9 +69,9 @@ public record EstimateProposed(
 /// <param name="DiaryEntryId">The entry the patient confirmed.</param>
 /// <param name="PatientId">Who confirmed it.</param>
 /// <param name="LocalTimestamp">The moment the patient declared. Never rewritten.</param>
-/// <param name="PlanAdherence">IN-1. The answer given with the confirmation: InPlan or OffPlan.</param>
+/// <param name="PlanAdherence">The answer given with the confirmation: InPlan or OffPlan.</param>
 /// <param name="EvaluatesDay">
-///     IN-6. False when the entry is one of a meal logged in a group: the group announces its day once, with
+///     False when the entry is one of a meal logged in a group: the group announces its day once, with
 ///     <see cref="MealGroupLogged" />, so the day is evaluated once rather than once per ingredient.
 /// </param>
 public record EstimateConfirmedByPatient(
@@ -82,7 +82,7 @@ public record EstimateConfirmedByPatient(
     bool EvaluatesDay = true) : DomainEventBase;
 
 /// <summary>
-///     IN-6. A meal logged as several entries of one moment («Registrar esta comida» from an idea of IA-3), each
+///     A meal logged as several entries of one moment ("Log this meal" from a meal idea), each
 ///     already confirmed. Published once, after the entries were committed and their own events left. It crosses to
 ///     Monitoring and Adherence Subflow 5.4, where the day the meal declared is evaluated once.
 /// </summary>
@@ -106,7 +106,7 @@ public record MealGroupLogged(
 /// <param name="PatientId">Who corrected it.</param>
 /// <param name="ReferenceFoodId">The food the patient chose instead.</param>
 /// <param name="PortionGrams">The portion the patient chose instead.</param>
-/// <param name="PlanAdherence">IN-1. The answer given with the correction: InPlan or OffPlan.</param>
+/// <param name="PlanAdherence">The answer given with the correction: InPlan or OffPlan.</param>
 public record EstimateAdjustedByPatient(
     int DiaryEntryId,
     int PatientId,
@@ -120,14 +120,14 @@ public record EstimateAdjustedByPatient(
 /// <remarks>
 ///     It carries no detail beyond the fact and the moment, and it carries no judgement. Monitoring
 ///     counts the day as logged; nothing computes a deviation from an off-plan entry.
-///     Deprecated by IN-1: published only by the deprecated one-tap endpoint and by legacy offline
+///     Kept for stored entries and old offline clients: published only by legacy offline
 ///     queues. An off-plan meal logged with food now travels as <see cref="MealLogged" /> and
 ///     <see cref="EstimateConfirmedByPatient" /> with PlanAdherence OffPlan.
 /// </remarks>
 /// <param name="DiaryEntryId">The entry that was created.</param>
 /// <param name="PatientId">Who logged it.</param>
 /// <param name="LocalTimestamp">The moment the patient declared. Never rewritten.</param>
-/// <param name="ViaSynchronization">MA-1. As on <see cref="MealLogged" />: the batch evaluates the day.</param>
+/// <param name="ViaSynchronization">As on <see cref="MealLogged" />: the batch evaluates the day.</param>
 public record OffPlanEntryLogged(
     int DiaryEntryId,
     int PatientId,
@@ -140,9 +140,9 @@ public record OffPlanEntryLogged(
 /// </summary>
 /// <param name="SelfWeighInId">The reading that was recorded.</param>
 /// <param name="PatientId">Who recorded it.</param>
-/// <param name="FollowsProtocol">Whether the reading meets the protocol in force (IN-3: fasted).</param>
+/// <param name="FollowsProtocol">Whether the reading meets the protocol in force (fasted).</param>
 /// <param name="ViaSynchronization">
-///     IN-4. True when the reading arrived in an offline synchronisation batch. The batch recalculates the
+///     True when the reading arrived in an offline synchronisation batch. The batch recalculates the
 ///     trend once, with <see cref="SelfWeighInBatchSynchronized" />, instead of once per reading.
 /// </param>
 public record SelfWeighInRecorded(
@@ -152,7 +152,7 @@ public record SelfWeighInRecorded(
     bool ViaSynchronization = false) : DomainEventBase;
 
 /// <summary>
-///     IN-4. Published once at the end of a self weigh-in synchronisation batch that created at least one
+///     Published once at the end of a self weigh-in synchronisation batch that created at least one
 ///     reading. Stays inside this context: its only subscriber recalculates the trend, once.
 /// </summary>
 /// <remarks>
@@ -204,7 +204,7 @@ public record EntryQueuedOffline(
 /// <param name="PatientId">Whose entry it is.</param>
 /// <param name="LocalTimestamp">The moment the patient declared, unchanged by the journey.</param>
 /// <param name="ReEvaluatesDay">
-///     MA-1. False when the entry is part of a batch that announces its days once, with
+///     False when the entry is part of a batch that announces its days once, with
 ///     <see cref="DiaryBatchSynchronized" />, so that a day with several queued entries is
 ///     re-evaluated once rather than once per entry.
 /// </param>
@@ -215,7 +215,7 @@ public record EntrySynchronized(
     bool ReEvaluatesDay = true) : DomainEventBase;
 
 /// <summary>
-///     Subflow 4.6, MA-1. Published once at the end of a synchronisation batch with the distinct days
+///     Subflow 4.6. Published once at the end of a synchronisation batch with the distinct days
 ///     its reconciled entries declared. It crosses to Monitoring and Adherence Subflow 5.5, where each
 ///     of those days, and only those, is re-evaluated once.
 /// </summary>

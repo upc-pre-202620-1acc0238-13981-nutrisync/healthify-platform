@@ -4,9 +4,9 @@ namespace Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 /// <param name="UserId">Identifier of the account.</param>
 /// <param name="Email">The address the account signs in with.</param>
 /// <param name="Role">Patient or Practitioner.</param>
-/// <param name="GivenNames">IAM-1. Given names.</param>
-/// <param name="FamilyNames">IAM-1. Family names.</param>
-/// <param name="FullName">IAM-1. Both together, as the header shows them.</param>
+/// <param name="GivenNames">Given names.</param>
+/// <param name="FamilyNames">Family names.</param>
+/// <param name="FullName">Both together, as the header shows them.</param>
 public record RecordIdentityResource(
     int UserId,
     string Email,
@@ -24,13 +24,13 @@ public record RecordIdentityResource(
     /// <summary>Patient or Practitioner. Declared at registration and never inferred.</summary>
     public string Role { get; init; } = Role;
 
-    /// <summary>IAM-1. Given names ("Ana").</summary>
+    /// <summary>Given names ("Ana").</summary>
     public string GivenNames { get; init; } = GivenNames;
 
-    /// <summary>IAM-1. Family names ("Flores"). Empty on accounts created before IAM-1.</summary>
+    /// <summary>Family names ("Flores"). Empty on accounts created before names were required.</summary>
     public string FamilyNames { get; init; } = FamilyNames;
 
-    /// <summary>IAM-1. "Ana Flores", as the header of the record shows it.</summary>
+    /// <summary>"Ana Flores", as the header of the record shows it.</summary>
     public string FullName { get; init; } = FullName;
 }
 
@@ -143,8 +143,8 @@ public record RecordConsistencyResource(
 /// <param name="Reason">Why, in the words of the practitioner.</param>
 /// <param name="IssuedBy">The practitioner who issued it.</param>
 /// <param name="IssuedAt">When it was issued.</param>
-/// <param name="Status">RM-4. Open ("en curso") or Closed.</param>
-/// <param name="ClosedAt">RM-4. When it was closed, or null.</param>
+/// <param name="Status">Open (in progress) or Closed.</param>
+/// <param name="ClosedAt">When it was closed, or null.</param>
 public record RecordReferralResource(
     int ReferralId,
     string Specialty,
@@ -170,12 +170,12 @@ public record RecordReferralResource(
     public DateTimeOffset IssuedAt { get; init; } = IssuedAt;
 
     /// <summary>
-    ///     RM-4 (DECISIÓN §12-#8). Open ("Derivación a Endocrinología · en curso") or Closed. PT20 "Sin
-    ///     derivaciones activas" means none is Open.
+    ///     Open (in progress, e.g. a referral to Endocrinology) or Closed. The patient sees "no active referrals"
+    ///     when none is Open.
     /// </summary>
     public string Status { get; init; } = Status;
 
-    /// <summary>RM-4. When the practitioner closed it, or null while it is open.</summary>
+    /// <summary>When the practitioner closed it, or null while it is open.</summary>
     public DateTimeOffset? ClosedAt { get; init; } = ClosedAt;
 }
 
@@ -194,9 +194,9 @@ public record RecordReferralResource(
 /// <param name="CarbG">Daily carbohydrate target in grams.</param>
 /// <param name="FatG">Daily fat target in grams.</param>
 /// <param name="Guidelines">What the practitioner wrote: a catalog code or a custom text each.</param>
-/// <param name="Restrictions">What the practitioner ruled out, as codes since NC-6.</param>
-/// <param name="GuidelineItems">NC-6. The guidelines, telling catalog codes from custom texts.</param>
-/// <param name="LegacyRestrictions">NC-6. Free text restrictions from before the closed list.</param>
+/// <param name="Restrictions">What the practitioner ruled out, as codes since restrictions became a closed list.</param>
+/// <param name="GuidelineItems">The guidelines, telling catalog codes from custom texts.</param>
+/// <param name="LegacyRestrictions">Free text restrictions from before the closed list.</param>
 public record RecordActiveTargetsResource(
     int PlanVersion,
     DateTimeOffset ValidFrom,
@@ -233,17 +233,17 @@ public record RecordActiveTargetsResource(
     /// </summary>
     public IReadOnlyList<string> Guidelines { get; init; } = Guidelines;
 
-    /// <summary>DietaryRestriction codes since NC-6.</summary>
+    /// <summary>DietaryRestriction codes since restrictions became a closed list.</summary>
     public IReadOnlyList<string> Restrictions { get; init; } = Restrictions;
 
-    /// <summary>NC-6. The guidelines, each a catalog code (translate it) or a custom text (show it as written).</summary>
+    /// <summary>The guidelines, each a catalog code (translate it) or a custom text (show it as written).</summary>
     public IReadOnlyList<RecordGuidelineResource> GuidelineItems { get; init; } = GuidelineItems ?? [];
 
-    /// <summary>NC-6. Free text restrictions written before the closed list, which match no code (PT4, PAC-4).</summary>
+    /// <summary>Free text restrictions written before the closed list, which match no code.</summary>
     public IReadOnlyList<string> LegacyRestrictions { get; init; } = LegacyRestrictions ?? [];
 }
 
-/// <summary>NC-6. One guideline of the plan: a catalog code or a custom text, never both.</summary>
+/// <summary>One guideline of the plan: a catalog code or a custom text, never both.</summary>
 /// <param name="Code">Catalog code, or null for a custom guideline.</param>
 /// <param name="Custom">Written by the practitioner. Clinical data: never translated.</param>
 public record RecordGuidelineResource(string? Code, string? Custom)

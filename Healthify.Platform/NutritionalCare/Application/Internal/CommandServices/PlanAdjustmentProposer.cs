@@ -6,11 +6,11 @@ using Healthify.Platform.Shared.Application.Patterns;
 
 namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandServices;
 
-/// <summary>IA-8 - Plan Adjustment Proposal (see <see cref="IPlanAdjustmentProposer" />).</summary>
+/// <summary>Plan Adjustment Proposal (see <see cref="IPlanAdjustmentProposer" />).</summary>
 /// <remarks>
 ///     What leaves for the model is <see cref="PlanAdjustmentInput" /> as numbers and codes, plus the bounds the
 ///     answer must respect (so a good model rarely wastes a generation) and the guideline catalog. Custom guideline
-///     texts ("Otra indicación") are clinical free text and stay here; only codes go.
+///     texts are clinical free text and stay here; only codes go.
 /// </remarks>
 public class PlanAdjustmentProposer(IAiGenerationPipeline pipeline, IPatientMessageLexicon lexicon)
     : IPlanAdjustmentProposer
@@ -64,7 +64,7 @@ public class PlanAdjustmentProposer(IAiGenerationPipeline pipeline, IPatientMess
                 macroTolerancePercent = PlanAdjustmentSafety.MacroTolerance * 100m
             },
             guidelineCatalog = Guideline.Codes,
-            // X-2: one call, two readers. The title and the rationale for the practitioner, the message for the
+            // One call, two readers. The title and the rationale for the practitioner, the message for the
             // patient, each in the language of whoever reads it (plan-adjustment-proposal@2).
             languages = new
             {

@@ -11,7 +11,7 @@ namespace Healthify.Platform.ReadModels.Application;
 /// </summary>
 /// <remarks>
 ///     Business rule: the patient never receives a diagnosis, rationale, calculation basis, BMI or BMI category
-///     (ethical rule 3, §12-#9). None of the contracts read here carries them, and the composer does not call the
+///     (ethical rule 3). None of the contracts read here carries them, and the composer does not call the
 ///     practitioner-only methods (<c>GetActiveDiagnosis</c>, <c>GetClinicalEvaluations</c>). Nothing about another
 ///     patient is read: every call is keyed by this patient, and the only other people named are their own
 ///     practitioners.

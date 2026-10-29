@@ -11,11 +11,11 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     Against a real MySQL server: the message of the EV-5 draft lives in the JSON of
+///     Against a real MySQL server: the message of the publication draft lives in the JSON of
 ///     <c>consultations.publication_draft</c> (drafts saved before it still read, without a message), and the recovery
 ///     of the proposal queue finds open sustained deviations without a proposal by their real <c>created_at</c>.
 /// </summary>
-/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (CLAUDE.md §5).</remarks>
+/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (see CLAUDE.md).</remarks>
 [Collection(MySqlCollection.Name)]
 [Trait("Category", "MySql")]
 public class PlanProposalFollowUpMySqlTests
@@ -47,7 +47,7 @@ public class PlanProposalFollowUpMySqlTests
             Assert.Equal([Guideline.ReduceSalt], draft.Guidelines);
             Assert.Equal(["Caminar 20 minutos"], draft.CustomGuidelines);
 
-            // A draft saved before NC-9 has no message in its JSON.
+            // A draft saved before patient messages has no message in its JSON.
             await context.Database.ExecuteSqlRawAsync(
                 "UPDATE consultations SET publication_draft = {0} WHERE id = {1}",
                 "{\"Restrictions\":[],\"Guidelines\":[\"ReduceSalt\"],\"CustomGuidelines\":[]}", consultationId);

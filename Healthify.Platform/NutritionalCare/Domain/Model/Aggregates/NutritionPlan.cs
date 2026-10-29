@@ -98,7 +98,7 @@ public partial class NutritionPlan
     public string? PrescribedOverrideReason { get; private set; }
 
     /// <summary>
-    ///     Why this version exists (Subflow 3.6). X-2: rebuilt from three columns, the sentence
+    ///     Why this version exists (Subflow 3.6). Rebuilt from three columns, the sentence
     ///     (<see cref="ChangeReasonText" />), its code and the parameters of the code.
     /// </summary>
     public ChangeReason? ChangeReason =>
@@ -107,10 +107,10 @@ public partial class NutritionPlan
     /// <summary>NOTE: technical field for EF (<c>change_reason</c>). Read <see cref="ChangeReason" />.</summary>
     public string? ChangeReasonText { get; private set; }
 
-    /// <summary>NOTE: technical field for EF (X-2, <c>change_reason_code</c>). Read <see cref="ChangeReason" />.</summary>
+    /// <summary>NOTE: technical field for EF (<c>change_reason_code</c>). Read <see cref="ChangeReason" />.</summary>
     public string? ChangeReasonCode { get; private set; }
 
-    /// <summary>NOTE: technical field for EF (X-2, <c>change_reason_data</c>). Read <see cref="ChangeReason" />.</summary>
+    /// <summary>NOTE: technical field for EF (<c>change_reason_data</c>). Read <see cref="ChangeReason" />.</summary>
     public ChangeReasonData? ChangeReasonData { get; private set; }
 
     public DateTimeOffset? PublishedAt { get; private set; }
@@ -119,33 +119,33 @@ public partial class NutritionPlan
     /// <summary>Business rule: One Active Version Per Patient (Subflow 3.5).</summary>
     public bool IsActive { get; private set; }
 
-    /// <summary>NC-6. Catalog codes and custom texts ("Otra indicación").</summary>
+    /// <summary>Catalog codes and custom texts (the "other guideline" field).</summary>
     public IReadOnlyList<Guideline> Guidelines => _guidelines;
 
-    /// <summary>NC-6. <see cref="DietaryRestriction" /> codes.</summary>
+    /// <summary><see cref="DietaryRestriction" /> codes.</summary>
     public IReadOnlyList<string> Restrictions => _restrictions;
 
     /// <summary>
-    ///     NC-6. Free text restrictions written before the closed list that match no code. Kept and shown as
+    ///     Free text restrictions written before the closed list that match no code. Kept and shown as
     ///     they were (the patient keeps seeing them), until a new version maps them to a code.
     /// </summary>
     public IReadOnlyList<string> LegacyRestrictions => _legacyRestrictions;
 
     /// <summary>
-    ///     NC-6. The legacy restrictions of the previous version that this version did not carry over: the
+    ///     The legacy restrictions of the previous version that this version did not carry over: the
     ///     record that they were left out on purpose, by a person, when this version was published.
     /// </summary>
     public IReadOnlyList<string> DroppedLegacyRestrictions => _droppedLegacyRestrictions ?? [];
 
     /// <summary>
-    ///     NC-8. "Qué cambió en esta versión", calculated by <see cref="PlanVersionDiff" /> when the version is
-    ///     published and never again. Null for versions published before NC-8.
+    ///     The "what changed in this version" list, calculated by <see cref="PlanVersionDiff" /> when the version is
+    ///     published and never again. Null for versions published before changes were recorded.
     /// </summary>
     public IReadOnlyList<PlanChange>? ChangesFromPrevious => _changesFromPrevious;
 
     /// <summary>
-    ///     NC-9. The practitioner's message to the patient for this version (<see cref="PatientFacingMessage" />, at
-    ///     most 500 characters), or null. Written with the publication, the adjustment or the NC-10 acceptance, and
+    ///     The practitioner's message to the patient for this version (<see cref="PatientFacingMessage" />, at
+    ///     most 500 characters), or null. Written with the publication, the adjustment or an accepted AI proposal, and
     ///     never changed once the version is published. Each version has its own: it is not carried over.
     /// </summary>
     public string? PatientMessage { get; private set; }
@@ -170,7 +170,7 @@ public partial class NutritionPlan
             PrescribedOverrideReason is null ? null : new OverrideReason(PrescribedOverrideReason));
 
     /// <summary>
-    ///     NC-2. When an unpublished draft was left out: its consultation was discarded, or it was prescribed on a
+    ///     When an unpublished draft was left out: its consultation was discarded, or it was prescribed on a
     ///     diagnosis the consultation replaced. The row is kept; it never was a version the patient received.
     /// </summary>
     public DateTimeOffset? DiscardedAt { get; private set; }
@@ -201,7 +201,7 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-5 - "Cambiar parámetros" in EV-4: the same draft version is calculated again, on the diagnosis
+    ///     "Change parameters" in step 3: the same draft version is calculated again, on the diagnosis
     ///     the consultation now has. Only an unprescribed draft can be recalculated: once a person has signed
     ///     the numbers, they are not replaced by arithmetic.
     /// </summary>
@@ -242,7 +242,7 @@ public partial class NutritionPlan
         PrescribedOverrideReason = targets.OverrideReason?.Value;
     }
 
-    /// <summary>Subflow 3.5 - Publish Nutrition Plan, with the closed catalogs of NC-6.</summary>
+    /// <summary>Subflow 3.5 - Publish Nutrition Plan, with the closed catalogs.</summary>
     public void PublishWith(IEnumerable<Guideline> guidelines, IEnumerable<DietaryRestriction> restrictions)
     {
         EnsureNotDiscarded();
@@ -252,7 +252,7 @@ public partial class NutritionPlan
             throw new InvalidOperationException("This plan version has already been published.");
 
         var distinctGuidelines = guidelines.Distinct().ToList();
-        // Business rule: At Most Five Custom Guidelines Per Version (NC-6)
+        // Business rule: At Most Five Custom Guidelines Per Version
         if (distinctGuidelines.Count(g => g.IsCustom) > Guideline.MaximumCustomPerVersion)
             throw new ArgumentException(
                 $"A plan version carries at most {Guideline.MaximumCustomPerVersion} custom guidelines.",
@@ -260,7 +260,7 @@ public partial class NutritionPlan
 
         _guidelines.Clear();
         _guidelines.AddRange(distinctGuidelines);
-        // Business rule: Closed Restriction List (NC-6). Only codes reach a new version.
+        // Business rule: Closed Restriction List. Only codes reach a new version.
         _restrictions.Clear();
         _restrictions.AddRange(restrictions.Select(r => r.Value).Distinct());
 
@@ -269,7 +269,7 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-7 - Why this version exists, written before it is published. Business rule: Change Reason Required
+    ///     Why this version exists, written before it is published. Business rule: Change Reason Required
     ///     (Subflow 3.6) holds for every version after the first, whichever path publishes it.
     /// </summary>
     public void SetChangeReason(ChangeReason changeReason)
@@ -279,7 +279,7 @@ public partial class NutritionPlan
         WriteChangeReason(changeReason);
     }
 
-    /// <summary>X-2. The sentence, its code and its parameters, always together.</summary>
+    /// <summary>The sentence, its code and its parameters, always together.</summary>
     private void WriteChangeReason(ChangeReason changeReason)
     {
         ChangeReasonText = changeReason.Value;
@@ -288,8 +288,8 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-9 - The message for the patient that goes out with this version, or none. Business rule: A Person
-    ///     Confirms The Message (NC-9): it is set before publishing, by the practitioner's command, and a published
+    ///     The message for the patient that goes out with this version, or none. Business rule: A Person
+    ///     Confirms The Message: it is set before publishing, by the practitioner's command, and a published
     ///     version keeps the message it was published with.
     /// </summary>
     public void SetPatientMessage(PatientFacingMessage? message)
@@ -300,7 +300,7 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-6. This version replaces <paramref name="previous" />: legacy restrictions are not carried over
+    ///     This version replaces <paramref name="previous" />: legacy restrictions are not carried over
     ///     (only codes reach a new version), so the ones the practitioner did not map are recorded here as
     ///     left out. The previous version keeps them untouched.
     /// </summary>
@@ -312,7 +312,7 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-8 - What this version changed against <paramref name="previous" /> (null for the first version),
+    ///     What this version changed against <paramref name="previous" /> (null for the first version),
     ///     recorded once, when the version is published, so it is never calculated again and stays as it was.
     /// </summary>
     public void RecordChangesFromPrevious(NutritionPlan? previous)
@@ -326,8 +326,8 @@ public partial class NutritionPlan
 
     /// <summary>Subflow 3.5 - Publish Nutrition Plan, from the original lists of strings.</summary>
     /// <remarks>
-    ///     Deprecated by NC-6: a catalog code is that code and any other text a custom guideline; restrictions
-    ///     must be codes. Same reading as the stand-alone endpoint.
+    ///     Free text from older plans: a catalog code is that code and any other text a custom guideline;
+    ///     restrictions must be codes.
     /// </remarks>
     public void Publish(IEnumerable<string> guidelines, IEnumerable<string> restrictions)
     {
@@ -337,7 +337,7 @@ public partial class NutritionPlan
     }
 
     /// <summary>
-    ///     NC-2 - Leave an unpublished draft out. A published version is never discarded: it is superseded.
+    ///     Leave an unpublished draft out. A published version is never discarded: it is superseded.
     /// </summary>
     public void Discard()
     {
@@ -373,7 +373,7 @@ public partial class NutritionPlan
     /// <param name="changeReason">Why the version exists.</param>
     /// <param name="guidelines">The guidelines of the new version.</param>
     /// <param name="restrictions">The restrictions of the new version.</param>
-    /// <param name="patientMessage">NC-9. The message that goes out with the new version, or none.</param>
+    /// <param name="patientMessage">The message that goes out with the new version, or none.</param>
     public NutritionPlan CreateAdjustedVersion(AdjustNutritionPlanCommand command, ChangeReason changeReason,
         IReadOnlyList<Guideline> guidelines, IReadOnlyList<DietaryRestriction> restrictions,
         PatientFacingMessage? patientMessage = null)

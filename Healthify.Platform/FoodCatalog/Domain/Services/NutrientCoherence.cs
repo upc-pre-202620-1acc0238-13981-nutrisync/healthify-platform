@@ -1,7 +1,7 @@
 namespace Healthify.Platform.FoodCatalog.Domain.Services;
 
 /// <summary>
-///     IN-7. How far the declared energy may be from 4P + 4C + 9G: the larger of a share of the declared energy and a
+///     How far the declared energy may be from 4P + 4C + 9G: the larger of a share of the declared energy and a
 ///     fixed number of kilocalories per 100 g. The fixed part keeps foods with much fibre (vegetables, whose energy is
 ///     low and whose carbohydrate counts fibre) from being refused for a few kilocalories.
 /// </summary>
@@ -22,7 +22,7 @@ public sealed record NutrientTolerance(decimal Percent, decimal Kcal)
 }
 
 /// <summary>
-///     IN-7. Business rule: AI Estimated Nutrients Coherent. Nutrients per 100 g that a model estimated become a food of
+///     Business rule: AI Estimated Nutrients Coherent. Nutrients per 100 g that a model estimated become a food of
 ///     the shared catalog only if they could describe real food.
 /// </summary>
 /// <remarks>

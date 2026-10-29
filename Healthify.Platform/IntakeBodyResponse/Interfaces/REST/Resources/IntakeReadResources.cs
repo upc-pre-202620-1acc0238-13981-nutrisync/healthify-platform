@@ -46,36 +46,36 @@ public record ActiveTargetsResource(
 
     /// <summary>
     ///     Qualitative guidance from the practitioner: a catalog code or a custom text each. Use
-    ///     <see cref="GuidelineItems" /> to tell them apart (NC-6).
+    ///     <see cref="GuidelineItems" /> to tell them apart.
     /// </summary>
     public IReadOnlyList<string> Guidelines { get; init; } = Guidelines;
 
-    /// <summary>Restrictions from the practitioner, as codes since NC-6 (LactoseFree, GlutenFree, Vegan…).</summary>
+    /// <summary>Restrictions from the practitioner, as codes since restrictions became a closed list (LactoseFree, GlutenFree, Vegan…).</summary>
     public IReadOnlyList<string> Restrictions { get; init; } = Restrictions;
 
     /// <summary>When this copy was last refreshed. The device keeps it and it survives offline.</summary>
     public DateTimeOffset RefreshedAt { get; init; } = RefreshedAt;
 
-    /// <summary>NC-6. The guidelines, each a catalog code (translate it) or a custom text (show it as written).</summary>
+    /// <summary>The guidelines, each a catalog code (translate it) or a custom text (show it as written).</summary>
     public IReadOnlyList<ActiveGuidelineResource> GuidelineItems { get; init; } = GuidelineItems ?? [];
 
     /// <summary>
-    ///     NC-6. Restrictions written as free text before the closed list, which match no code. Show them as
+    ///     Restrictions written as free text before the closed list, which match no code. Show them as
     ///     written, next to <see cref="Restrictions" />.
     /// </summary>
     public IReadOnlyList<string> LegacyRestrictions { get; init; } = LegacyRestrictions ?? [];
 
     /// <summary>
-    ///     NC-8. "Qué cambió en esta versión": empty for the first version and for contracts published before
-    ///     NC-8. Write the sentence from each type on the device.
+    ///     "What changed in this version": empty for the first version and for contracts published before
+    ///     it existed. Write the sentence from each type on the device.
     /// </summary>
     public IReadOnlyList<ActivePlanChangeResource> ChangesFromPrevious { get; init; } = ChangesFromPrevious ?? [];
 
-    /// <summary>NC-9. The practitioner's message to the patient for this version, or null.</summary>
+    /// <summary>The practitioner's message to the patient for this version, or null.</summary>
     public string? PatientMessage { get; init; } = PatientMessage;
 }
 
-/// <summary>NC-8. One line of "Qué cambió en esta versión".</summary>
+/// <summary>One line of "What changed in this version".</summary>
 public record ActivePlanChangeResource(
     string Type,
     string? Code,
@@ -106,7 +106,7 @@ public record ActivePlanChangeResource(
     public decimal? To { get; init; } = To;
 }
 
-/// <summary>NC-6. One guideline of the plan: a catalog code or a custom text, never both.</summary>
+/// <summary>One guideline of the plan: a catalog code or a custom text, never both.</summary>
 public record ActiveGuidelineResource(string? Code, string? Custom)
 {
     /// <summary>Catalog code, to translate on the device; null for a custom guideline.</summary>
@@ -192,12 +192,12 @@ public record DiaryEntryResource(
 
     /// <summary>
     ///     InPlan, OffPlan, or NotAnswered while the entry waits to be confirmed. OffPlan is shown as
-    ///     «Fuera del plan» and still counts in the diary.
+    ///     "off plan" and still counts in the diary.
     /// </summary>
     public string PlanAdherence { get; init; } = PlanAdherence;
 
     /// <summary>
-    ///     Whether the entry adds to today's targets. False while it is «Por confirmar»: a proposal
+    ///     Whether the entry adds to today's targets. False while it waits to be confirmed: a proposal
     ///     the patient has not spoken about is not intake.
     /// </summary>
     public bool IsCountedTowardsTargets { get; init; } = IsCountedTowardsTargets;
@@ -209,12 +209,12 @@ public record DiaryEntryResource(
     public string? FoodName { get; init; } = FoodName;
 
     /// <summary>
-    ///     IN-6. The meal this entry was logged with, shared by its other foods, so PT14 shows them as one meal. Null
+    ///     The meal this entry was logged with, shared by its other foods, so the diary shows them as one meal. Null
     ///     for an entry logged alone.
     /// </summary>
     public Guid? MealGroupId { get; init; } = MealGroupId;
 
-    /// <summary>IN-6. MealIdea when it was logged from an idea (IA-3); otherwise null.</summary>
+    /// <summary>MealIdea when it was logged from an idea; otherwise null.</summary>
     public string? Origin { get; init; } = Origin;
 }
 
@@ -244,14 +244,14 @@ public record SelfWeighInResource(
     /// <summary>Declared as taken fasted.</summary>
     public bool FastedState { get; init; } = FastedState;
 
-    /// <summary>Declared as taken at the usual time of day. Null when not asked (IN-3).</summary>
+    /// <summary>Declared as taken at the usual time of day. Null when not asked.</summary>
     public bool? SameTimeOfDay { get; init; } = SameTimeOfDay;
 
-    /// <summary>Declared as taken on the usual scale. Null when not asked (IN-3).</summary>
+    /// <summary>Declared as taken on the usual scale. Null when not asked.</summary>
     public bool? SameScale { get; init; } = SameScale;
 
     /// <summary>
-    ///     Whether the reading meets the protocol in force (IN-3: taken fasted). False means the
+    ///     Whether the reading meets the protocol in force (taken fasted). False means the
     ///     reading is kept in full and does not smooth the trend. It does not mean anything else.
     /// </summary>
     public bool FollowsProtocol { get; init; } = FollowsProtocol;
@@ -275,7 +275,7 @@ public record WeightTrendPointResource(DateOnly Date, decimal SmoothedValueKg)
 ///     resource carries. There is no field here for the latest reading and no field for today's weight,
 ///     because a single morning reading moves several hundred grams with hydration alone and showing it
 ///     as the headline turns noise into a verdict.
-///     IN-5: the summary of the last weeks (slope and change) is computed from the smoothed points of the
+///     The summary of the last weeks (slope and change) is computed from the smoothed points of the
 ///     range, never from a single day's reading.
 /// </remarks>
 public record WeightTrendResource(
@@ -302,24 +302,24 @@ public record WeightTrendResource(
     public IReadOnlyList<WeightTrendPointResource> Points { get; init; } = Points;
 
     /// <summary>
-    ///     IN-5. Readings between <see cref="RangeFrom" /> and <see cref="RangeTo" /> that did not follow the
-    ///     protocol: kept, but not in this line («no están en esta línea, pero sí quedaron guardados»).
+    ///     Readings between <see cref="RangeFrom" /> and <see cref="RangeTo" /> that did not follow the
+    ///     protocol: kept, but not in this line.
     /// </summary>
     public int ExcludedReadingsCount { get; init; } = ExcludedReadingsCount;
 
-    /// <summary>IN-5. Last smoothed point of the range minus the first. Null with fewer than two points.</summary>
+    /// <summary>Last smoothed point of the range minus the first. Null with fewer than two points.</summary>
     public decimal? ChangeKgOverRange { get; init; } = ChangeKgOverRange;
 
     /// <summary>
-    ///     IN-5. Least squares slope of the smoothed points of the range, in kg per week ("−0,3 kg/sem"). Null
+    ///     Least squares slope of the smoothed points of the range, in kg per week ("−0,3 kg/sem"). Null
     ///     with fewer than two points.
     /// </summary>
     public decimal? SlopeKgPerWeek { get; init; } = SlopeKgPerWeek;
 
-    /// <summary>IN-5. First day of the range (<c>?weeks=</c>, 4 by default), inclusive.</summary>
+    /// <summary>First day of the range (<c>?weeks=</c>, 4 by default), inclusive.</summary>
     public DateOnly? RangeFrom { get; init; } = RangeFrom;
 
-    /// <summary>IN-5. Last day of the range (today), inclusive.</summary>
+    /// <summary>Last day of the range (today), inclusive.</summary>
     public DateOnly? RangeTo { get; init; } = RangeTo;
 }
 
@@ -343,7 +343,7 @@ public record SyncedEntryOutcomeResource(
     public string? Reason { get; init; } = Reason;
 }
 
-/// <summary>IN-4. What happened to one queued self weigh-in.</summary>
+/// <summary>What happened to one queued self weigh-in.</summary>
 public record SyncedSelfWeighInOutcomeResource(
     Guid ClientEntryId,
     int? SelfWeighInId,
@@ -363,7 +363,7 @@ public record SyncedSelfWeighInOutcomeResource(
     public string? Reason { get; init; } = Reason;
 }
 
-/// <summary>IN-4. The end of a self weigh-in synchronisation batch.</summary>
+/// <summary>The end of a self weigh-in synchronisation batch.</summary>
 public record SelfWeighInSyncOutcomeResource(
     int PatientId,
     int Created,
@@ -415,7 +415,7 @@ public record SyncOutcomeResource(
     public IReadOnlyList<SyncedEntryOutcomeResource> Entries { get; init; } = Entries;
 }
 
-/// <summary>IA-3. One ingredient of a meal idea («Pechuga de pollo · 150 g»).</summary>
+/// <summary>One ingredient of a meal idea («Pechuga de pollo · 150 g»).</summary>
 public record MealIdeaIngredientResource(
     string Name,
     decimal Grams,
@@ -430,7 +430,7 @@ public record MealIdeaIngredientResource(
     public decimal Grams { get; init; } = Grams;
 
     /// <summary>
-    ///     The catalog entry it resolved to (FC-2), to log the idea with <c>/diary-entries/manual-logs/batch</c>; null
+    ///     The catalog entry it resolved to, to log the idea with <c>/diary-entries/manual-logs/batch</c>; null
     ///     when the catalog does not have it (<see cref="Resolved" /> false).
     /// </summary>
     public int? ReferenceFoodId { get; init; } = ReferenceFoodId;
@@ -440,12 +440,12 @@ public record MealIdeaIngredientResource(
 
     /// <summary>
     ///     False for a minor ingredient (a condiment, less than 15 % of the energy of the idea) the catalog does not
-    ///     have: it carries no referenceFoodId, and the app leaves it out of the log or sends it to PT9.
+    ///     have: it carries no referenceFoodId, and the app leaves it out of the log or sends it to adjustment.
     /// </summary>
     public bool Resolved { get; init; } = Resolved;
 }
 
-/// <summary>IA-3. One idea (PT14.4 card and PT14.5 detail).</summary>
+/// <summary>One idea, as its card and its detail show it.</summary>
 public record MealIdeaResource(
     string MealIdeaId,
     string Name,
@@ -478,7 +478,7 @@ public record MealIdeaResource(
     /// <summary>The ingredients in grams.</summary>
     public IReadOnlyList<MealIdeaIngredientResource> Ingredients { get; init; } = Ingredients;
 
-    /// <summary>«Por qué esta idea».</summary>
+    /// <summary>"Why this idea".</summary>
     public string Why { get; init; } = Why;
 
     /// <summary>True when the figures are the food catalog's rather than the AI's (they differed by more than 15 %).</summary>
@@ -486,7 +486,7 @@ public record MealIdeaResource(
 }
 
 /// <summary>
-///     IA-3. «Caben en lo que te queda hoy (590 kcal) y no llevan mariscos.» What is left is computed by the
+///     "They fit in what is left today (590 kcal) and carry no seafood." What is left is computed by the
 ///     server, never by the AI; the ideas never carry a diagnosis.
 /// </summary>
 public record MealIdeasResource(
@@ -516,7 +516,7 @@ public record MealIdeasResource(
     /// <summary>Fat left today, in grams (zero when covered).</summary>
     public decimal RemainingFatG { get; init; } = RemainingFatG;
 
-    /// <summary>The restriction codes of the plan every idea respects (NC-6).</summary>
+    /// <summary>The restriction codes of the plan every idea respects.</summary>
     public IReadOnlyList<string> Restrictions { get; init; } = Restrictions;
 
     /// <summary>Two or three ideas.</summary>
@@ -528,12 +528,12 @@ public record MealIdeasResource(
     /// <summary>When they were generated (cached for two hours).</summary>
     public DateTimeOffset GeneratedAt { get; init; } = GeneratedAt;
 
-    /// <summary>«Las ideas no reemplazan las indicaciones».</summary>
+    /// <summary>"Ideas do not replace the practitioner's guidance".</summary>
     public string Disclaimer { get; init; } = Disclaimer;
 }
 
 /// <summary>
-///     IN-7. What the AI recognized in the photo (PT7 «¿Es esto lo que comiste?»). A proposal: nothing is in the diary
+///     What the AI recognized in the photo, for the confirmation screen. A proposal: nothing is in the diary
 ///     until the patient logs it with <c>POST /diary-entries/photo-logs</c> and this <c>analysisId</c>.
 /// </summary>
 /// <remarks>
@@ -559,7 +559,7 @@ public record MealPhotoAnalysisResource(
     /// <summary>Its name in the catalog.</summary>
     public string FoodName { get; init; } = FoodName;
 
-    /// <summary>The estimated portion, in grams («Lo que propusimos: 320 g»).</summary>
+    /// <summary>The estimated portion, in grams ("what we proposed: 320 g").</summary>
     public decimal EstimatedGrams { get; init; } = EstimatedGrams;
 
     /// <summary>How sure the AI was, from 0 to 1. Always present.</summary>
@@ -572,20 +572,20 @@ public record MealPhotoAnalysisResource(
     public DateTimeOffset ExpiresAt { get; init; } = ExpiresAt;
 
     /// <summary>
-    ///     IN-8. The suggestion for «¿Estaba en tu plan?» of the dish, which the app preselects. Null when there is
+    ///     The suggestion for "was it in your plan?" of the dish, which the app preselects. Null when there is
     ///     none (no plan published yet).
     /// </summary>
     public PlanFitResource? PlanFit { get; init; } = PlanFit;
 }
 
-/// <summary>IN-7. Another dish the photo could show.</summary>
+/// <summary>Another dish the photo could show.</summary>
 public record MealPhotoAlternativeResource(
     string Name,
     decimal Grams,
     int? ReferenceFoodId,
     PlanFitResource? PlanFit = null)
 {
-    /// <summary>IN-8. The suggestion for this dish, or null when the catalog does not carry it.</summary>
+    /// <summary>The suggestion for this dish, or null when the catalog does not carry it.</summary>
     public PlanFitResource? PlanFit { get; init; } = PlanFit;
 
     /// <summary>Its name: the catalog's when the catalog carries it.</summary>
@@ -599,7 +599,7 @@ public record MealPhotoAlternativeResource(
 }
 
 /// <summary>
-///     IN-9. What the patient logged on one of their days and what is left of their targets (PT3 «Medidor del día»).
+///     What the patient logged on one of their days and what is left of their targets (the day's gauge).
 ///     Descriptive only: it never rates the day.
 /// </summary>
 public record DailyIntakeResource(
@@ -666,7 +666,7 @@ public record DailyIntakeResource(
 }
 
 /// <summary>
-///     IN-8. A suggestion for «¿Esta comida estaba en tu plan?», computed by the server without AI. The app preselects
+///     A suggestion for "was this meal in your plan?", computed by the server without AI. The app preselects
 ///     it; the patient may change it, and what is logged is always their own answer.
 /// </summary>
 public record PlanFitResource(
@@ -679,7 +679,7 @@ public record PlanFitResource(
     /// <summary><c>InPlan</c> or <c>OffPlan</c>.</summary>
     public string SuggestedAdherence { get; init; } = SuggestedAdherence;
 
-    /// <summary>The restriction codes of the plan the food seems to break (NC-6); empty when none.</summary>
+    /// <summary>The restriction codes of the plan the food seems to break; empty when none.</summary>
     public IReadOnlyList<string> ViolatedRestrictions { get; init; } = ViolatedRestrictions;
 
     /// <summary><c>Fits</c>, <c>BreaksRestriction</c> or <c>ExceedsRemaining</c>: the app shows its own text for each.</summary>
@@ -692,7 +692,7 @@ public record PlanFitResource(
     public decimal? RemainingKcal { get; init; } = RemainingKcal;
 }
 
-/// <summary>IN-6. The entries a meal logged in a group became.</summary>
+/// <summary>The entries a meal logged in a group became.</summary>
 public record MealGroupLogResource(Guid MealGroupId, string? Origin, IReadOnlyList<DiaryEntryResource> Entries)
 {
     /// <summary>The group the entries share.</summary>

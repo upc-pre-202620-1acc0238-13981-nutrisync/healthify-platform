@@ -15,7 +15,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-8. «¿Estaba en tu plan?» suggested without AI: the restrictions of the plan first (real lexicon), then the
+///     "Was it in your plan?" suggested without AI: the restrictions of the plan first (real lexicon), then the
 ///     energy of the portion against what is left today, with its margin.
 /// </summary>
 public class PlanFitTests

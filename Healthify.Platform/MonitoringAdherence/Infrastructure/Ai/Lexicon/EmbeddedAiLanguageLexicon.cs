@@ -4,7 +4,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Services;
 namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Ai.Lexicon;
 
 /// <summary>
-///     IA-2/IA-4/IA-5. <see cref="IAiLanguageLexicon" /> over <c>generated-text-lexicon.json</c>, a file of this
+///     <see cref="IAiLanguageLexicon" /> over <c>generated-text-lexicon.json</c>, a file of this
 ///     context embedded in the assembly (see the csproj). Spanish and English terms are merged: a text is checked
 ///     against both, whatever language it was asked in.
 /// </summary>

@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Iam.Domain.Model.Commands;
 
 /// <summary>
-///     IAM-2 - Verify Password Reset Code. Checks the code that was emailed and, if it is right, issues the reset
+///     Verify Password Reset Code. Checks the code that was emailed and, if it is right, issues the reset
 ///     token that sets the new password.
 /// </summary>
 /// <param name="Email">The email the code was sent to.</param>

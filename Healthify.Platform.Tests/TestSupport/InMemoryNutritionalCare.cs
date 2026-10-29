@@ -58,8 +58,7 @@ public sealed class InMemoryNutritionalCare
         var diagnoses = new DiagnosisRepository(this);
         var plans = new PlanRepository(this);
 
-        var planService = new NutritionPlanCommandService(plans, diagnoses, assessments, UnitOfWork,
-            new BmrCalculator(), NullLogger<NutritionPlanCommandService>.Instance, Mediator);
+        var planService = new NutritionPlanCommandService(plans, UnitOfWork, NullLogger<NutritionPlanCommandService>.Instance, Mediator);
         PlanCommands = planService;
         var cacheService = new ActiveTargetsCacheCommandService(new CacheRepository(this), UnitOfWork,
             CareRelationship, NullLogger<ActiveTargetsCacheCommandService>.Instance, Mediator);
@@ -68,7 +67,7 @@ public sealed class InMemoryNutritionalCare
         Fakes.Route(Mediator, new OnNutritionPlanPublishedHandler(
             Fakes.ScopeFactoryWith<INutritionPlanCommandService>(planService),
             NullLogger<OnNutritionPlanPublishedHandler>.Instance));
-        // NC-9/NC-10: the adjustment publishes the contract through its own policy.
+        // The adjustment publishes the contract through its own policy.
         Fakes.Route(Mediator, new OnNutritionPlanAdjustedHandler(
             Fakes.ScopeFactoryWith<INutritionPlanCommandService>(planService),
             NullLogger<OnNutritionPlanAdjustedHandler>.Instance));
@@ -81,7 +80,7 @@ public sealed class InMemoryNutritionalCare
             DefaultTargetParametersPolicyTests.Policy(), NullLogger<ConsultationCommandService>.Instance, Mediator);
         Queries = new ConsultationQueryService(consultations, assessments, diagnoses,
             Substitute.For<IDefaultGuidelinesProvider>(), plans, Monitoring);
-        // NC-10/IA-8: the review inbox, the real AI pipeline with a fake model, and the acceptance.
+        // The review inbox, the real AI pipeline with a fake model, and the acceptance.
         var reviewItems = new ReviewItemRepository(this);
         ReviewItemStore = reviewItems;
         AiConsent.IsAllowedAsync(Arg.Any<int>(), Arg.Any<AiFeature>(), Arg.Any<CancellationToken>()).Returns(true);
@@ -115,19 +114,19 @@ public sealed class InMemoryNutritionalCare
     public List<ActiveTargetsCache> Caches { get; } = [];
     public List<ReviewItem> ReviewItemRows { get; } = [];
 
-    /// <summary>NC-10. The inbox repository over <see cref="ReviewItemRows" />.</summary>
+    /// <summary>The inbox repository over <see cref="ReviewItemRows" />.</summary>
     public IReviewItemRepository ReviewItemStore { get; }
 
-    /// <summary>NC-10. Open, resolve, generate the proposal, open the rechecks.</summary>
+    /// <summary>Open, resolve, generate the proposal, open the rechecks.</summary>
     public IReviewItemCommandService ReviewItems { get; }
 
-    /// <summary>NC-10. The acceptance: the only path from a proposal to a version.</summary>
+    /// <summary>The acceptance: the only path from a proposal to a version.</summary>
     public IPlanProposalCommandService PlanProposals { get; }
 
     public ReviewItemQueryService ReviewItemQueries { get; }
     public IPlanProposalGenerationQueue ProposalQueue { get; } = new InMemoryPlanProposalGenerationQueue();
 
-    /// <summary>IA-8. The model, the audit, the patient's consent and the AI settings (on by default).</summary>
+    /// <summary>The model, the audit, the patient's consent and the AI settings (on by default).</summary>
     public FakeLanguageModelClient Model { get; } = new();
 
     public InMemoryAiGenerationLog AiLog { get; } = new();
@@ -136,7 +135,7 @@ public sealed class InMemoryNutritionalCare
     public IConfigurationRoot AiConfiguration { get; } = new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?> { ["Ai:Enabled"] = "true" }).Build();
 
-    /// <summary>IA-8. Intake, for the weight trend and the moments of the diary; empty unless a test says otherwise.</summary>
+    /// <summary>Intake, for the weight trend and the moments of the diary; empty unless a test says otherwise.</summary>
     public IIntakeContextFacade Intake { get; } = Substitute.For<IIntakeContextFacade>();
 
     /// <summary>Every broken invariant seen at a save, with the save that broke it.</summary>
@@ -147,23 +146,23 @@ public sealed class InMemoryNutritionalCare
     public ICareRelationshipContextFacade CareRelationship { get; } = Substitute.For<ICareRelationshipContextFacade>();
     public IMediator Mediator { get; } = Substitute.For<IMediator>();
 
-    /// <summary>MA-4. Monitoring, for the check in of EV-2; returns null unless a test says otherwise.</summary>
+    /// <summary>Monitoring, for the check in of step 1; returns null unless a test says otherwise.</summary>
     public IMonitoringContextFacade Monitoring { get; } = Substitute.For<IMonitoringContextFacade>();
     public IConsultationCommandService Consultation { get; }
 
-    /// <summary>NC-9. The plan command service (stand-alone publication, adjustment) over the same store.</summary>
+    /// <summary>The plan command service (stand-alone publication, adjustment) over the same store.</summary>
     public INutritionPlanCommandService PlanCommands { get; }
     public ConsultationQueryService Queries { get; }
     public NutritionPlanQueryService PlanQueries { get; }
     public PatientBaselineQueryService BaselineQueries { get; }
 
-    /// <summary>RM-4. The assessments, for the facade's evaluations.</summary>
+    /// <summary>The assessments, for the facade's evaluations.</summary>
     public NutritionalAssessmentQueryService AssessmentQueries { get; }
 
-    /// <summary>RM-4. The active diagnosis, for the facade.</summary>
+    /// <summary>The active diagnosis, for the facade.</summary>
     public NutritionalDiagnosisQueryService DiagnosisQueries { get; }
 
-    /// <summary>RM-4. The Nutritional Care facade over these services, as other contexts read it.</summary>
+    /// <summary>The Nutritional Care facade over these services, as other contexts read it.</summary>
     public NutritionalCareContextFacade Facade(DateOnly today)
     {
         return new NutritionalCareContextFacade(PlanQueries, Substitute.For<IReviewItemQueryService>(),

@@ -1,17 +1,17 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
-/// <summary>Who asks for a generation: decides which consent the policy checks (IA-0, guard 2).</summary>
+/// <summary>Who asks for a generation: decides which consent the policy checks (guard 2).</summary>
 public enum AiFeatureAudience
 {
     /// <summary>The patient asks, about themselves: general AI consent plus the preference for the feature.</summary>
     Patient,
 
-    /// <summary>The practitioner asks, about a patient: general AI consent of that patient only (§12-#5).</summary>
+    /// <summary>The practitioner asks, about a patient: general AI consent of that patient only.</summary>
     Practitioner
 }
 
 /// <summary>
-///     IA-0. One AI function of the platform, as the technical module knows it: a stable name (the
+///     One AI function of the platform, as the technical module knows it: a stable name (the
 ///     <c>Ai:Features:&lt;Name&gt;</c> configuration key, the <c>feature</c> column of <c>ai_generations</c> and the
 ///     prompt file prefix) and its audience. The function itself, its input and its business rules live in the
 ///     context that owns its data.
@@ -29,34 +29,34 @@ public sealed record AiFeature
         Audience = audience;
     }
 
-    /// <summary>IA-2 (MonitoringAdherence). Weekly summary for the patient.</summary>
+    /// <summary>MonitoringAdherence. Weekly summary for the patient.</summary>
     public static AiFeature WeeklySummary { get; } = new("WeeklySummary", "weekly-summary", AiFeatureAudience.Patient);
 
-    /// <summary>IA-3 (IntakeBodyResponse). Meal ideas within the remaining targets.</summary>
+    /// <summary>IntakeBodyResponse. Meal ideas within the remaining targets.</summary>
     public static AiFeature MealIdeas { get; } = new("MealIdeas", "meal-ideas", AiFeatureAudience.Patient);
 
-    /// <summary>IA-4 (MonitoringAdherence). Questions the patient may bring to the follow-up.</summary>
+    /// <summary>MonitoringAdherence. Questions the patient may bring to the follow-up.</summary>
     public static AiFeature SuggestedQuestions { get; } =
         new("SuggestedQuestions", "suggested-questions", AiFeatureAudience.Patient);
 
-    /// <summary>IA-5 (MonitoringAdherence). Monitoring summary for the practitioner.</summary>
+    /// <summary>MonitoringAdherence. Monitoring summary for the practitioner.</summary>
     public static AiFeature PractitionerMonitoringSummary { get; } = new("PractitionerMonitoringSummary",
         "practitioner-monitoring-summary", AiFeatureAudience.Practitioner);
 
-    /// <summary>IA-6 (NutritionalCare). Diagnosis suggestion during the consultation.</summary>
+    /// <summary>NutritionalCare. Diagnosis suggestion during the consultation.</summary>
     public static AiFeature DiagnosisSuggestion { get; } =
         new("DiagnosisSuggestion", "diagnosis-suggestion", AiFeatureAudience.Practitioner);
 
-    /// <summary>IA-7 (NutritionalCare). Guideline suggestions for the plan.</summary>
+    /// <summary>NutritionalCare. Guideline suggestions for the plan.</summary>
     public static AiFeature GuidelineSuggestions { get; } =
         new("GuidelineSuggestions", "guideline-suggestions", AiFeatureAudience.Practitioner);
 
-    /// <summary>IA-8 (NutritionalCare). Plan adjustment proposal.</summary>
+    /// <summary>NutritionalCare. Plan adjustment proposal.</summary>
     public static AiFeature PlanAdjustmentProposal { get; } =
         new("PlanAdjustmentProposal", "plan-adjustment-proposal", AiFeatureAudience.Practitioner);
 
     /// <summary>
-    ///     IN-7 (IntakeBodyResponse). Recognizes the dish of a photo and estimates its portion and its nutrients. The
+    ///     IntakeBodyResponse. Recognizes the dish of a photo and estimates its portion and its nutrients. The
     ///     only function that sends an image, stripped of metadata and without any data of the patient.
     /// </summary>
     public static AiFeature MealPhotoRecognition { get; } =

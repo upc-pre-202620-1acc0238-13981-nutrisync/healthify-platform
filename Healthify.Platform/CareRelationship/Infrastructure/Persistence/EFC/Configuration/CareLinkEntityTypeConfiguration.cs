@@ -34,7 +34,7 @@ public class CareLinkEntityTypeConfiguration : IEntityTypeConfiguration<CareLink
 
         builder.Property(c => c.PendingTargetsVersion).HasColumnName("pending_targets_version");
         builder.Property(c => c.LastAcknowledgedVersion).HasColumnName("last_acknowledged_version");
-        // CR-3. When the acknowledgement was given.
+        // When the acknowledgement was given.
         builder.Property(c => c.LastAcknowledgedAt).HasColumnName("last_acknowledged_at");
 
         // Persisted projection of the Consent value object. Mapped as columns rather than as a
@@ -44,7 +44,7 @@ public class CareLinkEntityTypeConfiguration : IEntityTypeConfiguration<CareLink
         builder.Property(c => c.ConsentScope).HasColumnName("consent_scope").HasMaxLength(200);
         builder.Property(c => c.ConsentGrantedAt).HasColumnName("consent_granted_at");
         builder.Property(c => c.ConsentWithdrawnAt).HasColumnName("consent_withdrawn_at");
-        // CR-2. AI processing consent, inside the same consent. Existing rows: off, never decided.
+        // AI processing consent, inside the same consent. Existing rows: off, never decided.
         builder.Property(c => c.ConsentAiProcessingGranted).HasColumnName("consent_ai_processing")
             .IsRequired().HasDefaultValue(false);
         builder.Property(c => c.ConsentAiProcessingDecidedAt).HasColumnName("consent_ai_decided_at");

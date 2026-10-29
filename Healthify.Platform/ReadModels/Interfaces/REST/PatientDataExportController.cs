@@ -11,7 +11,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.ReadModels.Interfaces.REST;
 
 /// <summary>
-///     Data export. "Descargar mis datos" (Settings): the patient downloads a copy of their own data.
+///     Data export. The download my data option in Settings: the patient downloads a copy of their own data.
 /// </summary>
 /// <remarks>
 ///     Only the patient themselves: identity from the token, and no practitioner path, not even with an active link.

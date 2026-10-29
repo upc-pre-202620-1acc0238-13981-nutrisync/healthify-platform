@@ -16,7 +16,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.NutritionalCare;
 
-/// <summary>NC-1. Order of the guards of the baseline command service and its persistence.</summary>
+/// <summary>Order of the guards of the baseline command service and its persistence.</summary>
 public class PatientBaselineCommandServiceTests
 {
     private const int PatientId = 10;

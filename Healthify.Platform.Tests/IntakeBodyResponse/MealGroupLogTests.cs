@@ -23,7 +23,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-6 (§12-#4, option A). «Registrar esta comida»: one confirmed Manual entry per food, sharing a meal group
+///     Log this meal: one confirmed Manual entry per food, sharing a meal group
 ///     and the moment, in one save, and the day evaluated once by the real Monitoring policies.
 /// </summary>
 public class MealGroupLogTests

@@ -30,7 +30,7 @@ public partial class DiaryEntry
 
     /// <summary>Subflows 4.2 and 4.3 - an entry comes into being with its provenance and its moment.</summary>
     /// <remarks>
-    ///     IN-1. Off the plan is no longer a provenance: it is the patient's answer, recorded with the
+    ///     Off the plan is no longer a provenance: it is the patient's answer, recorded with the
     ///     confirmation. A new entry therefore cannot be created with <c>Provenance.OffPlan</c>; the
     ///     legacy paths that still need one go through <see cref="LegacyOffPlan" />.
     /// </remarks>
@@ -70,11 +70,11 @@ public partial class DiaryEntry
     }
 
     /// <summary>
-    ///     Subflow 4.4 - Log Off Plan Meal, kept only for the deprecated one-tap endpoint and for
-    ///     offline queues sent by older clients.
+    ///     Subflow 4.4 - Log Off Plan Meal, kept only for stored entries and for offline queues sent by
+    ///     older clients.
     /// </summary>
     /// <remarks>
-    ///     Deprecated by IN-1. The entry carries no food and no portion, exactly as before, and its
+    ///     No endpoint creates it any more. The entry carries no food and no portion, exactly as before, and its
     ///     answer is recorded as off the plan so that it reads the same as the rows backfilled by the
     ///     migration.
     /// </remarks>
@@ -122,7 +122,7 @@ public partial class DiaryEntry
     public Provenance Provenance { get; private set; } = null!;
 
     /// <summary>
-    ///     IN-1. Whether the patient said the meal was in their plan. Set with the confirmation and
+    ///     Whether the patient said the meal was in their plan. Set with the confirmation and
     ///     never rewritten afterwards; <c>NotAnswered</c> while the entry waits to be confirmed.
     /// </summary>
     public PlanAdherence PlanAdherence { get; private set; } = null!;
@@ -160,22 +160,22 @@ public partial class DiaryEntry
     public Guid? ClientEntryId { get; private set; }
 
     /// <summary>
-    ///     IN-6. The meal several entries of one moment make together (an idea of IA-3 has several ingredients and
+    ///     The meal several entries of one moment make together (a meal idea has several ingredients and
     ///     an entry holds one food), so the diary can show them as one meal. Null for an entry logged alone.
     /// </summary>
     public Guid? MealGroupId { get; private set; }
 
-    /// <summary>IN-6. Where a grouped entry came from (<c>MealIdea</c>), or null.</summary>
+    /// <summary>Where a grouped entry came from (<c>MealIdea</c>), or null.</summary>
     public EntryOrigin? Origin { get; private set; }
 
     /// <summary>
-    ///     IN-7. NOTE: technical field. The photo analysis the proposal of this entry came from (the AI recognized
+    ///     NOTE: technical field. The photo analysis the proposal of this entry came from (the AI recognized
     ///     the dish on the server). Unique: one analysis is logged once. The analysis itself is purged after 24 hours;
     ///     this identifier stays as a trace and points to nothing that holds patient data.
     /// </summary>
     public Guid? MealPhotoAnalysisId { get; private set; }
 
-    /// <summary>IN-7. NOTE: technical field. The <c>ai_generations</c> row that produced the proposal, or null.</summary>
+    /// <summary>NOTE: technical field. The <c>ai_generations</c> row that produced the proposal, or null.</summary>
     public long? ProposedAiGenerationId { get; private set; }
 
     /// <summary>Rebuilt from the stored columns, or null while the estimator has not run.</summary>
@@ -212,7 +212,7 @@ public partial class DiaryEntry
     }
 
     /// <summary>Subflow 4.2 - Confirm Estimate. The patient accepts the proposal as it stands.</summary>
-    /// <param name="adherence">IN-1. The patient's answer to «¿Esta comida estaba en tu plan?». Required.</param>
+    /// <param name="adherence">The patient's answer to "was this meal in your plan?". Required.</param>
     public void ConfirmProposedEstimate(PlanAdherence adherence)
     {
         RequireAnswer(adherence);
@@ -230,7 +230,7 @@ public partial class DiaryEntry
     /// <summary>Subflow 4.2 - Adjust Estimate. The patient corrects the proposal.</summary>
     /// <param name="referenceFoodId">The food the patient chose instead.</param>
     /// <param name="portionGrams">The portion the patient chose instead.</param>
-    /// <param name="adherence">IN-1. The patient's answer to «¿Esta comida estaba en tu plan?». Required.</param>
+    /// <param name="adherence">The patient's answer to "was this meal in your plan?". Required.</param>
     public void AdjustProposedEstimate(int referenceFoodId, decimal portionGrams, PlanAdherence adherence)
     {
         RequireAnswer(adherence);
@@ -247,7 +247,7 @@ public partial class DiaryEntry
 
     /// <summary>Subflow 4.3 - Log Meal Manually. What the patient typed is a confirmation from the start.</summary>
     /// <param name="estimate">What the patient declared.</param>
-    /// <param name="adherence">IN-1. The patient's answer to «¿Esta comida estaba en tu plan?». Required.</param>
+    /// <param name="adherence">The patient's answer to "was this meal in your plan?". Required.</param>
     public void ConfirmDirectly(ConfirmedEstimate estimate, PlanAdherence adherence)
     {
         RequireAnswer(adherence);
@@ -259,7 +259,7 @@ public partial class DiaryEntry
     }
 
     /// <summary>
-    ///     Subflow 4.6 - an entry queued offline by a client older than IN-1, which never asked the
+    ///     Subflow 4.6 - an entry queued offline by a client older than the plan question, which never asked the
     ///     question. It is confirmed as the device declared it and its answer stays <c>NotAnswered</c>:
     ///     refusing it would discard something the patient really recorded.
     /// </summary>
@@ -272,7 +272,7 @@ public partial class DiaryEntry
     }
 
     /// <summary>
-    ///     IN-6. Places a new entry in the meal it was logged with. Set once, before the entry is stored; a grouping
+    ///     Places a new entry in the meal it was logged with. Set once, before the entry is stored; a grouping
     ///     is part of what the patient said and, like the moment, it is never rewritten.
     /// </summary>
     public void JoinMealGroup(Guid mealGroupId, EntryOrigin? origin)
@@ -287,7 +287,7 @@ public partial class DiaryEntry
     }
 
     /// <summary>
-    ///     IN-7. Records that the proposal of this new entry is the one the AI made from a photo analysis. Set once,
+    ///     Records that the proposal of this new entry is the one the AI made from a photo analysis. Set once,
     ///     before the entry is stored, and never rewritten: like the proposal itself, it is what happened.
     /// </summary>
     public void RecordPhotoAnalysis(Guid analysisId, long aiGenerationId)
@@ -330,14 +330,14 @@ public partial class DiaryEntry
     /// <param name="portionGrams">The portion the latest copy carries.</param>
     /// <param name="confirmedAt">When the server reconciled it.</param>
     /// <param name="adherence">
-    ///     IN-1. The answer the latest copy carries, if any. It is recorded only while the entry has
+    ///     The answer the latest copy carries, if any. It is recorded only while the entry has
     ///     none; an answer already given is never rewritten by a later copy.
     /// </param>
     /// <returns>True when the stored entry actually changed.</returns>
     public bool ResolveWithLatest(int referenceFoodId, decimal portionGrams, DateTimeOffset confirmedAt,
         PlanAdherence? adherence = null)
     {
-        // DECISIÓN §12-#3: «¿Estaba en tu plan?» cannot be corrected once answered in this version.
+        // "Was it in your plan?" cannot be corrected once answered in this version.
         // A later copy may only fill an answer that is still missing.
         var answerChanged = false;
         if (adherence is { IsAnswered: true } && !PlanAdherence.IsAnswered)
@@ -368,8 +368,8 @@ public partial class DiaryEntry
     {
         ArgumentNullException.ThrowIfNull(adherence);
 
-        // Business rule: Plan Adherence Required On Confirmation (IN-1). Equivalent to the UI
-        // validation «Responde Sí o No»: a confirmed entry always says whether it was in the plan.
+        // Business rule: Plan Adherence Required On Confirmation. Equivalent to the UI
+        // validation that asks for Yes or No: a confirmed entry always says whether it was in the plan.
         if (!adherence.IsAnswered)
             throw new ArgumentException("Confirming an entry requires answering whether it was in the plan.",
                 nameof(adherence));

@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Ai.Lexicon;
 
 /// <summary>
-///     IA-8. <see cref="IPatientMessageLexicon" /> over <c>patient-message-lexicon.json</c>, a file of this context
+///     <see cref="IPatientMessageLexicon" /> over <c>patient-message-lexicon.json</c>, a file of this context
 ///     embedded in the assembly (see the csproj). Spanish and English terms are merged: a message is checked against
 ///     both, whatever language it was asked in.
 /// </summary>

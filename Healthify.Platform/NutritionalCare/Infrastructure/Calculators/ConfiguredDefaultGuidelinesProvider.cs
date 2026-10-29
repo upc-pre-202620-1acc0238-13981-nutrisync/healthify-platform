@@ -4,13 +4,13 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Calculators;
 
 /// <summary>
-///     NC-6. Reads <c>NutritionalCare:DefaultGuidelinesByDiagnosis:&lt;DiagnosisCode&gt;</c> (a list of guideline
+///     Reads <c>NutritionalCare:DefaultGuidelinesByDiagnosis:&lt;DiagnosisCode&gt;</c> (a list of guideline
 ///     codes) and falls back to the table in code when the key is missing or holds no valid code. A code that
 ///     is not in the catalog is ignored with a warning: the output only ever contains catalog codes.
 /// </summary>
 /// <remarks>
 ///     NOTE: the table below is a starting point for the MVP, to be confirmed with the nutritionist. The
-///     overweight row is the example of IA-7.
+///     overweight row is the example from the guideline suggestion design.
 /// </remarks>
 public class ConfiguredDefaultGuidelinesProvider(
     IConfiguration configuration,

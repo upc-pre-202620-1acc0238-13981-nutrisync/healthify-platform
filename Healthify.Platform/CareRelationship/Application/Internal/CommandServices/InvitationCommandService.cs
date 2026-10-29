@@ -102,7 +102,7 @@ public class InvitationCommandService(
         }
     }
 
-    /// <summary>Subflow 2.2 - Redeem Invitation, and CR-1 - switching practitioners.</summary>
+    /// <summary>Subflow 2.2 - Redeem Invitation, including switching practitioners.</summary>
     /// <remarks>
     ///     The care link is not created here. Redeeming publishes Invitation Redeemed, and the policy
     ///     that reacts to it issues Establish Care Link, which is the only path into a care link.
@@ -157,12 +157,12 @@ public class InvitationCommandService(
             if (previousLink is not null)
             {
                 // Without the explicit confirmation of the switch, the answer is the conflict it
-                // always was (CR-1).
+                // always was.
                 if (!command.ReplaceActiveLink)
                     return new Result<InvitationRedemptionOutcome, CareRelationshipError>.Failure(
                         CareRelationshipError.PatientAlreadyHasActiveLink);
 
-                // Business rule: Switching Requires Another Practitioner (CR-1). Replacing a link
+                // Business rule: Switching Requires Another Practitioner. Replacing a link
                 // with an identical one would only revoke it; the token is left untouched.
                 if (previousLink.PractitionerId == invitation.IssuedBy)
                     return new Result<InvitationRedemptionOutcome, CareRelationshipError>.Failure(
@@ -171,7 +171,7 @@ public class InvitationCommandService(
                 // Business rule: Revoked Link Kept With Revocation Date (Subflow 2.5). The previous
                 // practitioner loses access from this commit on, as in a consent withdrawal; the
                 // diary and the self weigh-ins do not depend on the link and are kept.
-                // Business rule: AI Processing Ends With The Link (CR-2). The new link starts without it.
+                // Business rule: AI Processing Ends With The Link. The new link starts without it.
                 previousLinkHadAiProcessing = previousLink.ConsentAiProcessingGranted;
                 previousLink.Revoke(RevocationReason.SwitchedPractitioner);
                 careLinkRepository.Update(previousLink);
@@ -195,7 +195,7 @@ public class InvitationCommandService(
                         previousLink.PractitionerId, previousLink.RevokedAt!.Value,
                         previousLink.RevocationReason!.Value), cancellationToken);
 
-            // CR-2: published before the new link exists, so the preferences go off and the AI content of the
+            // Published before the new link exists, so the preferences go off and the AI content of the
             // patient is purged; granting AI consent on the new link turns them on again.
             if (previousLink is not null && previousLinkHadAiProcessing)
                 await mediator.PublishAsync(

@@ -1,13 +1,13 @@
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Services;
 
 /// <summary>
-///     IA-3. Which ingredients break a dietary restriction of the plan (NC-6), as a map ingredient → category
+///     Which ingredients break a dietary restriction of the plan, as a map ingredient → category
 ///     (shellfish, gluten, dairy…) → restriction, and which words a text for the patient must never carry. The map
 ///     lives in <c>Infrastructure/Ai/Lexicon/RestrictionLexicon.json</c>.
 /// </summary>
 /// <remarks>
 ///     A lexicon errs on the side of the patient: a doubtful ingredient is a broken restriction, and the idea is
-///     discarded. An unknown restriction code restricts nothing here; the code list is closed upstream (NC-6).
+///     discarded. An unknown restriction code restricts nothing here; the code list is closed upstream.
 /// </remarks>
 public interface IRestrictionLexicon
 {

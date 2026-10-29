@@ -28,7 +28,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-6. A plan published before the closed lists, with restrictions «Sin cerdo» and «Sin lactosa»:
+///     A plan published before the closed lists, with restrictions «Sin cerdo» and «Sin lactosa»:
 ///     after the migration it carries <c>["LactoseFree"]</c> plus the legacy <c>["Sin cerdo"]</c>, and the
 ///     patient keeps receiving both through the whole contract (event, Intake cache, resource, facade). A new
 ///     version that does not map the legacy one leaves it out and records it; the old version is untouched.
@@ -150,8 +150,7 @@ public class LegacyRestrictionsContractTests
 
     private NutritionPlanCommandService PlanService()
     {
-        return new NutritionPlanCommandService(_plans, Substitute.For<INutritionalDiagnosisRepository>(),
-            Substitute.For<INutritionalAssessmentRepository>(), Substitute.For<IUnitOfWork>(),
-            Substitute.For<IBmrCalculator>(), NullLogger<NutritionPlanCommandService>.Instance, _mediator);
+        return new NutritionPlanCommandService(_plans, Substitute.For<IUnitOfWork>(),
+            NullLogger<NutritionPlanCommandService>.Instance, _mediator);
     }
 }

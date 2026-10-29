@@ -5,15 +5,15 @@ using Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Scheduling;
 
 /// <summary>
-///     NC-10. Background worker that generates the AI plan proposal (IA-8) of each sustained deviation queued by
+///     Background worker that generates the AI plan proposal of each sustained deviation queued by
 ///     <c>OnSustainedDeviationDetectedHandler</c>, one at a time.
 /// </summary>
 /// <remarks>
-///     Business rule: No Signal Or Algorithm Modifies The Plan Without An Explicit Action Of The Practitioner (NC-10).
+///     Business rule: No Signal Or Algorithm Modifies The Plan Without An Explicit Action Of The Practitioner.
 ///     This worker resolves the review item command service and issues Generate Plan Proposal, which attaches a
 ///     proposal to the item; no plan command is reachable from here.
 ///     Guards: each generation in a scope of its own; any failure is logged and the item stays without a proposal
-///     (PR14 without AI); the item leaves the pending set whatever happens, so <c>GET /plan-proposal</c> stops
+///     (shown without AI); the item leaves the pending set whatever happens, so <c>GET /plan-proposal</c> stops
 ///     answering 202.
 /// </remarks>
 public class PlanProposalGenerationHostedService(

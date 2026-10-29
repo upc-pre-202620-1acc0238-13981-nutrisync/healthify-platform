@@ -1,11 +1,11 @@
 namespace Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 
 /// <summary>
-///     IA-2/IA-4/IA-5. The slot of the day a diary entry falls in, from the clock of the patient's device
+///     The slot of the day a diary entry falls in, from the clock of the patient's device
 ///     (<c>LocalTimestamp</c>): Breakfast, Lunch, Dinner or Other.
 /// </summary>
 /// <remarks>
-///     DECISIÓN IA-2: the MD names the slots ("desayuno, almuerzo, cena, otros, según LocalTimestamp") but not their
+///     The spec names the slots (breakfast, lunch, dinner, other, by LocalTimestamp) but not their
 ///     hours. Assumed: Breakfast 05:00–10:59, Lunch 11:00–15:59, Dinner 18:00–22:59, Other the rest (snacks, late
 ///     night). Descriptive only: a slot never decides an outcome.
 /// </remarks>
@@ -32,7 +32,7 @@ public static class MealSlot
     }
 }
 
-/// <summary>IA-2/IA-4/IA-5. How many days of a period had at least one counted entry in each slot.</summary>
+/// <summary>How many days of a period had at least one counted entry in each slot.</summary>
 /// <param name="Breakfast">Days with something counted at breakfast.</param>
 /// <param name="Lunch">Days with something counted at lunch.</param>
 /// <param name="Dinner">Days with something counted at dinner.</param>
@@ -40,14 +40,14 @@ public static class MealSlot
 public sealed record MealSlotDays(int Breakfast, int Lunch, int Dinner, int Other);
 
 /// <summary>
-///     IA-2/IA-4/IA-5. One calendar day of a period, as the AI input describes it: no entry, no food name, no photo.
+///     One calendar day of a period, as the AI input describes it: no entry, no food name, no photo.
 /// </summary>
 /// <param name="Date">The day the patient was living.</param>
 /// <param name="Weekday">Mon … Sun.</param>
-/// <param name="Outcome">Met, Exceeded, Short or Unlogged (MA-6; a day never evaluated is Unlogged).</param>
+/// <param name="Outcome">Met, Exceeded, Short or Unlogged (a day never evaluated is Unlogged).</param>
 /// <param name="EnergyKcal">What the confirmed entries added up to; null on an unlogged day.</param>
 /// <param name="TargetEnergyKcal">The energy target in force that day; null when the day was never evaluated.</param>
-/// <param name="OffPlanEntryCount">Entries the patient answered as off the plan (descriptive, MA-1).</param>
+/// <param name="OffPlanEntryCount">Entries the patient answered as off the plan (descriptive).</param>
 /// <param name="Slots">The slots with at least one counted entry.</param>
 public sealed record PeriodDayFact(
     DateOnly Date,
@@ -59,15 +59,15 @@ public sealed record PeriodDayFact(
     IReadOnlyList<string> Slots);
 
 /// <summary>
-///     IA-2/IA-4/IA-5. The facts of a period, computed without AI: the compliance of MA-6, the slots of the diary and
-///     the home weight trend of IN-5. They are passed to the prompt as facts, and the output validator checks every
+///     The facts of a period, computed without AI: the daily compliance, the slots of the diary and
+///     the home weight trend. They are passed to the prompt as facts, and the output validator checks every
 ///     number of the generated text against them.
 /// </summary>
 /// <remarks>
-///     Business rule: The AI Does Not Count (IA-2). "5 de 7 días", "registraste 6 de 7 días" and "tu peso bajó
-///     0,3 kg" come from here, never from the model.
+///     Business rule: The AI Does Not Count. "5 of 7 days", "you logged 6 of 7 days" and "your weight
+///     went down 0.3 kg" come from here, never from the model.
 ///     Business rule: Unlogged Is Not Non Compliant. The denominator is the calendar days of the period
-///     (DECISIÓN §12-#7) and a day nobody wrote in is Unlogged, never Short.
+///     and a day nobody wrote in is Unlogged, never Short.
 ///     There is no diagnosis, no calculation basis and no BMI here, and no single day's weight: only the change and
 ///     the slope of the smoothed series.
 /// </remarks>
@@ -108,20 +108,20 @@ public sealed record MonitoringPeriodFacts
     public DateOnly From { get; }
     public DateOnly To { get; }
 
-    /// <summary>Calendar days of the period: the denominator of "5 de 7 días".</summary>
+    /// <summary>Calendar days of the period: the denominator of "5 of 7 days".</summary>
     public int TotalDays { get; }
 
     public int MetDays { get; }
     public int ExceededDays { get; }
     public int ShortDays { get; }
 
-    /// <summary>Days without a confirmed entry ("Sin registro"), evaluated or not.</summary>
+    /// <summary>Days without a confirmed entry ("no log"), evaluated or not.</summary>
     public int UnloggedDays { get; }
 
     /// <summary>Days with something logged: Met, Exceeded or Short.</summary>
     public int LoggedDays => MetDays + ExceededDays + ShortDays;
 
-    /// <summary>Entries answered as off the plan (descriptive, MA-1).</summary>
+    /// <summary>Entries answered as off the plan (descriptive).</summary>
     public int OffPlanEntryCount { get; }
 
     /// <summary>Days with at least one entry off the plan.</summary>
@@ -129,23 +129,23 @@ public sealed record MonitoringPeriodFacts
 
     public MealSlotDays MealSlotDays { get; }
 
-    /// <summary>IA-5. The weekdays (Mon … Sun) that landed below the target ("el jueves y el sábado").</summary>
+    /// <summary>The weekdays (Mon … Sun) that landed below the target ("Thursday and Saturday").</summary>
     public IReadOnlyList<string> ShortWeekdays { get; }
 
     /// <summary>
-    ///     IA-5 ("sobre todo en la cena"). The main slot most often without a counted entry on the short days, or null
+    ///     "Mostly at dinner": the main slot most often without a counted entry on the short days, or null
     ///     when there were no short days or none of them missed a slot.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN IA-5: the diary published to this context carries no energy per entry, so "where the energy was
+    ///     The diary published to this context carries no energy per entry, so "where the energy was
     ///     missing" is read as the slot that most often had nothing counted on those days.
     /// </remarks>
     public string? DominantMissingSlotOnShortDays { get; }
 
-    /// <summary>Change of the smoothed home series over the period (IN-5), one decimal; null without a trend.</summary>
+    /// <summary>Change of the smoothed home series over the period, one decimal; null without a trend.</summary>
     public decimal? WeightChangeKg { get; }
 
-    /// <summary>Slope of the smoothed home series (IN-5), kg per week, one decimal; null without a trend.</summary>
+    /// <summary>Slope of the smoothed home series, kg per week, one decimal; null without a trend.</summary>
     public decimal? WeightSlopeKgPerWeek { get; }
 
     /// <summary>Points of the home series in the range of the trend.</summary>
@@ -155,15 +155,15 @@ public sealed record MonitoringPeriodFacts
     public IReadOnlyList<PeriodDayFact> Days { get; }
 
     /// <summary>
-    ///     The facts of a period from the evaluations of MA-6, the counted entries of each day and the trend of IN-5.
+    ///     The facts of a period from the daily evaluations, the counted entries of each day and the weight trend.
     /// </summary>
     /// <param name="from">First day, included.</param>
     /// <param name="to">Last day, included.</param>
     /// <param name="evaluated">The evaluated days of the patient (any range; the period is cut here).</param>
     /// <param name="countedEntryTimes">Local timestamps of the entries counted towards the targets, per day.</param>
-    /// <param name="weightChangeKg">IN-5 change over the range of the trend, or null.</param>
-    /// <param name="weightSlopeKgPerWeek">IN-5 slope, or null.</param>
-    /// <param name="selfWeighInCount">IN-5 points in the range.</param>
+    /// <param name="weightChangeKg">Weight change over the range of the trend, or null.</param>
+    /// <param name="weightSlopeKgPerWeek">Weight slope, or null.</param>
+    /// <param name="selfWeighInCount">Home weigh-ins in the range.</param>
     public static MonitoringPeriodFacts Compute(DateOnly from, DateOnly to, IEnumerable<DailyCompliance> evaluated,
         IReadOnlyDictionary<DateOnly, IReadOnlyList<DateTimeOffset>> countedEntryTimes, decimal? weightChangeKg,
         decimal? weightSlopeKgPerWeek, int selfWeighInCount)
@@ -172,7 +172,7 @@ public sealed record MonitoringPeriodFacts
         ArgumentNullException.ThrowIfNull(countedEntryTimes);
 
         var series = evaluated.ToList();
-        // MA-6: one outcome per calendar day (a day never evaluated is Unlogged) and the same days counted.
+        // One outcome per calendar day (a day never evaluated is Unlogged) and the same days counted.
         var summary = ComplianceSummary.Of(series, from, to);
         var outcomes = ComplianceSummary.DaysOf(series, from, to);
         var lastEvaluation = series
@@ -217,7 +217,7 @@ public sealed record MonitoringPeriodFacts
 
     /// <summary>
     ///     Every number a generated text about this period may contain: the counts, the weight figures (absolute,
-    ///     one decimal) and the calendar numbers of the period ("semana del 8 al 14").
+    ///     one decimal) and the calendar numbers of the period ("week of 8 to 14").
     /// </summary>
     public IReadOnlySet<decimal> AllowedNumbers()
     {

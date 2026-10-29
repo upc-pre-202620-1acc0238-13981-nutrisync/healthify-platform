@@ -21,8 +21,8 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-4. Step 2 of the guided consultation: the order of the guards, the single transaction and the
-///     deterministic suggestion of EV-3. Since NC-7 the diagnosis of step 2 is pending: Consultation Supersedes
+///     Step 2 of the guided consultation: the order of the guards, the single transaction and the
+///     deterministic suggestion. The diagnosis of step 2 is pending: Consultation Supersedes
 ///     Previous Diagnosis applies when step 4 publishes the plan (see <c>PublishFromConsultationTests</c>), so the
 ///     active diagnosis is untouched here and no diagnosis event is published.
 /// </summary>

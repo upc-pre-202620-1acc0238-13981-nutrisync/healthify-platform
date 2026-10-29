@@ -49,14 +49,14 @@ public partial class WeightTrend
 
     public bool HasPoints => _points.Count > 0;
 
-    /// <summary>RM-2/IN-5. Where the smoothed series went from <paramref name="from" /> on.</summary>
+    /// <summary>Where the smoothed series went from <paramref name="from" /> on.</summary>
     public WeightTrendSummary SummarizeSince(DateOnly from)
     {
         return WeightTrendSummary.Of(_points, from);
     }
 
     /// <summary>
-    ///     IN-5. The last <paramref name="weeks" /> weeks up to <paramref name="today" />: slope and change of the
+    ///     The last <paramref name="weeks" /> weeks up to <paramref name="today" />: slope and change of the
     ///     smoothed points, and how many readings of those days stayed out of the smoothing.
     /// </summary>
     /// <param name="today">Last day of the range, inclusive.</param>
@@ -80,7 +80,7 @@ public partial class WeightTrend
     }
 
     /// <summary>
-    ///     IA-2. The smoothed points of an explicit range of local days, <paramref name="from" /> to
+    ///     The smoothed points of an explicit range of local days, <paramref name="from" /> to
     ///     <paramref name="to" /> (both included): slope, change and the readings of those days that stayed out of the
     ///     smoothing. Unlike <see cref="SummarizeLastWeeks" />, it does not depend on the day it is asked: the weekly
     ///     summary of a week says the same whenever it is generated.
@@ -117,7 +117,7 @@ public partial class WeightTrend
     ///     readings, which matters more here than sensitivity does.
     /// </remarks>
     /// <param name="weighIns">Every reading this patient has recorded, in any order.</param>
-    /// <param name="protocol">IN-3. The configured protocol; null means the default (fasted only).</param>
+    /// <param name="protocol">The configured protocol; null means the default (fasted only).</param>
     /// <returns>The identifiers of the readings that were kept but did not smooth the trend.</returns>
     public IReadOnlyList<int> Recalculate(IReadOnlyList<SelfWeighIn> weighIns,
         SelfWeighInProtocol? protocol = null)
