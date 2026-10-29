@@ -4,7 +4,7 @@ using Healthify.Platform.Shared.Domain.Repositories;
 
 namespace Healthify.Platform.Tests.TestSupport;
 
-/// <summary>IN-7. Photos for the tests: tiny containers with metadata a leak would reveal.</summary>
+/// <summary>Photos for the tests: tiny containers with metadata a leak would reveal.</summary>
 public static class MealPhotos
 {
     public const string ExifSecret = "GPS-LIMA-12.0464S-77.0428W";
@@ -74,7 +74,7 @@ public static class MealPhotos
     }
 }
 
-/// <summary>IN-7. The temporary photo analyses in memory, saved by their own unit of work.</summary>
+/// <summary>The temporary photo analyses in memory, saved by their own unit of work.</summary>
 public sealed class InMemoryMealPhotoAnalyses : IMealPhotoAnalysisRepository, IUnitOfWork
 {
     private readonly List<MealPhotoAnalysis> _pending = [];

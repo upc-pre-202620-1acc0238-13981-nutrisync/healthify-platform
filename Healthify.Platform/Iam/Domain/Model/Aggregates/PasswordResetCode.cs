@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Iam.Domain.Model.Aggregates;
 
 /// <summary>
-///     IAM-2. A single-use code that lets the owner of an account set a new password without signing in. The code
+///     A single-use code that lets the owner of an account set a new password without signing in. The code
 ///     itself goes by email and is never stored: only its keyed hash is.
 /// </summary>
 /// <remarks>
@@ -13,7 +13,7 @@ namespace Healthify.Platform.Iam.Domain.Model.Aggregates;
 /// </remarks>
 public partial class PasswordResetCode
 {
-    /// <summary>Business rule: Reset Code Attempts Are Limited (IAM-2).</summary>
+    /// <summary>Business rule: Reset Code Attempts Are Limited.</summary>
     public const int MaxFailedAttempts = 5;
 
     /// <summary>Required by EF Core.</summary>
@@ -76,7 +76,7 @@ public partial class PasswordResetCode
     }
 
     /// <summary>
-    ///     Business rule: A Reset Code Is Verified Once (IAM-2). Accepts the code and keeps the hash of the reset
+    ///     Business rule: A Reset Code Is Verified Once. Accepts the code and keeps the hash of the reset
     ///     token that will set the password.
     /// </summary>
     public void Verify(DateTimeOffset now, string resetTokenHash, DateTimeOffset resetTokenExpiresAt)

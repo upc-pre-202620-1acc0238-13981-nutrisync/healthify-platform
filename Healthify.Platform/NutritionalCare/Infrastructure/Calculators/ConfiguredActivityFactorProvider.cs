@@ -5,7 +5,7 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Calculators;
 
 /// <summary>
-///     NC-3. Reads <c>NutritionalCare:ActivityFactors:&lt;Level&gt;</c> and falls back to the default
+///     Reads <c>NutritionalCare:ActivityFactors:&lt;Level&gt;</c> and falls back to the default
 ///     factor of the level when the key is missing or implausible.
 /// </summary>
 public class ConfiguredActivityFactorProvider(

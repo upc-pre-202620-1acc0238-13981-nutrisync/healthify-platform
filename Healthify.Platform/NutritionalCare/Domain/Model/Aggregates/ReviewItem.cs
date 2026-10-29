@@ -12,7 +12,7 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.Aggregates;
 ///     path from a review item to Adjust Nutrition Plan. The chain enters through a policy, creates one
 ///     of these, and dies in the inbox. That a person takes the next step is not a user experience
 ///     detail, it is what stops an algorithm changing a clinical plan.
-///     NC-10 reformulates the rule as "No signal or algorithm modifies the plan without an explicit action
+///     With AI proposals the rule reads "No signal or algorithm modifies the plan without an explicit action
 ///     of the practitioner": a sustained deviation may carry an AI <see cref="PlanAdjustmentProposal" />,
 ///     which is a text in the inbox. Attaching it changes this aggregate only; the plan changes when, and
 ///     only when, the practitioner accepts it (<see cref="ResolveByAssigningPlan" />).
@@ -63,8 +63,8 @@ public partial class ReviewItem
     public string Evidence { get; private set; } = null!;
 
     /// <summary>
-    ///     NC-11. The same evidence as numbers, for the client to word in its language. Null for items opened before
-    ///     NC-11 and for signals that carry no numbers (consistency escalation).
+    ///     The same evidence as numbers, for the client to word in its language. Null for items opened before
+    ///     evidence was stored as numbers and for signals that carry no numbers (consistency escalation).
     /// </summary>
     public ReviewItemEvidence? EvidenceData { get; private set; }
 
@@ -77,46 +77,46 @@ public partial class ReviewItem
 
     /// <summary>
     ///     The note of the resolution. For <see cref="ResolutionNoteCode.Custom" /> it is the practitioner's text; for a
-    ///     system code it is the Spanish fallback of clients that do not know the code (X-2); null when nothing was
+    ///     system code it is the Spanish fallback of clients that do not know the code; null when nothing was
     ///     written.
     /// </summary>
     public string? ResolutionNote { get; private set; }
 
     /// <summary>
-    ///     X-2. <see cref="ResolutionNoteCode" />: Custom, PlanAssignedAsIs, PlanAssignedWithEdits or ProposalDiscarded.
+    ///     <see cref="ResolutionNoteCode" />: Custom, PlanAssignedAsIs, PlanAssignedWithEdits or ProposalDiscarded.
     ///     Null while the item is open, and when it was resolved without a note and without a proposal to discard.
     /// </summary>
     public string? ResolutionNoteCode { get; private set; }
 
-    /// <summary>X-2. The parameters of <see cref="ResolutionNoteCode" />, or null.</summary>
+    /// <summary>The parameters of <see cref="ResolutionNoteCode" />, or null.</summary>
     public ResolutionNoteData? ResolutionNoteData { get; private set; }
 
-    /// <summary>NC-10. The AI plan proposal attached to a sustained deviation, or null.</summary>
+    /// <summary>The AI plan proposal attached to a sustained deviation, or null.</summary>
     public PlanAdjustmentProposal? Proposal { get; private set; }
 
     /// <summary>
-    ///     NC-10. "Revisar de nuevo en N días": when the scheduled recheck is due (<c>ResolvedAt + RecheckAfterDays</c>),
+    ///     "Check again in N days": when the scheduled recheck is due (<c>ResolvedAt + RecheckAfterDays</c>),
     ///     set when a practitioner assigns a proposed plan. Null otherwise.
     /// </summary>
     public DateTimeOffset? RecheckDueAt { get; private set; }
 
     /// <summary>
-    ///     NC-10. When the recheck item was opened, or skipped because nobody cares for the patient any more. NOTE:
+    ///     When the recheck item was opened, or skipped because nobody cares for the patient any more. NOTE:
     ///     technical field, it keeps the recheck policy idempotent.
     /// </summary>
     public DateTimeOffset? RecheckIssuedAt { get; private set; }
 
     public bool IsOpen => State.IsOpen;
 
-    /// <summary>NC-11/NC-10. Whether PR14.IA opens instead of PR14.</summary>
+    /// <summary>Whether the item opens with its AI proposal instead of the plain review.</summary>
     public bool HasPlanProposal => Proposal is not null;
 
-    /// <summary>NC-10. A recheck is waiting for its date.</summary>
+    /// <summary>A recheck is waiting for its date.</summary>
     public bool IsRecheckPending => RecheckDueAt is not null && RecheckIssuedAt is null;
 
     /// <summary>Subflow 3.7 - Resolve Review Item.</summary>
     /// <remarks>
-    ///     NC-10: also "Resolver sin asignar". A proposal still waiting is dismissed: the plan stays as it is, and the
+    ///     Also "resolve without assigning". A proposal still waiting is dismissed: the plan stays as it is, and the
     ///     proposal remains as the record of what was not assigned.
     /// </remarks>
     public void Resolve(bool resolvedWithAdjustment, string? note)
@@ -133,8 +133,8 @@ public partial class ReviewItem
         var discarding = Proposal is { IsProposed: true };
         if (discarding) Proposal!.Dismiss();
 
-        // X-2. The practitioner's note is theirs (Custom); without one, a discarded proposal is said by a code.
-        // DECISIÓN X-2: ProposalDiscarded only when there is no note, so the practitioner's text is never replaced;
+        // The practitioner's note is theirs (Custom); without one, a discarded proposal is said by a code.
+        // ProposalDiscarded only when there is no note, so the practitioner's text is never replaced;
         // the dismissal stays readable on the proposal (status Dismissed) either way.
         ResolutionNoteCode = ResolutionNote is not null ? ValueObjects.ResolutionNoteCode.Custom
             : discarding ? ValueObjects.ResolutionNoteCode.ProposalDiscarded
@@ -143,18 +143,18 @@ public partial class ReviewItem
     }
 
     /// <summary>
-    ///     NC-10 - The AI proposal for a sustained deviation, generated in the background after the item opened.
+    ///     The AI proposal for a sustained deviation, generated in the background after the item opened.
     ///     Changes this aggregate only: no plan is written, no version is created.
     /// </summary>
     /// <exception cref="InvalidOperationException">
-    ///     Not a sustained deviation (DECISIÓN §12-#11), already resolved, or a proposal is already attached.
+    ///     Not a sustained deviation, already resolved, or a proposal is already attached.
     /// </exception>
     public PlanAdjustmentProposal AttachProposal(long aiGenerationId, string title, decimal energyKcal,
         decimal proteinG, decimal carbG, decimal fatG, IEnumerable<string> addedGuidelines,
         IEnumerable<string> removedGuidelines, string patientMessage, int recheckAfterDays, string rationale,
         DateTimeOffset generatedAt, string? practitionerLanguage = null, string? patientLanguage = null)
     {
-        // Business rule: Proposal Only For A Sustained Deviation (NC-10). The other signals keep PR14.
+        // Business rule: Proposal Only For A Sustained Deviation. The other signals keep the review without AI.
         if (!SignalType.IsSustainedDeviation)
             throw new InvalidOperationException("Only a sustained deviation carries a plan proposal.");
         if (!IsOpen) throw new InvalidOperationException("A resolved review item takes no plan proposal.");
@@ -168,15 +168,15 @@ public partial class ReviewItem
     }
 
     /// <summary>
-    ///     IA-8 - The patient's AI processing ended (consent withdrawn, link ended or discharge): a proposal no
+    ///     The patient's AI processing ended (consent withdrawn, link ended or discharge): a proposal no
     ///     practitioner accepted is removed with what the AI wrote in it. An accepted one stays, because it produced a
     ///     version of the plan and is part of the clinical record. The item itself is untouched and keeps working as
-    ///     PR14 without AI.
+    ///     a review without AI.
     /// </summary>
     /// <returns>Whether a proposal was removed.</returns>
     public bool PurgeUnacceptedProposal()
     {
-        // Business rule: Accepted Proposal Is Clinical Record (IA-8).
+        // Business rule: Accepted Proposal Is Clinical Record.
         if (Proposal is null || Proposal.IsAccepted) return false;
 
         Proposal = null;
@@ -184,7 +184,7 @@ public partial class ReviewItem
     }
 
     /// <summary>
-    ///     NC-10 - PR14.IA "Resolver" (as is) or PR14.IA-A "Asignar plan ajustado" (with edits): the practitioner
+    ///     "Resolve" (as is) or "Assign adjusted plan" (with edits): the practitioner
     ///     assigned version <paramref name="planVersion" /> from the proposal. The item is resolved with an
     ///     adjustment, with the automatic note, and the recheck is scheduled.
     /// </summary>
@@ -202,7 +202,7 @@ public partial class ReviewItem
 
         // Business rule: Resolution States Whether The Plan Was Adjusted (3.7): it was, by this act.
         ResolvedWithAdjustment = true;
-        // X-2: a code with the version, for the client to word in the reader's language; the Spanish sentence stays
+        // A code with the version, for the client to word in the reader's language; the Spanish sentence stays
         // as the fallback of clients that do not know the code.
         ResolutionNote = acceptedAsIs
             ? $"Plan v{planVersion} asignado (propuesta IA aceptada tal cual)"
@@ -216,7 +216,7 @@ public partial class ReviewItem
         RecheckDueAt = ResolvedAt.Value.AddDays(Proposal.RecheckAfterDays);
     }
 
-    /// <summary>NC-10 - The scheduled recheck was opened, or is not needed any more. Once per item.</summary>
+    /// <summary>The scheduled recheck was opened, or is not needed any more. Once per item.</summary>
     public void MarkRecheckIssued(DateTimeOffset issuedAt)
     {
         if (!IsRecheckPending) throw new InvalidOperationException("No recheck is pending on this review item.");

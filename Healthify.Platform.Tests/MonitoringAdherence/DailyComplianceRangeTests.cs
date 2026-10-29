@@ -17,8 +17,8 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-6. <c>GET /patients/{id}/daily-compliance?from=&amp;to=</c>: every calendar day of the range (at most 31)
-///     with its summary; a day never evaluated is Unlogged, never Short (DECISIÓN §12-#7). <c>?date=</c> and no
+///     <c>GET /patients/{id}/daily-compliance?from=&amp;to=</c>: every calendar day of the range (at most 31)
+///     with its summary; a day never evaluated is Unlogged, never Short. <c>?date=</c> and no
 ///     parameters keep the original list for legacy clients.
 /// </summary>
 public class DailyComplianceRangeTests

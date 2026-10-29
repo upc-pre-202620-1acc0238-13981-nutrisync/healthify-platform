@@ -18,7 +18,7 @@ namespace Healthify.Platform.IntakeBodyResponse.Interfaces.REST;
 
 /// <summary>
 ///     The per-patient read models of the Intake and Body Response bounded context: My Daily Targets,
-///     Daily Diary, Weight Trend Chart, Pending Sync Queue and the plan suggestion (IN-8).
+///     Daily Diary, Weight Trend Chart, Pending Sync Queue and the plan suggestion.
 /// </summary>
 /// <remarks>
 ///     Patient only. The practitioner reads the same material through the composite monitoring panel,
@@ -210,7 +210,7 @@ public class PatientIntakeController(
         };
     }
 
-    /// <summary>IN-1. The names of every food shown, resolved in one query rather than per entry.</summary>
+    /// <summary>The names of every food shown, resolved in one query rather than per entry.</summary>
     private async Task<IReadOnlyDictionary<int, string>> FoodNamesOf(IEnumerable<DiaryEntry> entries)
     {
         var ids = entries.Select(DiaryEntryResourceAssembler.DisplayedFoodId).OfType<int>().ToList();

@@ -6,7 +6,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Services;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Ai.Lexicon;
 
 /// <summary>
-///     IA-3. <see cref="IRestrictionLexicon" /> over <c>RestrictionLexicon.json</c>, a file of this context embedded in
+///     <see cref="IRestrictionLexicon" /> over <c>RestrictionLexicon.json</c>, a file of this context embedded in
 ///     the assembly (see the csproj). Spanish and English terms live together: a text is checked against both.
 /// </summary>
 /// <remarks>

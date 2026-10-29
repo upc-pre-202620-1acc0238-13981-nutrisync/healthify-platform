@@ -21,9 +21,9 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     IA-6 and IA-7. The AI suggestions of the guided consultation: through the shared pipeline (real settings,
+///     The AI suggestions of the guided consultation: through the shared pipeline (real settings,
 ///     prompts and audit, fake model), validated by this context, and always with their deterministic fallback.
-///     The patient: woman, 31, 168 cm, 74.2 kg, waist 88 cm (IMC 26.3, OverweightGradeI).
+///     The patient: woman, 31, 168 cm, 74.2 kg, waist 88 cm (BMI 26.3, OverweightGradeI).
 /// </summary>
 public class ConsultationAiSuggestionsTests
 {
@@ -66,7 +66,7 @@ public class ConsultationAiSuggestionsTests
         _consultations.FindByIdAsync(ConsultationId, Arg.Any<CancellationToken>()).Returns(_consultation);
     }
 
-    // ---- IA-6 ----
+    // ---- Diagnosis suggestion ----
 
     [Fact]
     public async Task An_ai_suggestion_within_one_grade_of_the_index_is_returned_with_its_generation()
@@ -88,7 +88,7 @@ public class ConsultationAiSuggestionsTests
     [Fact]
     public async Task An_ai_diagnosis_more_than_one_grade_from_the_index_falls_back_to_the_rule()
     {
-        // IA-6: IMC 26.3 → ObesityGradeII contradicts the index by two grades.
+        // BMI 26.3 → ObesityGradeII contradicts the index by two grades.
         _model.Answers("""{ "code": "ObesityGradeII", "rationale": "Riesgo cardiometabólico elevado por la cintura." }""");
 
         var suggestion = Success(await Service().Handle(Diagnosis()));
@@ -139,7 +139,7 @@ public class ConsultationAiSuggestionsTests
     [Fact]
     public async Task Without_the_patients_ai_consent_the_rule_answers_and_the_model_is_never_called()
     {
-        // §12-#5: practitioner functions process the patient's data, so they need the patient's AI consent.
+        // Practitioner functions process the patient's data, so they need the patient's AI consent.
         _consent.IsAllowedAsync(PatientId, AiFeature.DiagnosisSuggestion, Arg.Any<CancellationToken>())
             .Returns(false);
 
@@ -200,7 +200,7 @@ public class ConsultationAiSuggestionsTests
         Assert.Empty(_model.Requests);
     }
 
-    // ---- IA-7 ----
+    // ---- Guideline suggestion ----
 
     [Fact]
     public async Task Ai_guidelines_are_catalog_codes_returned_in_the_order_of_ev5()

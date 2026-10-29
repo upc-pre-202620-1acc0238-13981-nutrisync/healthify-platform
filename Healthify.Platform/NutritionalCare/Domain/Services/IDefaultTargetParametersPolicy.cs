@@ -4,8 +4,8 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Domain.Services;
 
 /// <summary>
-///     NC-5. The parameters EV-4 calculates with before the practitioner changes any ("Se calculan solas con
-///     los datos base y la medición de hoy"). Defaults in code, overridable in
+///     The parameters step 3 calculates with before the practitioner changes any, from the baseline
+///     and today's measurement. Defaults in code, overridable in
 ///     <c>NutritionalCare:DefaultTargetParameters</c>.
 /// </summary>
 public interface IDefaultTargetParametersPolicy

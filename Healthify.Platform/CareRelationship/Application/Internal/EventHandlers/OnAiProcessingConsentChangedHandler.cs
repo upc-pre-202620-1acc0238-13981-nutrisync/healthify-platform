@@ -7,9 +7,9 @@ using Healthify.Platform.Shared.Application.Internal.EventHandlers;
 namespace Healthify.Platform.CareRelationship.Application.Internal.EventHandlers;
 
 /// <summary>
-///     IA-1 - Policy "When AI Processing Consent Changed" (CR-2), this context's part:
+///     Policy "When AI Processing Consent Changed", this context's part:
 ///     - the preferences follow the switch (all on when granted, all off when withdrawn);
-///     - when withdrawn, every row of the technical audit about the patient is purged (§12-#14).
+///     - when withdrawn, every row of the technical audit about the patient is purged.
 ///     The other contexts purge the AI content they keep with their own handlers of the same event.
 /// </summary>
 public class OnAiProcessingConsentChangedHandler(

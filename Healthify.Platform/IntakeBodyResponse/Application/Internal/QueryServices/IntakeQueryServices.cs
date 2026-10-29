@@ -21,7 +21,7 @@ public class ActiveTargetsCacheQueryService(IActiveTargetsCacheRepository reposi
 }
 
 /// <summary>
-///     IN-8. «¿Estaba en tu plan?» suggested from the published contract and the day's diary, without AI: the
+///     "Was it in your plan?" suggested from the published contract and the day's diary, without AI: the
 ///     restrictions of the plan through <see cref="IRestrictionLexicon" /> and what is left today as the meal ideas
 ///     compute it (<see cref="DailyIntakeCalculator" />).
 /// </summary>
@@ -32,7 +32,7 @@ public class PlanFitQueryService(
     IRestrictionLexicon lexicon,
     TimeProvider timeProvider) : IPlanFitQueryService
 {
-    /// <summary>IN-8: how many foods one request may ask about (a photo asks for its dish and three alternatives).</summary>
+    /// <summary>How many foods one request may ask about (a photo asks for its dish and three alternatives).</summary>
     public const int MaximumCandidates = 10;
 
     private const decimal NutrientBasisGrams = 100m;
@@ -42,7 +42,7 @@ public class PlanFitQueryService(
     {
         if (query.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
 
-        // The patient's day: today on their device, one day either side of the server's UTC date (as IA-3).
+        // The patient's day: today on their device, one day either side of the server's UTC date (as meal ideas).
         var serverToday = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
         if (query.LocalDate is { } day && Math.Abs(day.DayNumber - serverToday.DayNumber) > 1)
             return Failure(IntakeError.InvalidLocalDate);
@@ -87,7 +87,7 @@ public class PlanFitQueryService(
 }
 
 /// <summary>
-///     IN-9. The day's intake for the patient's own home (PT3): the same totals the meal ideas and the plan suggestion
+///     The day's intake for the patient's own home: the same totals the meal ideas and the plan suggestion
 ///     use (<see cref="DailyIntakeCalculator" />, confirmed entries only) and what is left of the published targets.
 ///     It never rates the day.
 /// </summary>
@@ -102,7 +102,7 @@ public class DailyIntakeQueryService(
     {
         if (query.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
 
-        // The patient's day: today on their device, one day either side of the server's UTC date (as IN-8).
+        // The patient's day: today on their device, one day either side of the server's UTC date (as the plan suggestion).
         var serverToday = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
         if (Math.Abs(query.LocalDate.DayNumber - serverToday.DayNumber) > 1)
             return Failure(IntakeError.InvalidLocalDate);
@@ -159,7 +159,7 @@ public class DiaryEntryQueryService(
 
     /// <remarks>
     ///     The names are resolved through the Food Catalog facade, which degrades to null, so a food it
-    ///     cannot resolve simply has no label. Moved here from the Intake facade (IN-1) so that the
+    ///     cannot resolve simply has no label. Moved here from the Intake facade so that the
     ///     facade and the REST read models share one resolution.
     /// </remarks>
     public async Task<IReadOnlyDictionary<int, string>> Handle(GetFoodNamesQuery query,
@@ -205,7 +205,7 @@ public class WeightTrendQueryService(
     }
 
     /// <remarks>
-    ///     DECISIÓN IN-5: the range ends on today's UTC date. This context keeps no clinical time zone, and at
+    ///     The range ends on today's UTC date. This context keeps no clinical time zone, and at
     ///     the edge of a 4-week range a few hours move nothing that a weekly slope can show.
     /// </remarks>
     public async Task<WeightTrendView?> Handle(GetWeightTrendRangeByPatientIdQuery query,

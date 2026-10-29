@@ -23,7 +23,7 @@ public static class PlanScenario
     }
 
     /// <summary>
-    ///     A version published before NC-6 with free text lists, as it reads after the data migration
+    ///     A version published before the closed lists, with free text lists, as it reads after the data migration
     ///     <c>NutritionalCare_GuidelineCodes</c>: the same rules the migration applies, column by column.
     /// </summary>
     public static NutritionPlan PublishedBeforeNc6(int planId, int patientId, int practitionerId, int diagnosisId,

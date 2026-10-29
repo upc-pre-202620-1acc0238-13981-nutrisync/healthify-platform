@@ -9,19 +9,19 @@ using Healthify.Platform.Shared.Infrastructure.Ai.Configuration;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Gemini;
 
 /// <summary>
-///     IA-0. <see cref="ILanguageModelClient" /> over Gemini <c>generateContent</c>, with native structured output
+///     <see cref="ILanguageModelClient" /> over Gemini <c>generateContent</c>, with native structured output
 ///     (<c>responseMimeType: application/json</c> + <c>responseJsonSchema</c>).
 /// </summary>
 /// <remarks>
 ///     Two modes (<c>Ai:Gemini:Mode</c>):
 ///     - <c>GeminiApi</c> (default): <c>generativelanguage.googleapis.com</c> with <c>Ai:Gemini:ApiKey</c> in the
-///     <c>x-goog-api-key</c> header. Never the free tier with real patient data (docs, §12-#5/#6).
+///     <c>x-goog-api-key</c> header. Never the free tier with real patient data.
 ///     - <c>VertexAi</c>: <c>{location}-aiplatform.googleapis.com</c> (or <c>aiplatform.googleapis.com</c> for
 ///     <c>global</c>) with <c>Ai:Gemini:ProjectId</c>, <c>Ai:Gemini:Location</c> and Application Default Credentials.
 ///     Resilience: each attempt is bounded by the request timeout (<c>Ai:TimeoutSeconds</c>), and there is exactly
 ///     one retry, only after a 5xx or a timeout. A 4xx (the provider's own 429 included) or a network failure is
 ///     not retried. Neither the key nor the input is ever logged.
-///     IN-7: the images of the request travel as <c>inlineData</c> parts (base64) after the text, in the same user
+///     The images of the request travel as <c>inlineData</c> parts (base64) after the text, in the same user
 ///     turn. They exist only in the request body built here, which is never logged nor kept.
 /// </remarks>
 public class GeminiLanguageModelClient(

@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 namespace Healthify.Platform.Shared.Infrastructure.Ai.Persistence;
 
 /// <summary>
-///     IA-0. One row of <c>ai_generations</c>: the technical audit of a generation ("the AI wrote this", and what it
+///     One row of <c>ai_generations</c>: the technical audit of a generation ("the AI wrote this", and what it
 ///     cost). Not a domain aggregate: no context owns it and no rule lives in it. It never holds the input, only
 ///     its SHA-256.
 /// </summary>
@@ -50,7 +50,7 @@ public class AiGeneration
     /// <summary>SHA-256 of the pseudonymized input. Null when stopped before pseudonymization.</summary>
     public string? InputHash { get; private set; }
 
-    /// <summary>IN-7. SHA-256 of the image(s) sent with the input, never the bytes. Null for a text-only generation.</summary>
+    /// <summary>SHA-256 of the image(s) sent with the input, never the bytes. Null for a text-only generation.</summary>
     public string? InputImageHash { get; private set; }
 
     /// <summary>The validated output, only when it succeeded.</summary>
@@ -63,6 +63,6 @@ public class AiGeneration
     public int LatencyMs { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
-    /// <summary>Retention (§12-#14); the purge job deletes the row once it has passed.</summary>
+    /// <summary>Retention; the purge job deletes the row once it has passed.</summary>
     public DateTimeOffset? ExpiresAt { get; private set; }
 }

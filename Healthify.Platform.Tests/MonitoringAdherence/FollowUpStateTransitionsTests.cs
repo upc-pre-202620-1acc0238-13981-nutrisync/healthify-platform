@@ -5,8 +5,8 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-2. A visit ends Completed (a consultation was published for it) or Cancelled. Cancel and Reschedule
-///     exist in the domain without endpoints (MA-5).
+///     A visit ends Completed (a consultation was published for it) or Cancelled. Cancel and Reschedule
+///     exist in the domain without endpoints.
 /// </summary>
 public class FollowUpStateTransitionsTests
 {

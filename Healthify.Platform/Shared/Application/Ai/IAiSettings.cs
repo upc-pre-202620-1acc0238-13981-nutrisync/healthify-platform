@@ -1,7 +1,7 @@
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0. The configuration the pipeline obeys, read on every generation so the kill switch acts without a
+///     The configuration the pipeline obeys, read on every generation so the kill switch acts without a
 ///     restart. Every value has its default in code: AI is off unless <c>Ai:Enabled</c> says otherwise.
 /// </summary>
 public interface IAiSettings
@@ -18,6 +18,6 @@ public interface IAiSettings
     /// <summary>Guard 5: bound of each provider attempt (<c>Ai:TimeoutSeconds</c>, default 20).</summary>
     TimeSpan Timeout { get; }
 
-    /// <summary>§12-#14: how long a generation is kept (<c>Ai:RetentionDays</c>, default 180).</summary>
+    /// <summary>How long a generation is kept (<c>Ai:RetentionDays</c>, default 180).</summary>
     TimeSpan Retention { get; }
 }

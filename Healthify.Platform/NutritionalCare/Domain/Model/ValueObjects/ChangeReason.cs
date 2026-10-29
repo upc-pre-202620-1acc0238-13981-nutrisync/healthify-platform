@@ -6,19 +6,19 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 /// </summary>
 /// <remarks>
 ///     Enforces the business rule "Change Reason Required" (Subflow 3.6).
-///     X-2: a reason the system writes is a <see cref="Code" /> with its <see cref="Data" />, which the client words in
+///     A reason the system writes is a <see cref="Code" /> with its <see cref="Data" />, which the client words in
 ///     the reader's language; <see cref="Value" /> keeps the Spanish sentence as the legacy fallback. A reason a
 ///     practitioner writes is <see cref="Custom" />: clinical text, kept as written and never translated.
 /// </remarks>
 public sealed record ChangeReason
 {
-    /// <summary>X-2. Written by a practitioner: <see cref="Value" /> is the reason.</summary>
+    /// <summary>Written by a practitioner: <see cref="Value" /> is the reason.</summary>
     public const string Custom = "Custom";
 
-    /// <summary>X-2 (NC-7). A version published from a consultation. Data: <c>date</c>.</summary>
+    /// <summary>A version published from a consultation. Data: <c>date</c>.</summary>
     public const string NewConsultationCode = "NewConsultation";
 
-    /// <summary>X-2 (NC-10). A version assigned from an AI proposal. Data: <c>date</c> and <c>signalType</c>.</summary>
+    /// <summary>A version assigned from an AI proposal. Data: <c>date</c> and <c>signalType</c>.</summary>
     public const string SignalAdjustmentCode = "SignalAdjustment";
 
     private const int MaximumLength = 500;
@@ -45,21 +45,21 @@ public sealed record ChangeReason
 
     /// <summary>
     ///     The sentence. For <see cref="Custom" /> it is the practitioner's text; for the other codes it is the
-    ///     Spanish fallback of clients that do not know the code (X-2).
+    ///     Spanish fallback of clients that do not know the code.
     /// </summary>
     public string Value { get; }
 
-    /// <summary>X-2. <see cref="Custom" />, <see cref="NewConsultationCode" /> or <see cref="SignalAdjustmentCode" />.</summary>
+    /// <summary><see cref="Custom" />, <see cref="NewConsultationCode" /> or <see cref="SignalAdjustmentCode" />.</summary>
     public string Code { get; }
 
-    /// <summary>X-2. The parameters of the code, or null for <see cref="Custom" />.</summary>
+    /// <summary>The parameters of the code, or null for <see cref="Custom" />.</summary>
     public ChangeReasonData? Data { get; }
 
     public bool IsCustom => Code == Custom;
 
     /// <summary>
-    ///     NC-7 - The reason written for a version published from a consultation: "Nueva consulta del 18 sept.
-    ///     2026". X-2: code <see cref="NewConsultationCode" /> with the date; the sentence stays as the fallback, with
+    ///     The reason written for a version published from a consultation: "Nueva consulta del 18 sept.
+    ///     2026". Stored as code <see cref="NewConsultationCode" /> with the date; the sentence stays as the fallback, with
     ///     the months spelled here rather than taken from the culture data of the server.
     /// </summary>
     public static ChangeReason NewConsultation(DateOnly date)
@@ -69,8 +69,8 @@ public sealed record ChangeReason
     }
 
     /// <summary>
-    ///     NC-10 - The reason of a version assigned from an AI proposal: "Ajuste por señal: desviación sostenida del
-    ///     8 sept. 2026", the day the signal reached the inbox. X-2: code <see cref="SignalAdjustmentCode" /> with
+    ///     The reason of a version assigned from an AI proposal: "Ajuste por señal: desviación sostenida del
+    ///     8 sept. 2026", the day the signal reached the inbox. Stored as code <see cref="SignalAdjustmentCode" /> with
     ///     that date and the signal type.
     /// </summary>
     public static ChangeReason SignalAdjustment(DateOnly signalDate, string signalType = SignalType.SustainedDeviation)
@@ -80,7 +80,7 @@ public sealed record ChangeReason
     }
 
     /// <summary>
-    ///     Rebuilds a stored reason without validating it again. A row without a code (written before X-2 and not
+    ///     Rebuilds a stored reason without validating it again. A row without a code (an older row not
     ///     recognised by its backfill) reads as <see cref="Custom" />, and an unknown code as well.
     /// </summary>
     public static ChangeReason? Rehydrate(string? value, string? code, ChangeReasonData? data)
@@ -105,7 +105,7 @@ public sealed record ChangeReason
 }
 
 /// <summary>
-///     X-2. Parameters of a <see cref="ChangeReason" /> code, stored as JSON in
+///     Parameters of a <see cref="ChangeReason" /> code, stored as JSON in
 ///     <c>nutrition_plans.change_reason_data</c>: <c>{ "date": "2026-09-18" }</c> or
 ///     <c>{ "date": "2026-09-08", "signalType": "SustainedDeviation" }</c>.
 /// </summary>

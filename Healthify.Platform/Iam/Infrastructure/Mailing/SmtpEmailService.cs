@@ -6,7 +6,7 @@ using MimeKit;
 
 namespace Healthify.Platform.Iam.Infrastructure.Mailing;
 
-/// <summary>IAM-2. <see cref="IEmailService" /> over SMTP with MailKit.</summary>
+/// <summary><see cref="IEmailService" /> over SMTP with MailKit.</summary>
 /// <remarks>
 ///     Configuration: <c>Smtp:Host</c>, <c>Smtp:Port</c> (587), <c>Smtp:Username</c>, <c>Smtp:Password</c>,
 ///     <c>Smtp:From</c> and <c>Smtp:UseSsl</c> (false: STARTTLS when the server offers it).

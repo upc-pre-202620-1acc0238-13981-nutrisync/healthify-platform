@@ -68,7 +68,7 @@ public class ActiveTargetsCacheEntityTypeConfiguration : IEntityTypeConfiguratio
                 StringListComparer)
             .HasColumnName("restrictions").HasColumnType("json").IsRequired();
 
-        // NC-6: the same guidelines as objects, [{ "code": ... } | { "custom": ... }], and the free text
+        // The same guidelines as objects, [{ "code": ... } | { "custom": ... }], and the free text
         // restrictions from before the closed list.
         builder.Property<List<CachedGuideline>>("_guidelineItems")
             .HasConversion(
@@ -87,7 +87,7 @@ public class ActiveTargetsCacheEntityTypeConfiguration : IEntityTypeConfiguratio
                 StringListComparer)
             .HasColumnName("legacy_restrictions").HasColumnType("json").IsRequired();
 
-        // NC-8 and NC-9: "Qué cambió" and the practitioner's message, as the contract carried them.
+        // "What changed" and the practitioner's message, as the contract carried them.
         builder.Property<List<CachedPlanChange>?>("_changesFromPrevious")
             .HasConversion(
                 v => v == null ? null : CachedGuidelineJson.SerializeChanges(v),
@@ -137,7 +137,7 @@ public class DiaryEntryEntityTypeConfiguration : IEntityTypeConfiguration<DiaryE
             .HasConversion(p => p.Value, value => new Provenance(value))
             .HasColumnName("provenance").HasMaxLength(20).IsRequired();
 
-        // IN-1. The answer to «¿Esta comida estaba en tu plan?». The database default covers rows
+        // The answer to "was this meal in your plan?". The database default covers rows
         // written before the column existed; the migration backfills the legacy off-plan ones.
         builder.Property(e => e.PlanAdherence)
             .HasConversion(a => a.Value, value => new PlanAdherence(value))
@@ -172,15 +172,15 @@ public class DiaryEntryEntityTypeConfiguration : IEntityTypeConfiguration<DiaryE
         builder.HasIndex(e => e.ClientEntryId)
             .HasDatabaseName("ix_diary_entries_client_entry_id").IsUnique();
 
-        // IN-6. The entries of one meal logged together (an idea of IA-3), and where they came from. Both null for
-        // an entry logged alone, which is every entry written before IN-6.
+        // The entries of one meal logged together (a meal idea), and where they came from. Both null for
+        // an entry logged alone, which is every entry written before meals could be grouped.
         builder.Property(e => e.MealGroupId).HasColumnName("meal_group_id");
         builder.HasIndex(e => e.MealGroupId).HasDatabaseName("ix_diary_entries_meal_group_id");
         builder.Property(e => e.Origin)
             .HasConversion(o => o!.Value, value => new EntryOrigin(value))
             .HasColumnName("origin").HasMaxLength(EntryOrigin.MaximumLength);
 
-        // IN-7. The photo analysis the proposal came from (unique: an analysis is logged once; MySQL allows any number
+        // The photo analysis the proposal came from (unique: an analysis is logged once; MySQL allows any number
         // of NULLs, which every entry without one is) and the AI generation behind it. No foreign key: the analysis
         // is purged after its lifetime, the trace stays.
         builder.Property(e => e.MealPhotoAnalysisId).HasColumnName("meal_photo_analysis_id");
@@ -201,7 +201,7 @@ public class DiaryEntryEntityTypeConfiguration : IEntityTypeConfiguration<DiaryE
     }
 }
 
-/// <summary>IN-7. The temporary photo analyses. There is no column for the image: it is never stored.</summary>
+/// <summary>The temporary photo analyses. There is no column for the image: it is never stored.</summary>
 public class MealPhotoAnalysisEntityTypeConfiguration : IEntityTypeConfiguration<MealPhotoAnalysis>
 {
     private static readonly ValueComparer<List<MealPhotoAlternative>> AlternativeListComparer = new(
@@ -285,13 +285,13 @@ public class SelfWeighInEntityTypeConfiguration : IEntityTypeConfiguration<SelfW
             .HasColumnName("local_utc_offset_minutes").IsRequired();
 
         // Persisted projection of the protocol declaration: fasted, same time of day, same scale.
-        // IN-3: only fasted is asked now; the other two are null on new readings.
+        // Only fasted is asked now; the other two are null on new readings.
         builder.Property(w => w.ProtocolFastedState).HasColumnName("protocol_fasted_state").IsRequired();
         builder.Property(w => w.ProtocolSameTimeOfDay)
             .HasColumnName("protocol_same_time_of_day").IsRequired(false);
         builder.Property(w => w.ProtocolSameScale).HasColumnName("protocol_same_scale").IsRequired(false);
 
-        // IN-4. Idempotency By Aggregate Id (Subflow 4.6), per patient. Online readings leave it NULL, and
+        // Idempotency By Aggregate Id (Subflow 4.6), per patient. Online readings leave it NULL, and
         // MySQL lets a unique index hold any number of NULLs.
         builder.Property(w => w.ClientEntryId).HasColumnName("client_entry_id");
         builder.HasIndex(w => new { w.PatientId, w.ClientEntryId })

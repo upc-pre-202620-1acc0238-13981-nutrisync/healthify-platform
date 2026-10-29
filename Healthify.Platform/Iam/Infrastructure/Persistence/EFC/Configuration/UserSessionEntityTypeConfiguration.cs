@@ -36,7 +36,7 @@ public class UserSessionEntityTypeConfiguration : IEntityTypeConfiguration<UserS
         builder.Property(s => s.StartedAt).HasColumnName("started_at").IsRequired();
         builder.Property(s => s.TerminatedAt).HasColumnName("terminated_at");
 
-        // IAM-4. Only hashes are stored. The current one is unique: it is what a refresh looks the session up by.
+        // Only hashes are stored. The current one is unique: it is what a refresh looks the session up by.
         // It is also the concurrency token: every UPDATE of a session is conditional on the hash it read, so two
         // refreshes of the same token cannot both rotate; the one that loses replays the winner (grace).
         builder.Property(s => s.RefreshTokenHash)

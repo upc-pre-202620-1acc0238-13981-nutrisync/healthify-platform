@@ -21,7 +21,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.FoodCatalog;
 
 /// <summary>
-///     IN-7. Foods created from the nutrients the AI estimated: coherent or not created, verified automatically,
+///     Foods created from the nutrients the AI estimated: coherent or not created, verified automatically,
 ///     idempotent by the normalized name (also when two requests race), never overwritten by an import, and never
 ///     exposed as such by any resource or ACL item.
 /// </summary>
@@ -40,7 +40,7 @@ public class AiEstimatedFoodTests
     [InlineData(400, 40, 40, 30, false)] // 110 g of macronutrients in 100 g
     [InlineData(500, 10, 10, 1, false)] // 89 kcal by Atwater: 411 apart, far beyond max(15 %, 20 kcal)
     [InlineData(100, 10, 10, 1, true)] // 89 vs 100: within 15 %
-    // Changed on purpose (IN-7, second pass): the tolerance is now max(15 %, 20 kcal), so 10 vs 18 kcal is accepted.
+    // Changed on purpose: the tolerance is now max(15 %, 20 kcal), so 10 vs 18 kcal is accepted.
     [InlineData(10, 0, 0, 2, true)]
     [InlineData(25, 2, 6, 0.2, true)] // a vegetable with much fibre: 33.8 by Atwater, 8.8 apart, within 20 kcal
     [InlineData(10, 0, 0, 10, false)] // 90 kcal of fat declared as 10: impossible
@@ -243,7 +243,7 @@ public class AiEstimatedFoodTests
         Assert.Null(await facade.CreateAiEstimatedFood("Plato raro", new FoodNutrientsItem(500m, 10m, 10m, 1m),
             GenerationId));
 
-        // Afterwards it is a food like any other: the local resolution of FC-2 finds it.
+        // Afterwards it is a food like any other: the local name resolution finds it.
         var resolved = Assert.Single(await facade.ResolveByNames(["lomo saltado"], 5));
         Assert.Equal(item.ReferenceFoodId, resolved.ReferenceFoodId);
     }

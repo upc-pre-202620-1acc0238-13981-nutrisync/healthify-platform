@@ -6,7 +6,7 @@ using Healthify.Platform.NutritionalCare.Interfaces.Acl;
 namespace Healthify.Platform.ReadModels.Application;
 
 /// <summary>
-///     RM-1. One patient of the roster (PR1 "Ana Flores · Vinculada desde 12 mar. 2026", "sin plan · Nueva").
+///     One patient of the roster: name, linked since, plan status and whether they are new.
 /// </summary>
 /// <param name="Link">The link and its status (Active or PendingConsent).</param>
 /// <param name="Identity">The name, or null when Iam could not answer.</param>
@@ -19,13 +19,13 @@ public record PatientRosterEntry(
     NextFollowUpItem? NextFollowUp)
 {
     /// <summary>
-    ///     "Nueva": no baseline yet or no published plan yet. The roster opens PAC-0 or PAC-1 from it.
+    ///     New: no baseline yet or no published plan yet. The roster opens the empty state or the summary from it.
     /// </summary>
     public bool IsNew => CareStatus is not { HasBaseline: true, ActivePlanVersion: not null };
 }
 
 /// <summary>
-///     Composes the Patient Roster read model (RM-1) of one practitioner.
+///     Composes the Patient Roster read model of one practitioner.
 /// </summary>
 /// <remarks>
 ///     One call per facade for the whole roster, never one per patient: the links first, then names, care

@@ -22,7 +22,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-4. Offline self weigh-ins are synchronised idempotently by client identifier, a duplicate is resolved
+///     Offline self weigh-ins are synchronised idempotently by client identifier, a duplicate is resolved
 ///     in silence, and the trend is recalculated once per batch.
 /// </summary>
 public class SelfWeighInSyncTests

@@ -8,8 +8,8 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     RM-2 ("Cumplimiento 5 de 7 días"). The denominator is calendar days and a day without data is Unlogged,
-///     never Short (DECISIÓN §12-#7, rule Unlogged Is Not Non Compliant).
+///     Compliance "5 of 7 days". The denominator is calendar days and a day without data is Unlogged,
+///     never Short (rule Unlogged Is Not Non Compliant).
 /// </summary>
 public class ComplianceSummaryTests
 {

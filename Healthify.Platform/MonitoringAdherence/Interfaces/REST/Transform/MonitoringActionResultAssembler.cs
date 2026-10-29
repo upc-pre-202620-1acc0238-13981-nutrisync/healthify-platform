@@ -44,7 +44,7 @@ public static class MonitoringActionResultAssembler
         };
     }
 
-    /// <summary>MA-4. The check in, or the error of the rule it broke.</summary>
+    /// <summary>The check in, or the error of the rule it broke.</summary>
     public static IActionResult ToPreVisitCheckInResult(
         Result<PreVisitCheckInView, MonitoringError> result,
         IStringLocalizer<MonitoringMessages> localizer)
@@ -161,7 +161,7 @@ public static class MonitoringActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-0. The shared technical AI errors of a generation run by this context (IA-2, IA-4 and IA-5), with the texts of
+    ///     The shared technical AI errors of a generation run by this context, with the texts of
     ///     <see cref="AiMessages" />.
     /// </summary>
     public static IActionResult ToAiFailureResult(AiError error, IStringLocalizer<AiMessages> localizer)
@@ -184,7 +184,7 @@ public static class MonitoringActionResultAssembler
     }
 
     /// <summary>
-    ///     IA-2/IA-4/IA-5. The answer of an AI function of this context: its resource, a business error of the
+    ///     The answer of an AI function of this context: its resource, a business error of the
     ///     context (<see cref="MonitoringMessages" />) or a technical AI error (<see cref="AiMessages" />).
     /// </summary>
     public static IActionResult ToAiFunctionResult<T>(Result<T, MonitoringAiFailure> result,

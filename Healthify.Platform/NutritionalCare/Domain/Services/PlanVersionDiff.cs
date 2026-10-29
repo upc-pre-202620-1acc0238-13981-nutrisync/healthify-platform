@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Domain.Services;
 
 /// <summary>
-///     NC-8 - "Qué cambió en esta versión" (PT4). Compares two published versions of the same plan through
+///     What changed in this version. Compares two published versions of the same plan through
 ///     what the patient receives: the daily targets, the guidelines and the restrictions.
 /// </summary>
 /// <remarks>
@@ -39,7 +39,7 @@ public static class PlanVersionDiff
                 changes.Add(PlanChange.MacroWasChanged(PlanChange.Fat, before.FatG, after.FatG));
         }
 
-        // PT4 "Las metas de energía y macronutrientes no cambiaron."
+        // The patient sees that the energy and macronutrient targets did not change.
         if (changes.Count == 0) changes.Add(PlanChange.NoTargetsChanged());
 
         changes.AddRange(current.Guidelines.Where(g => !previous.Guidelines.Contains(g))
@@ -51,7 +51,7 @@ public static class PlanVersionDiff
             .Select(PlanChange.RestrictionWasAdded));
         changes.AddRange(previous.Restrictions.Where(r => !current.Restrictions.Contains(r))
             .Select(PlanChange.RestrictionWasRemoved));
-        // NC-6: a free text restriction the new version did not carry over is, for the patient, a removed one.
+        // A free text restriction the new version did not carry over is, for the patient, a removed one.
         changes.AddRange(previous.LegacyRestrictions.Where(r => !current.LegacyRestrictions.Contains(r))
             .Select(PlanChange.LegacyRestrictionWasRemoved));
 

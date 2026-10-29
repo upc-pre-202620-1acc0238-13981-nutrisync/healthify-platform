@@ -14,203 +14,10 @@ namespace Healthify.Platform.NutritionalCare.Application.Internal.CommandService
 
 public class NutritionPlanCommandService(
     INutritionPlanRepository planRepository,
-    INutritionalDiagnosisRepository diagnosisRepository,
-    INutritionalAssessmentRepository assessmentRepository,
     IUnitOfWork unitOfWork,
-    IBmrCalculator bmrCalculator,
     ILogger<NutritionPlanCommandService> logger,
     IMediator mediator) : INutritionPlanCommandService
 {
-    /// <summary>
-    ///     Subflow 3.3 - Propose Targets. Deterministic arithmetic on parameters a human chose.
-    /// </summary>
-    public async Task<Result<NutritionPlan, NutritionalCareError>> Handle(ProposeTargetsCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        // 1. Value object validation. Business rule: Complete Calculation Basis Required (Subflow 3.3).
-        //    Each component reports its own error, so the practitioner learns which parameter is wrong.
-        if (TargetCalculation.TryValidate(command, out var parameters) is { } invalid) return Failure(invalid);
-
-        try
-        {
-            // 2. Business rule: Active Diagnosis Required (Subflow 3.3). No plan exists without a
-            //    diagnosis that grounds it.
-            var diagnosis = await diagnosisRepository.FindActiveByPatientIdAsync(command.PatientId,
-                cancellationToken);
-            if (diagnosis is null)
-                return Failure(NutritionalCareError.ActiveDiagnosisRequired);
-            if (diagnosis.PractitionerId != command.PractitionerId)
-                return Failure(NutritionalCareError.PractitionerOnly);
-
-            // The anthropometry the equations read comes from the assessment behind the diagnosis.
-            var assessment = await assessmentRepository.FindByIdAsync(diagnosis.AssessmentId,
-                cancellationToken);
-            var measurement = assessment?.LatestMeasurement;
-            if (assessment is null || measurement is null)
-                return Failure(NutritionalCareError.ClinicalMeasurementRequired);
-
-            // 3. The arithmetic, in the order the rules state it.
-            if (TargetCalculation.TryCalculate(bmrCalculator, parameters!, assessment, measurement, out var basis,
-                    out var proposal) is { } notCalculable)
-                return Failure(notCalculable);
-
-            var nextVersion = await planRepository.GetLatestVersionAsync(command.PatientId,
-                cancellationToken) + 1;
-
-            var plan = new NutritionPlan(command.PatientId, command.PractitionerId, diagnosis.Id.Value,
-                nextVersion, basis!, proposal!);
-
-            await planRepository.AddAsync(plan, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
-
-            // Stays inside this context: the calculation basis is professional information, and the
-            // patient receives the result rather than the procedure.
-            await mediator.PublishAsync(
-                new TargetsProposed(plan.Id.Value, plan.PatientId, proposal!.EnergyKcal, proposal.ProteinG,
-                    proposal.CarbG, proposal.FatG), cancellationToken);
-
-            return new Result<NutritionPlan, NutritionalCareError>.Success(plan);
-        }
-        catch (ArgumentException)
-        {
-            return Failure(NutritionalCareError.IncompleteCalculationBasis);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error proposing targets for patient {PatientId}", command.PatientId);
-            return Failure(NutritionalCareError.UnexpectedError);
-        }
-    }
-
-    /// <summary>
-    ///     Subflow 3.4 - Prescribe Targets. One command, and exactly one of two events.
-    /// </summary>
-    public async Task<Result<NutritionPlan, NutritionalCareError>> Handle(PrescribeTargetsCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        PrescriptionOutcome outcome;
-        try
-        {
-            outcome = new PrescriptionOutcome(command.Outcome);
-        }
-        catch (ArgumentException)
-        {
-            return Failure(NutritionalCareError.PlanNotInExpectedState);
-        }
-
-        // Business rule: Override Requires Reason (Subflow 3.4), checked before anything loads.
-        if (outcome.IsOverridden && string.IsNullOrWhiteSpace(command.OverrideReason))
-            return Failure(NutritionalCareError.OverrideReasonRequired);
-
-        try
-        {
-            var plan = await planRepository.FindByIdAsync(command.PlanId, cancellationToken);
-            if (plan is null) return Failure(NutritionalCareError.PlanNotFound);
-            if (plan.PractitionerId != command.PractitionerId)
-                return Failure(NutritionalCareError.PractitionerOnly);
-            if (plan.IsPrescribed) return Failure(NutritionalCareError.PlanNotInExpectedState);
-
-            // Business rule: Previous Proposal Required (Subflow 3.4). Accepting means signing the
-            // numbers the arithmetic produced; overriding means replacing them and saying why.
-            var prescribed = TargetCalculation.BuildPrescription(plan, outcome, command.EnergyKcal, command.ProteinG,
-                command.CarbG, command.FatG, command.OverrideReason);
-
-            plan.PrescribeTargets(prescribed);
-
-            planRepository.Update(plan);
-            await unitOfWork.CompleteAsync(cancellationToken);
-
-            // Exactly one of the two, never both.
-            if (outcome.IsOverridden)
-                await mediator.PublishAsync(
-                    new TargetsOverridden(plan.Id.Value, plan.PatientId, prescribed.EnergyKcal,
-                        prescribed.OverrideReason!.Value), cancellationToken);
-            else
-                await mediator.PublishAsync(
-                    new TargetsAcceptedAsProposed(plan.Id.Value, plan.PatientId, prescribed.EnergyKcal),
-                    cancellationToken);
-
-            return new Result<NutritionPlan, NutritionalCareError>.Success(plan);
-        }
-        catch (ArgumentException)
-        {
-            return Failure(NutritionalCareError.OverrideReasonRequired);
-        }
-        catch (InvalidOperationException)
-        {
-            return Failure(NutritionalCareError.PlanNotInExpectedState);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error prescribing targets on plan {PlanId}", command.PlanId);
-            return Failure(NutritionalCareError.UnexpectedError);
-        }
-    }
-
-    /// <summary>Subflow 3.5 - Publish Nutrition Plan. Clinical phase 3.</summary>
-    public async Task<Result<NutritionPlan, NutritionalCareError>> Handle(
-        PublishNutritionPlanCommand command, CancellationToken cancellationToken = default)
-    {
-        // 1. NC-6: guidelines and restrictions, each to its own error, before anything loads.
-        if (PlanCatalogInput.TryGuidelines(command.Guidelines, command.CustomGuidelines, out var guidelines) is
-            { } badGuideline) return Failure(badGuideline);
-        if (PlanCatalogInput.TryRestrictions(command.Restrictions, out var restrictions) is { } badRestriction)
-            return Failure(badRestriction);
-        // NC-9: the optional message for the patient.
-        if (!TryPatientMessage(command.PatientMessage, out var patientMessage))
-            return Failure(NutritionalCareError.InvalidPatientMessage);
-
-        try
-        {
-            var plan = await planRepository.FindByIdAsync(command.PlanId, cancellationToken);
-            if (plan is null) return Failure(NutritionalCareError.PlanNotFound);
-            if (plan.PractitionerId != command.PractitionerId)
-                return Failure(NutritionalCareError.PractitionerOnly);
-            if (!plan.IsPrescribed) return Failure(NutritionalCareError.PreviousProposalRequired);
-            if (plan.IsPublished) return Failure(NutritionalCareError.PlanNotInExpectedState);
-
-            // Business rule: No Plan Without Diagnosis (Subflow 3.5)
-            // NC-7: the draft of a consultation reads a diagnosis that is still pending (or was discarded); it is
-            // published only by its consultation (step 4), together with that diagnosis.
-            var diagnosis = await diagnosisRepository.FindByIdAsync(plan.DiagnosisId, cancellationToken);
-            if (diagnosis is null || diagnosis.IsPending || diagnosis.IsDiscarded)
-                return Failure(NutritionalCareError.PlanRequiresDiagnosis);
-
-            // Business rule: One Active Version Per Patient (Subflow 3.5)
-            var active = await planRepository.FindActiveByPatientIdAsync(plan.PatientId, cancellationToken);
-            if (active is not null && active.Id.Value != plan.Id.Value)
-                return Failure(NutritionalCareError.PatientAlreadyHasActivePlanVersion);
-
-            plan.SetPatientMessage(patientMessage);
-            plan.PublishWith(guidelines, restrictions);
-            // NC-8: "Qué cambió en esta versión", against the last version published before this one (none for
-            // the first version: the stand-alone path only publishes when there is no active version).
-            var previous = (await planRepository.ListByPatientIdAsync(plan.PatientId, cancellationToken))
-                .Where(p => p.IsPublished && p.Version < plan.Version)
-                .MaxBy(p => p.Version);
-            plan.RecordChangesFromPrevious(previous);
-
-            planRepository.Update(plan);
-            await unitOfWork.CompleteAsync(cancellationToken);
-
-            // Consumed by this context own policy, which publishes the active targets contract.
-            await mediator.PublishAsync(
-                new NutritionPlanPublished(plan.Id.Value, plan.PatientId, plan.Version,
-                    plan.PublishedAt!.Value), cancellationToken);
-
-            return new Result<NutritionPlan, NutritionalCareError>.Success(plan);
-        }
-        catch (InvalidOperationException)
-        {
-            return Failure(NutritionalCareError.PlanNotInExpectedState);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error publishing plan {PlanId}", command.PlanId);
-            return Failure(NutritionalCareError.UnexpectedError);
-        }
-    }
-
     /// <summary>
     ///     Subflows 3.5 and 3.6 - Publish Active Targets. Reached only from a policy. This is the one
     ///     place where something about a plan leaves this bounded context, and it carries the reduced
@@ -273,12 +80,12 @@ public class NutritionPlanCommandService(
             return Failure(NutritionalCareError.ChangeReasonRequired);
         }
 
-        // NC-6: guidelines and restrictions, each to its own error, before anything loads.
+        // Guidelines and restrictions, each to its own error, before anything loads.
         if (PlanCatalogInput.TryGuidelines(command.Guidelines, command.CustomGuidelines, out var guidelines) is
             { } badGuideline) return Failure(badGuideline);
         if (PlanCatalogInput.TryRestrictions(command.Restrictions, out var restrictions) is { } badRestriction)
             return Failure(badRestriction);
-        // NC-9: the optional message for the patient.
+        // The optional message for the patient.
         if (!TryPatientMessage(command.PatientMessage, out var patientMessage))
             return Failure(NutritionalCareError.InvalidPatientMessage);
 
@@ -332,7 +139,7 @@ public class NutritionPlanCommandService(
         }
     }
 
-    /// <summary>NC-9. The optional message for the patient: none when absent or blank, false when too long.</summary>
+    /// <summary>The optional message for the patient: none when absent or blank, false when too long.</summary>
     internal static bool TryPatientMessage(string? value, out PatientFacingMessage? message)
     {
         try

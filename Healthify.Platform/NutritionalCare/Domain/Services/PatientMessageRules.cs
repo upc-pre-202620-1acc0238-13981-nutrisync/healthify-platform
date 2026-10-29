@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace Healthify.Platform.NutritionalCare.Domain.Services;
 
 /// <summary>
-///     IA-8. The tone of a message for the patient drafted by the AI: whole words or phrases of a list, compared
+///     The tone of a message for the patient drafted by the AI: whole words or phrases of a list, compared
 ///     without case or accents ("fallaste" matches "Fallaste"; "mal" does not match "normal"). Static domain service.
 /// </summary>
 public static class PatientMessageRules

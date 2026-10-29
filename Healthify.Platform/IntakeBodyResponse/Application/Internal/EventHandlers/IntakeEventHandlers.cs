@@ -57,7 +57,7 @@ public class OnActiveTargetsUpdatedIntakeHandler(
 ///     Policy "When Meal Logged And Provenance Is Photo" (Intake and Body Response, Subflow 4.2).
 /// </summary>
 /// <remarks>
-///     IN-7: the proposal is either the AI's, made on the server from the photo before the entry existed
+///     The proposal is either the AI's, made on the server from the photo before the entry existed
 ///     (<c>meal-photo-analyses</c>), or, in the legacy flow, what the device computed. Either way it arrives
 ///     with the event. NOTE (legacy flow): portion estimation runs on-device; the server persists the proposal only. This
 ///     handler makes no network call, runs no model and reaches no AI service. It takes what the
@@ -74,7 +74,7 @@ public class OnMealLoggedPhotoEstimationHandler(
     {
         if (notification.Provenance != Provenance.Photo) return;
 
-        // IN-2: confirmed on the device and saved in one transaction, proposal included. There is
+        // Confirmed on the device and saved in one transaction, proposal included. There is
         // nothing left to store, and trying would collide with the patient's confirmation.
         if (notification.ConfirmedOnCreation) return;
 
@@ -118,7 +118,7 @@ public class OnSelfWeighInRecordedHandler(
 {
     public async Task Handle(SelfWeighInRecorded notification, CancellationToken cancellationToken)
     {
-        // IN-4: a reading from a synchronisation batch leaves the recalculation to the batch, once.
+        // A reading from a synchronisation batch leaves the recalculation to the batch, once.
         if (notification.ViaSynchronization) return;
 
         await using var scope = scopeFactory.CreateAsyncScope();
@@ -134,7 +134,7 @@ public class OnSelfWeighInRecordedHandler(
 }
 
 /// <summary>
-///     IN-4. Policy "When Self Weigh In Batch Synchronized". Internal to this context.
+///     Policy "When Self Weigh In Batch Synchronized". Internal to this context.
 /// </summary>
 /// <remarks>
 ///     Recalculates the trend once for the whole batch: the readings of a week spent offline change the
@@ -159,8 +159,8 @@ public class OnSelfWeighInBatchSynchronizedHandler(
 }
 
 /// <summary>
-///     Policy "When AI Processing Consent Withdrawn" (CR-2, §12-#14), this context's part: purge the meal ideas
-///     (IA-3) it keeps for the patient.
+///     Policy "When AI Processing Consent Withdrawn", this context's part: purge the meal ideas
+///     it keeps for the patient.
 /// </summary>
 /// <remarks>
 ///     The ideas live only in the two-hour cache, so the purge evicts it. The technical audit (<c>ai_generations</c>)
@@ -176,13 +176,13 @@ public class OnAiProcessingConsentChangedIntakeHandler(
         if (notification.Granted) return;
 
         await MealIdeasPurge.Run(scopeFactory, logger, notification.PatientId, cancellationToken);
-        // IN-7: the temporary photo analyses go with the consent. The foods created from them stay: they are the
+        // The temporary photo analyses go with the consent. The foods created from them stay: they are the
         // shared catalog and hold nothing of the patient.
         await MealPhotoAnalysesPurge.Run(scopeFactory, logger, notification.PatientId, cancellationToken);
     }
 }
 
-/// <summary>IA-1. Meal ideas (IA-3) going off stop using the diary, and the cached ideas are purged.</summary>
+/// <summary>Meal ideas going off stop using the diary, and the cached ideas are purged.</summary>
 /// <remarks>Same purge as <see cref="OnAiProcessingConsentChangedIntakeHandler" />.</remarks>
 public class OnAiPreferencesChangedIntakeHandler(
     IServiceScopeFactory scopeFactory,
@@ -193,13 +193,13 @@ public class OnAiPreferencesChangedIntakeHandler(
         if (!notification.MealIdeasEnabled)
             await MealIdeasPurge.Run(scopeFactory, logger, notification.PatientId, cancellationToken);
 
-        // IN-7: «Reconocer comidas por foto» going off deletes the temporary photo analyses.
+        // The meal photo recognition switch going off deletes the temporary photo analyses.
         if (!notification.MealPhotoRecognitionEnabled)
             await MealPhotoAnalysesPurge.Run(scopeFactory, logger, notification.PatientId, cancellationToken);
     }
 }
 
-/// <summary>IN-7, §12-#14. The purge of the photo analyses both policies above issue, in a scope of its own.</summary>
+/// <summary>The purge of the photo analyses both policies above issue, in a scope of its own.</summary>
 internal static class MealPhotoAnalysesPurge
 {
     public static async Task Run(IServiceScopeFactory scopeFactory, ILogger logger, int patientId,
@@ -224,7 +224,7 @@ internal static class MealPhotoAnalysesPurge
     }
 }
 
-/// <summary>IA-3, §12-#14. The purge both policies above issue, in a scope of its own.</summary>
+/// <summary>The purge of the meal ideas both policies above issue, in a scope of its own.</summary>
 internal static class MealIdeasPurge
 {
     public static async Task Run(IServiceScopeFactory scopeFactory, ILogger logger, int patientId,

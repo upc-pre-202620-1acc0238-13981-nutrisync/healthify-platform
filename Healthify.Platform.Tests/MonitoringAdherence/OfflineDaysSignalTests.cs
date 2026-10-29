@@ -19,7 +19,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-1. A patient logs day 1 online, spends days 2 to 4 offline, and synchronises on day 5 with
+///     A patient logs day 1 online, spends days 2 to 4 offline, and synchronises on day 5 with
 ///     entries of day 5 only. The signals must come out exactly as if days 2 to 4 had been marked
 ///     Unlogged by a live evaluation, and the series must show those days as Unlogged.
 /// </summary>

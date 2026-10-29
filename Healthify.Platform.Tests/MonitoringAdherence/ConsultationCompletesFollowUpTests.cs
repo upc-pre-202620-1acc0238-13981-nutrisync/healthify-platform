@@ -19,9 +19,9 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-2 acceptance. Publishing a consultation (NC-2, step 4) completes the visit it was held for, through the
+///     Acceptance. Publishing a consultation (step 4) completes the visit it was held for, through the
 ///     integration event Consultation Completed and the Monitoring policy that consumes it; after that the
-///     missed-visit worker leaves the visit alone. "Una consulta no acudida no cierra el vínculo" still holds for
+///     missed-visit worker leaves the visit alone. "A missed visit does not close the link" still holds for
 ///     the visits nobody attended.
 /// </summary>
 public class ConsultationCompletesFollowUpTests

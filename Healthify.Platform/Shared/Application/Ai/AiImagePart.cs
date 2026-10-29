@@ -4,7 +4,7 @@ using System.Text;
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IN-7. One image sent to the model with the text input (Gemini <c>inlineData</c>). Held in memory for the
+///     One image sent to the model with the text input (Gemini <c>inlineData</c>). Held in memory for the
 ///     duration of the call only: the pipeline audits its SHA-256 (<c>ai_generations.input_image_hash</c>), never
 ///     its bytes, and nothing logs it.
 /// </summary>

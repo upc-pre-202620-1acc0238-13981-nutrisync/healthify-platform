@@ -20,7 +20,7 @@ using Xunit;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     X-2, Monitoring side. The signals carry their evidence as numbers next to the English sentence (kept as the
+///     Generated text language, Monitoring side. The signals carry their evidence as numbers next to the English sentence (kept as the
 ///     legacy fallback), so the clinical context stores them for the client to word in the reader's language; and an
 ///     AI suggested question of the check in keeps the language it was generated in, while a question the patient
 ///     wrote is their own text and has none.

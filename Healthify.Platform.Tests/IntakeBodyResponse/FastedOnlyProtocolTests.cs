@@ -25,7 +25,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-3. «¿Te pesaste en ayunas?» is the whole protocol: fasted readings smooth the trend, the two removed
+///     "Did you weigh yourself fasted?" is the whole protocol: fasted readings smooth the trend, the two removed
 ///     questions are optional and null on new readings, the protocol can be widened again by configuration,
 ///     and existing trends are rebuilt by a one-shot job.
 /// </summary>
@@ -44,7 +44,7 @@ public class FastedOnlyProtocolTests
     [Fact]
     public void A_legacy_reading_fasted_on_another_scale_now_follows_the_protocol()
     {
-        // Before IN-3 this reading was excluded because the scale was not the usual one.
+        // Before the fasted-only protocol this reading was excluded because the scale was not the usual one.
         Assert.True(new ProtocolCompliance(true, true, false).FollowsProtocol);
         Assert.False(new ProtocolCompliance(false, true, true).FollowsProtocol);
     }

@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 
 namespace Healthify.Platform.Tests.Ai;
 
-/// <summary>IA-0, guard 3. Nothing that identifies a person leaves the platform; the aggregates do.</summary>
+/// <summary>Guard 3. Nothing that identifies a person leaves the platform; the aggregates do.</summary>
 public class AiInputPseudonymizerTests
 {
     private static readonly object Input = new

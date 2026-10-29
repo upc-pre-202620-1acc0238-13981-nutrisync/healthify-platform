@@ -5,18 +5,18 @@ using Healthify.Platform.NutritionalCare.Interfaces.Acl;
 namespace Healthify.Platform.ReadModels.Application;
 
 /// <summary>
-///     RM-5. The consultations of a patient as PT25 shows them: the next visit, the check in of that visit and
+///     The consultations of a patient as their consultations screen shows them: the next visit, the check in of that visit and
 ///     the consultations already held.
 /// </summary>
 /// <remarks>
 ///     Only what the patient can see: no diagnosis, no calculation basis, no weight, BMI or BMI category, because
-///     none of the contracts this composer reads publishes them. The AI questions of PT25 are not here (IA-4):
+///     none of the contracts this composer reads publishes them. The AI questions of that screen are not here:
 ///     they are asked separately so the latency of the AI does not hold this page.
 /// </remarks>
 /// <param name="PatientId">Whose consultations.</param>
-/// <param name="Next">The visit on the calendar, or null (PT25 hides "Próxima consulta").</param>
+/// <param name="Next">The visit on the calendar, or null (the screen then hides the next consultation).</param>
 /// <param name="NextPractitionerFullName">Who the next visit is with; null when Iam could not answer.</param>
-/// <param name="CheckIn">The check in of the next visit; null shows "Responder", a value shows PT25.3.</param>
+/// <param name="CheckIn">The check in of the next visit; null shows the reply card, a value shows what was sent.</param>
 /// <param name="Past">The consultations already held, most recent first.</param>
 public record PatientConsultationsComposition(
     int PatientId,
@@ -26,7 +26,7 @@ public record PatientConsultationsComposition(
     IReadOnlyList<CompletedConsultationItem> Past);
 
 /// <summary>
-///     Composes the Patient Consultations read model (RM-5) from the ACL contracts of Monitoring, Nutritional Care
+///     Composes the Patient Consultations read model from the ACL contracts of Monitoring, Nutritional Care
 ///     and Iam, and nothing else.
 /// </summary>
 /// <remarks>Every section degrades on its own: a facade that cannot answer leaves its section empty.</remarks>

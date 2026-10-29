@@ -1,13 +1,13 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-3. Body mass index of a clinical measurement, in kg/m² with one decimal, and its WHO
+///     Body mass index of a clinical measurement, in kg/m² with one decimal, and its WHO
 ///     category.
 /// </summary>
 /// <remarks>
 ///     The category is taken from the rounded value, so the number shown and its category always agree
-///     (24.96 shows as 25.0 and is OverweightGradeI). The codes are the ones NC-4 uses for the
-///     diagnosis. DECISIÓN §12-#9: neither the index nor its category ever leaves this bounded context;
+///     (24.96 shows as 25.0 and is OverweightGradeI). The codes are the ones the coded
+///     diagnosis uses. Neither the index nor its category ever leaves this bounded context;
 ///     no facade publishes them, because for the patient the category is a diagnosis.
 /// </remarks>
 public sealed record BodyMassIndex

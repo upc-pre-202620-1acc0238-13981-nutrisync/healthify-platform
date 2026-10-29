@@ -3,7 +3,7 @@ using Healthify.Platform.IntakeBodyResponse.Application.Internal;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Ai.Caching;
 
 /// <summary>
-///     IN-7. <see cref="ICatalogNameHintsCache" /> in the memory of the process (singleton), with an absolute lifetime
+///     <see cref="ICatalogNameHintsCache" /> in the memory of the process (singleton), with an absolute lifetime
 ///     measured on <see cref="TimeProvider" />. With several instances each keeps its own copy; a restart only costs one
 ///     query.
 /// </summary>

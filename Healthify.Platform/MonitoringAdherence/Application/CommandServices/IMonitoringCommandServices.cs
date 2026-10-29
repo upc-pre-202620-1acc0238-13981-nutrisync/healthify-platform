@@ -33,7 +33,7 @@ public interface IEvaluationWindowCommandService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Subflow 5.4, MA-1 - Mark Unlogged Days Before. Fills the silence before a synchronised
+    ///     Subflow 5.4 - Mark Unlogged Days Before. Fills the silence before a synchronised
     ///     batch; never touches a day already evaluated.
     /// </summary>
     Task<Result<EvaluationWindow, MonitoringError>> Handle(MarkUnloggedDaysBeforeCommand command,
@@ -86,7 +86,7 @@ public interface IConsistencyIndexCommandService
         CancellationToken cancellationToken = default);
 
     /// <summary>Subflow 5.7 - Prompt Patient.</summary>
-    /// <summary>MA-7. Issued by the patient when the card was shown.</summary>
+    /// <summary>Issued by the patient when the card was shown.</summary>
     Task<Result<ConsistencyIndex, MonitoringError>> Handle(AcknowledgeConsistencyPromptCommand command,
         CancellationToken cancellationToken = default);
 
@@ -104,7 +104,7 @@ public interface IReferralCommandService
     Task<Result<Referral, MonitoringError>> Handle(RecordReferralCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>RM-4. Issued by the practitioner who recorded the referral.</summary>
+    /// <summary>Issued by the practitioner who recorded the referral.</summary>
     Task<Result<Referral, MonitoringError>> Handle(CloseReferralCommand command,
         CancellationToken cancellationToken = default);
 }
@@ -120,20 +120,20 @@ public interface IScheduledFollowUpCommandService
     Task<Result<ScheduledFollowUp, MonitoringError>> Handle(FlagMissedFollowUpCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-5. Issued by the practitioner whose agenda the visit is on.</summary>
+    /// <summary>Issued by the practitioner whose agenda the visit is on.</summary>
     Task<Result<ScheduledFollowUp, MonitoringError>> Handle(CancelFollowUpCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-5. Issued by the practitioner whose agenda the visit is on. The check in is kept.</summary>
+    /// <summary>Issued by the practitioner whose agenda the visit is on. The check in is kept.</summary>
     Task<Result<ScheduledFollowUp, MonitoringError>> Handle(RescheduleFollowUpCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-2. Issued by the policy on Consultation Completed only.</summary>
+    /// <summary>Issued by the policy on Consultation Completed only.</summary>
     Task<Result<ScheduledFollowUp, MonitoringError>> Handle(CompleteFollowUpFromConsultationCommand command,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     CR-4. Issued by the policies on Treatment Discharged and Care Link Revoked only. Returns the visits it
+    ///     Issued by the policies on Treatment Discharged and Care Link Revoked only. Returns the visits it
     ///     cancelled (none is a success).
     /// </summary>
     Task<Result<IReadOnlyList<ScheduledFollowUp>, MonitoringError>> Handle(CancelFollowUpsForPatientCommand command,
@@ -141,9 +141,9 @@ public interface IScheduledFollowUpCommandService
 }
 
 /// <summary>
-///     MA-4 - Submit Pre Visit Check In. Issued by the patient; creates or edits the check in of a visit.
+///     Submit Pre Visit Check In. Issued by the patient; creates or edits the check in of a visit.
 /// </summary>
-/// <remarks>Business rule: Check In Raises No Signal (MA-4). It writes one row and reaches nothing else.</remarks>
+/// <remarks>Business rule: Check In Raises No Signal. It writes one row and reaches nothing else.</remarks>
 public interface IPreVisitCheckInCommandService
 {
     Task<Result<PreVisitCheckInView, MonitoringError>> Handle(SubmitPreVisitCheckInCommand command,
@@ -151,11 +151,12 @@ public interface IPreVisitCheckInCommandService
 }
 
 /// <summary>
-///     IA-2 - Generate Weekly Summary (issued by <c>WeeklySummaryHostedService</c>) and the retention of the summaries.
+///     Generate Weekly Summary (issued by <c>WeeklySummaryHostedService</c>) and the retention of the summaries.
 /// </summary>
 /// <remarks>
-///     Business rule: The AI Does Not Count (IA-2). The figures come from MA-6 and IN-5 and the output is rejected
-///     when its numbers are not those. Business rule: Summary Needs Three Logged Days (IA-2).
+///     Business rule: The AI Does Not Count. The figures come from the daily compliance and the home weight
+///     trend, and the output is rejected when its numbers are not those.
+///     Business rule: Summary Needs Three Logged Days.
 /// </remarks>
 public interface IWeeklySummaryCommandService
 {
@@ -167,7 +168,7 @@ public interface IWeeklySummaryCommandService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>IA-4 - Suggest Questions for the visit (PT25, PT25.2). Never receives the diagnosis.</summary>
+/// <summary>Suggest Questions for the visit. Never receives the diagnosis.</summary>
 public interface ISuggestedQuestionsCommandService
 {
     Task<Result<SuggestedQuestionsView, MonitoringAiFailure>> Handle(SuggestQuestionsCommand command,
@@ -175,8 +176,8 @@ public interface ISuggestedQuestionsCommandService
 }
 
 /// <summary>
-///     IA-5 - Summarize Monitoring for the practitioner (PAC-2). Without the patient's AI consent it answers the
-///     deterministic facts only (§12-#5).
+///     Summarize Monitoring for the practitioner. Without the patient's AI consent it answers the
+///     deterministic facts only.
 /// </summary>
 public interface IMonitoringSummaryCommandService
 {
@@ -184,7 +185,7 @@ public interface IMonitoringSummaryCommandService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>§12-#14 - Purge the AI content this context generated for a patient.</summary>
+/// <summary>Purge the AI content this context generated for a patient.</summary>
 public interface IMonitoringAiContentCommandService
 {
     /// <returns>Weekly summaries and cache entries removed.</returns>

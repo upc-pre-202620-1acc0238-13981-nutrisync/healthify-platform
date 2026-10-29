@@ -17,7 +17,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-2. The read side of the consultation (resume, history) and its REST mapping: the 409 of a second
+///     The read side of the consultation (resume, history) and its REST mapping: the 409 of a second
 ///     consultation carries the identifier of the one in progress, the pending diagnosis appears only in the
 ///     consultation, and the new errors map to 400.
 /// </summary>

@@ -71,52 +71,52 @@ public enum IntakeError
     /// <summary>Rule: targets only reach a patient whose care link is live (Subflow 4.1).</summary>
     ActiveCareLinkRequired,
 
-    /// <summary>Rule: Plan Adherence Required On Confirmation (IN-1). «Responde Sí o No».</summary>
+    /// <summary>Rule: Plan Adherence Required On Confirmation. The patient answers Yes or No.</summary>
     PlanAdherenceRequired,
 
-    /// <summary>IN-1. The answer is not InPlan or OffPlan.</summary>
+    /// <summary>The answer is not InPlan or OffPlan.</summary>
     InvalidPlanAdherence,
 
-    /// <summary>IN-2. The confirmation sent with a photo log is neither AsProposed nor a complete adjustment.</summary>
+    /// <summary>The confirmation sent with a photo log is neither AsProposed nor a complete adjustment.</summary>
     InvalidEstimateConfirmation,
 
-    /// <summary>Rule: Idempotency By Aggregate Id (Subflow 4.6, IN-4). A queued reading without its device identifier.</summary>
+    /// <summary>Rule: Idempotency By Aggregate Id (Subflow 4.6). A queued reading without its device identifier.</summary>
     ClientEntryIdRequired,
 
     /// <summary>
-    ///     Rule: Ideas Need Room For A Meal (IA-3). 150 kcal or less are left today. Not a failure of the patient:
-    ///     the text says «Ya cubriste tu energía de hoy», never anything that accuses.
+    ///     Rule: Ideas Need Room For A Meal. 150 kcal or less are left today. Not a failure of the patient:
+    ///     the text says today's energy is already covered, never anything that accuses.
     /// </summary>
     NotEnoughRemaining,
 
-    /// <summary>IA-3. The local date is missing, or it is not today on the patient's device (one day either side of the server).</summary>
+    /// <summary>The local date is missing, or it is not today on the patient's device (one day either side of the server).</summary>
     InvalidLocalDate,
 
-    /// <summary>IN-6. A meal logged in a group needs one to ten items, each with a food and a positive portion.</summary>
+    /// <summary>A meal logged in a group needs one to ten items, each with a food and a positive portion.</summary>
     InvalidMealGroupItems,
 
-    /// <summary>IN-6. The origin of a grouped meal is not a known kind (MealIdea).</summary>
+    /// <summary>The origin of a grouped meal is not a known kind (MealIdea).</summary>
     InvalidEntryOrigin,
 
-    /// <summary>IN-7. The photo of the dish is missing or empty.</summary>
+    /// <summary>The photo of the dish is missing or empty.</summary>
     PhotoRequired,
 
-    /// <summary>Rule: Meal Photo Is JPEG Or WebP (IN-7), read from the bytes, not from the declared type.</summary>
+    /// <summary>Rule: Meal Photo Is JPEG Or WebP, read from the bytes, not from the declared type.</summary>
     UnsupportedPhotoFormat,
 
-    /// <summary>IN-7. The photo exceeds <c>Intake:MealPhoto:MaxBytes</c> (2 MB by default). 413.</summary>
+    /// <summary>The photo exceeds <c>Intake:MealPhoto:MaxBytes</c> (2 MB by default). 413.</summary>
     PhotoTooLarge,
 
     /// <summary>
-    ///     IN-7. The AI did not produce a valid proposal for the photo (no dish, an invalid answer, or nutrients that
-    ///     could not describe a real food). PT7.3: the app offers to log it by hand.
+    ///     The AI did not produce a valid proposal for the photo (no dish, an invalid answer, or nutrients that
+    ///     could not describe a real food). The app offers to log it by hand.
     /// </summary>
     PhotoNotRecognized,
 
-    /// <summary>IN-7. No photo analysis with this identifier belongs to the patient.</summary>
+    /// <summary>No photo analysis with this identifier belongs to the patient.</summary>
     MealPhotoAnalysisNotFound,
 
-    /// <summary>IN-7. The photo analysis is older than its lifetime (24 hours by default) and can no longer be logged.</summary>
+    /// <summary>The photo analysis is older than its lifetime (24 hours by default) and can no longer be logged.</summary>
     MealPhotoAnalysisExpired,
 
     UnexpectedError

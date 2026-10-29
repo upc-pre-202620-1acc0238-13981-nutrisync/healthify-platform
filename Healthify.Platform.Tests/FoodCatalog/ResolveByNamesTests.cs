@@ -15,7 +15,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.FoodCatalog;
 
 /// <summary>
-///     FC-2. <c>IFoodCatalogContextFacade.ResolveByNames</c>: free ingredient names resolved against the local
+///     <c>IFoodCatalogContextFacade.ResolveByNames</c>: free ingredient names resolved against the local
 ///     catalog only, every significant word matching, nutrients of the catalog.
 /// </summary>
 public class ResolveByNamesTests

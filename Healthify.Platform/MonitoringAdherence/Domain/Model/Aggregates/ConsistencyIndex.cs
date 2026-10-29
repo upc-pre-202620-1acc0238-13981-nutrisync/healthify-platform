@@ -13,9 +13,9 @@ namespace Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 ///     practitioner can never learn about an alert the patient has not been asked about first. The
 ///     patient knows this escalation exists and is told before it happens. This is not covert
 ///     surveillance.
-///     MA-7: issuing the prompt (<see cref="PromptIssuedAt" />) and the patient seeing it
+///     Issuing the prompt (<see cref="PromptIssuedAt" />) and the patient seeing it
 ///     (<see cref="ShownToPatientAt" />) are two moments. Only the second, acknowledged by the app when it painted
-///     the card (PT3), counts as shown.
+///     the card, counts as shown.
 ///     Business rule: Escalation Notifies Never Modifies The Plan (Subflow 5.8). Nothing on this
 ///     class references a plan, and the event it leads to opens an item in a human inbox.
 ///     Business rules: Both Series Required and No Index Without Both Series (Subflow 5.7).
@@ -82,15 +82,15 @@ public partial class ConsistencyIndex
     public DateTimeOffset? FirstFlaggedAt { get; private set; }
 
     /// <summary>
-    ///     Business rule: Prompt Date Recorded (Subflow 5.7). MA-7: when the patient acknowledged the prompt (the app
-    ///     painted the card in PT3). Before MA-7 it was set when the prompt was issued.
+    ///     Business rule: Prompt Date Recorded (Subflow 5.7): when the patient acknowledged the prompt (the app
+    ///     showed the card on the home screen). On older rows it is when the prompt was issued.
     /// </summary>
     public DateTimeOffset? ShownToPatientAt { get; private set; }
 
-    /// <summary>MA-7. When the prompt was issued for the current episode; the patient may not have seen it yet.</summary>
+    /// <summary>When the prompt was issued for the current episode; the patient may not have seen it yet.</summary>
     public DateTimeOffset? PromptIssuedAt { get; private set; }
 
-    /// <summary>MA-7. A prompt was issued and the patient has not acknowledged it: PT3 shows the card.</summary>
+    /// <summary>A prompt was issued and the patient has not acknowledged it: the home screen shows the card.</summary>
     public bool IsPatientPromptPending => PromptIssuedAt is not null && ShownToPatientAt is null;
 
     /// <summary>Business rule: Patient Prompt Required Before Escalation (Subflow 5.8).</summary>
@@ -213,7 +213,7 @@ public partial class ConsistencyIndex
     ///     message this prompt is rendered with, which is the only place a tone can live.
     /// </remarks>
     /// <returns>False when the patient has already been asked about this episode.</returns>
-    /// <remarks>MA-7: issuing the prompt no longer counts as showing it; see <see cref="MarkShownToPatient" />.</remarks>
+    /// <remarks>Issuing the prompt no longer counts as showing it; see <see cref="MarkShownToPatient" />.</remarks>
     public bool PromptPatient()
     {
         if (PromptIssuedAt is not null || ShownToPatientAt is not null) return false;
@@ -223,7 +223,7 @@ public partial class ConsistencyIndex
     }
 
     /// <summary>
-    ///     MA-7 - The patient saw the prompt: the app painted the card in PT3 and acknowledged it. This is the date
+    ///     The patient saw the prompt: the app showed the card on the home screen and acknowledged it. This is the date
     ///     Patient Prompt Required Before Escalation reads.
     /// </summary>
     /// <param name="at">When the card was shown.</param>
@@ -240,7 +240,7 @@ public partial class ConsistencyIndex
     }
 
     /// <summary>
-    ///     MA-7. Whether at least <paramref name="days" /> days have passed since the patient saw the prompt, so they had
+    ///     Whether at least <paramref name="days" /> days have passed since the patient saw the prompt, so they had
     ///     time to answer it before anybody else is told.
     /// </summary>
     public bool ShownToPatientAtLeast(int days, DateTimeOffset asOf)
@@ -280,8 +280,8 @@ public partial class ConsistencyIndex
     }
 
     /// <summary>
-    ///     X-2. Whole weeks the index has been in alert at <paramref name="asOf" />, for the evidence the client words
-    ///     in its language ("en alerta desde hace 3 semanas"). Null when it is not in alert.
+    ///     Whole weeks the index has been in alert at <paramref name="asOf" />, for the evidence the client words
+    ///     in its language ("in alert for 3 weeks"). Null when it is not in alert.
     /// </summary>
     public int? WeeksInAlertAt(DateTimeOffset asOf)
     {
@@ -292,7 +292,7 @@ public partial class ConsistencyIndex
     /// <summary>
     ///     What Monitoring observed, in one sentence, for the review inbox of the clinical context.
     /// </summary>
-    /// <remarks>X-2: an English sentence kept as the legacy fallback; the event also carries its numbers.</remarks>
+    /// <remarks>An English sentence kept as the legacy fallback; the event also carries its numbers.</remarks>
     public string Evidence()
     {
         var shown = ShownToPatientAt?.ToString("yyyy-MM-dd") ?? "not shown";

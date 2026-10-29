@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace Healthify.Platform.Shared.Application.Ai;
 
 /// <summary>
-///     IA-0, guard 6. Checks an output against the JSON Schema of its prompt. The provider is asked for that schema
+///     Guard 6. Checks an output against the JSON Schema of its prompt. The provider is asked for that schema
 ///     natively, but its answer is still untrusted text, so it is checked again here before anyone reads it.
 /// </summary>
 /// <remarks>

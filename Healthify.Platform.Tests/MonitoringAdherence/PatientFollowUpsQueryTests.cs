@@ -10,7 +10,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-3. The patient reads their next visit (PT3, PT20) and their past ones (PT25 "ANTERIORES"), with the name
+///     The patient reads their next visit and their past ones (the past visits list), with the name
 ///     of the practitioner from one batch read of Iam, and nothing clinical.
 /// </summary>
 public class PatientFollowUpsQueryTests

@@ -14,7 +14,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-5. The weight trend carries the summary of its last weeks: range, slope per week, change over the range
+///     The weight trend carries the summary of its last weeks: range, slope per week, change over the range
 ///     and how many readings of the range stayed out of the line. Never a daily figure.
 /// </summary>
 public class WeightTrendRangeTests

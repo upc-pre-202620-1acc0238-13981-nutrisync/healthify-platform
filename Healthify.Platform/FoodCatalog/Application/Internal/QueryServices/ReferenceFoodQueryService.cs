@@ -28,7 +28,7 @@ public class ReferenceFoodQueryService(IReferenceFoodRepository repository) : IR
     }
 
     /// <remarks>
-    ///     FC-2. Each distinct name narrows the catalog with its most telling word (one indexed search on the local
+    ///     Each distinct name narrows the catalog with its most telling word (one indexed search on the local
     ///     name, never a provider) and <see cref="FoodNameMatcher" /> picks among what comes back.
     /// </remarks>
     public async Task<IReadOnlyList<FoodNameResolution>> Handle(ResolveReferenceFoodsByNamesQuery query,
@@ -69,9 +69,9 @@ public class ReferenceFoodQueryService(IReferenceFoodRepository repository) : IR
         return await repository.ListVerifiedAsync(query.Max, query.ExcludedIds ?? [], cancellationToken);
     }
 
-    /// <summary>FC-2. Upper bound of the names one resolution looks up.</summary>
+    /// <summary>Upper bound of the names one resolution looks up.</summary>
     public const int MaxNamesPerResolution = 50;
 
-    /// <summary>FC-2. Catalog entries read per name before choosing.</summary>
+    /// <summary>Catalog entries read per name before choosing.</summary>
     private const int CandidatesPerName = 50;
 }

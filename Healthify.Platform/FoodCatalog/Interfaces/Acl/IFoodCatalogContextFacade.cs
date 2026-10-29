@@ -17,7 +17,7 @@ public record ReferenceFoodItem(
     bool IsLocalOverride);
 
 /// <summary>
-///     FC-2. What the local catalog says about one free name (an ingredient of an AI meal idea). Primitives only.
+///     What the local catalog says about one free name (an ingredient of an AI meal idea). Primitives only.
 ///     Everything but <paramref name="Name" /> is null when the name stands for nothing in the catalog.
 /// </summary>
 /// <param name="Name">The name as the caller sent it.</param>
@@ -40,7 +40,7 @@ public record ResolvedFoodItem(
 }
 
 /// <summary>
-///     IN-7. Nutrients per 100 g a caller hands to the catalog (what the AI estimated for a dish). Primitives only.
+///     Nutrients per 100 g a caller hands to the catalog (what the AI estimated for a dish). Primitives only.
 /// </summary>
 public record FoodNutrientsItem(
     decimal EnergyKcalPer100g,
@@ -62,13 +62,13 @@ public interface IFoodCatalogContextFacade
     Task<ReferenceFoodItem?> GetReferenceFoodById(int referenceFoodId, CancellationToken ct = default);
 
     /// <summary>
-    ///     IN-7. Up to <paramref name="max" /> verified entries (local overrides first, then by name) but the excluded
+    ///     Up to <paramref name="max" /> verified entries (local overrides first, then by name) but the excluded
     ///     ones. An empty list when the lookup fails.
     /// </summary>
     Task<IReadOnlyList<ReferenceFoodItem>> ListVerifiedFoods(int max, IReadOnlyCollection<int>? excludedIds = null,
         CancellationToken ct = default);
 
-    /// <summary>IN-7. Several entries at once (by lot). Unknown identifiers are left out; an empty list when the lookup fails.</summary>
+    /// <summary>Several entries at once (by lot). Unknown identifiers are left out; an empty list when the lookup fails.</summary>
     Task<IReadOnlyList<ReferenceFoodItem>> GetReferenceFoodsByIds(IReadOnlyList<int> referenceFoodIds,
         CancellationToken ct = default);
 
@@ -77,7 +77,7 @@ public interface IFoodCatalogContextFacade
         CancellationToken ct = default);
 
     /// <summary>
-    ///     FC-2. The catalog entry each name stands for, one item per name in the same order; at most
+    ///     The catalog entry each name stands for, one item per name in the same order; at most
     ///     <paramref name="max" /> distinct names are looked up (the rest come back unresolved). Searches only the
     ///     local catalog (seeded, cached or local overrides): no external provider is called while the caller waits.
     ///     An empty list when the lookup fails.
@@ -86,14 +86,14 @@ public interface IFoodCatalogContextFacade
         CancellationToken ct = default);
 
     /// <summary>
-    ///     IN-7. The catalog entry a recognized dish stands for, after asking the external providers (Search Food,
+    ///     The catalog entry a recognized dish stands for, after asking the external providers (Search Food,
     ///     which caches what they translate, idempotent by source hash). An unresolved item when nothing matches;
     ///     null when the lookup fails. Slower than <see cref="ResolveByNames" />: it may wait for a provider.
     /// </summary>
     Task<ResolvedFoodItem?> ResolveByNameWithProviders(string name, CancellationToken ct = default);
 
     /// <summary>
-    ///     IN-7. Creates (or finds) the food for a dish nothing else carries, with the nutrients the AI estimated.
+    ///     Creates (or finds) the food for a dish nothing else carries, with the nutrients the AI estimated.
     ///     Idempotent by the normalized name, also when two callers race. The item looks like any other food: it
     ///     says nothing about where it came from. Null when the nutrients are incoherent or the creation fails.
     /// </summary>

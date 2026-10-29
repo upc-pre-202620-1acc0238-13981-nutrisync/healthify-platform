@@ -7,8 +7,8 @@ using Healthify.Platform.MonitoringAdherence.Domain.Services;
 namespace Healthify.Platform.MonitoringAdherence.Application.Internal;
 
 /// <summary>
-///     IA-2/IA-4/IA-5. Reads the deterministic facts of a period: the evaluated days of this context (MA-6) and, by
-///     the Intake facade, the moments of the diary and the home weight trend (IN-5) over exactly the same days. One
+///     Reads the deterministic facts of a period: the evaluated days of this context and, by
+///     the Intake facade, the moments of the diary and the home weight trend over exactly the same days. One
 ///     read per source, never one per day.
 /// </summary>
 public class MonitoringFactsReader(
@@ -26,7 +26,7 @@ public class MonitoringFactsReader(
     /// <param name="patientId">Whose period.</param>
     /// <param name="from">First day, included.</param>
     /// <param name="to">Last day, included.</param>
-    /// <param name="includeWeight">Whether to read the IN-5 trend (not needed by every function).</param>
+    /// <param name="includeWeight">Whether to read the home weight trend (not needed by every function).</param>
     /// <param name="cancellationToken">Cancellation.</param>
     public async Task<MonitoringPeriodFacts> ReadAsync(int patientId, DateOnly from, DateOnly to, bool includeWeight,
         CancellationToken cancellationToken = default)
@@ -50,7 +50,7 @@ public class MonitoringFactsReader(
             weight?.PointCount ?? 0);
     }
 
-    /// <summary>es or en: the preferred language of IAM-3, or es when it cannot be read.</summary>
+    /// <summary>es or en: the patient's preferred language, or es when it cannot be read.</summary>
     public static string LanguageOf(string? preferred)
     {
         return string.Equals(preferred?.Trim(), "en", StringComparison.OrdinalIgnoreCase) ? "en" : "es";

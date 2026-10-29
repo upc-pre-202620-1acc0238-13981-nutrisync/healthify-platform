@@ -24,8 +24,8 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     Follow-ups of NC-9/NC-10/NC-11: the recovery of the in-memory proposal queue after a restart, the message for the
-///     patient kept with the EV-5 publication draft, and <c>POST /resolution</c> answering with the inbox fields.
+///     Follow-ups of the plan proposals: the recovery of the in-memory proposal queue after a restart, the message for the
+///     patient kept with the publication draft, and <c>POST /resolution</c> answering with the inbox fields.
 /// </summary>
 public class PlanProposalFollowUpTests
 {

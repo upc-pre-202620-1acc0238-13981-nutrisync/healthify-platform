@@ -2,8 +2,8 @@ namespace Healthify.Platform.Iam.Interfaces.Acl;
 
 /// <summary>Flat DTO exposed to other bounded contexts - primitives only.</summary>
 /// <remarks>
-///     IAM-1 appends the given names and family names. Accounts created before IAM-1 carry the local part
-///     of their email as given names and an empty family name.
+///     Accounts created before names were required carry the local part of their email as given names and an
+///     empty family name.
 /// </remarks>
 public record UserIdentityItem(
     int UserId,
@@ -25,9 +25,9 @@ public record UserIdentityItem(
 /// </summary>
 /// <param name="UserId">The account.</param>
 /// <param name="Email">Sign-in email.</param>
-/// <param name="GivenNames">Given names (IAM-1).</param>
-/// <param name="FamilyNames">Family names (IAM-1).</param>
-/// <param name="PreferredLanguage">es or en (IAM-3).</param>
+/// <param name="GivenNames">Given names.</param>
+/// <param name="FamilyNames">Family names.</param>
+/// <param name="PreferredLanguage">es or en.</param>
 /// <param name="RegisteredAt">When the account was created; null when it was not recorded.</param>
 public record AccountProfileItem(
     int UserId,
@@ -58,14 +58,14 @@ public interface IIamContextFacade
     Task<UserIdentityItem?> GetUserById(int userId, CancellationToken ct = default);
 
     /// <summary>
-    ///     IAM-1. Several accounts in one query, keyed by id, so that a listing (roster, inbox, agenda) does not
+    ///     Several accounts in one query, keyed by id, so that a listing (roster, inbox, agenda) does not
     ///     read one account per row. Ids that do not exist are absent; empty when the lookup fails.
     /// </summary>
     Task<IReadOnlyDictionary<int, UserIdentityItem>> GetUsersByIds(IEnumerable<int> userIds,
         CancellationToken ct = default);
 
     /// <summary>
-    ///     IAM-3. The interface language of the account (<c>es</c> or <c>en</c>), for the texts an AI
+    ///     The interface language of the account (<c>es</c> or <c>en</c>), for the texts an AI
     ///     function of the owning context writes to that person. Null when the account does not exist or the lookup fails.
     /// </summary>
     Task<string?> GetPreferredLanguage(int userId, CancellationToken ct = default);

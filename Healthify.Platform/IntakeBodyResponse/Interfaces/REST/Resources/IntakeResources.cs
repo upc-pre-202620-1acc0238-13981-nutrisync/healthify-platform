@@ -6,9 +6,9 @@ namespace Healthify.Platform.IntakeBodyResponse.Interfaces.REST.Resources;
 
 /// <summary>Payload of Subflow 4.2 - Log Meal By Photo.</summary>
 /// <remarks>
-///     IN-7: with <c>analysisId</c> (from <c>POST /patients/{id}/meal-photo-analyses</c>), the proposal is the one
+///     With <c>analysisId</c> (from <c>POST /patients/{id}/meal-photo-analyses</c>), the proposal is the one
 ///     the AI made on the server and the reference food, portion and confidence below are ignored. Without it, the
-///     legacy flow of IN-2: they are what the device already computed.
+///     legacy flow: they are what the device already computed.
 /// </remarks>
 public record LogMealByPhotoResource(
     int PatientId,
@@ -41,31 +41,31 @@ public record LogMealByPhotoResource(
     public decimal Confidence { get; init; } = Confidence;
 
     /// <summary>
-    ///     IN-2. What the patient decided on the confirmation screen, so the meal is saved already
-    ///     confirmed in one request. Omit it to save the entry as «Por confirmar», as before.
+    ///     What the patient decided on the confirmation screen, so the meal is saved already
+    ///     confirmed in one request. Omit it to save the entry waiting to be confirmed, as before.
     /// </summary>
     public PhotoConfirmationResource? Confirmation { get; init; } = Confirmation;
 
     /// <summary>
-    ///     «¿Esta comida estaba en tu plan?»: InPlan or OffPlan. Required with a confirmation; ignored
+    ///     "Was this meal in your plan?": InPlan or OffPlan. Required with a confirmation; ignored
     ///     without one, because the answer is given when the entry is confirmed.
     /// </summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 
     /// <summary>
-    ///     IN-7. The photo analysis the proposal comes from. It must belong to the patient and not be expired (24
+    ///     The photo analysis the proposal comes from. It must belong to the patient and not be expired (24
     ///     hours). An analysis is logged once: logging it again returns the same entry.
     /// </summary>
     public Guid? AnalysisId { get; init; } = AnalysisId;
 
     /// <summary>
-    ///     IN-7. The device's identifier of this log. Sending it again returns the entry already stored, without a
+    ///     The device's identifier of this log. Sending it again returns the entry already stored, without a
     ///     second entry and without evaluating the day again.
     /// </summary>
     public Guid? ClientEntryId { get; init; } = ClientEntryId;
 }
 
-/// <summary>IN-2. The patient's decision about the on-device proposal.</summary>
+/// <summary>The patient's decision about the on-device proposal.</summary>
 public record PhotoConfirmationResource(string Kind, int? ReferenceFoodId = null, decimal? PortionGrams = null)
 {
     /// <summary>AsProposed, or Adjusted with the food and the portion the patient chose instead.</summary>
@@ -100,41 +100,22 @@ public record LogMealManuallyResource(
     public decimal PortionGrams { get; init; } = PortionGrams;
 
     /// <summary>
-    ///     «¿Esta comida estaba en tu plan?»: InPlan or OffPlan. Required. OffPlan is marked
-    ///     «Fuera del plan» and still counts towards the day.
+    ///     "Was this meal in your plan?": InPlan or OffPlan. Required. OffPlan is marked
+    ///     "off plan" and still counts towards the day.
     /// </summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 
     /// <summary>
-    ///     IN-7. The device's identifier of this log. Sending it again returns the entry already stored, without a
+    ///     The device's identifier of this log. Sending it again returns the entry already stored, without a
     ///     second entry and without evaluating the day again.
     /// </summary>
     public Guid? ClientEntryId { get; init; } = ClientEntryId;
 }
 
-/// <summary>
-///     Payload of Subflow 4.4 - Log Off Plan Meal.
-/// </summary>
-/// <remarks>
-///     Business rules: No Detail Requested, No Deviation Computed, No Visual Penalty and Streak
-///     Rewards Logging Not Deficit (Subflow 4.4). Two fields, and that is the whole design. There is
-///     no food, no portion, no reason and no note, because asking for any of them is what makes
-///     people stop declaring. The goal is to make saying it cheaper than omitting it.
-///     Deprecated by IN-1: use <c>planAdherence: "OffPlan"</c> on manual-logs or photo-logs.
-/// </remarks>
-public record LogOffPlanMealResource(int PatientId, DateTimeOffset LocalTimestamp)
-{
-    /// <summary>The patient logging the meal. Must be the authenticated patient.</summary>
-    public int PatientId { get; init; } = PatientId;
-
-    /// <summary>When it happened, as the device reads it. Never rewritten by the server.</summary>
-    public DateTimeOffset LocalTimestamp { get; init; } = LocalTimestamp;
-}
-
-/// <summary>Payload of Subflow 4.2 - Confirm Estimate (IN-1).</summary>
+/// <summary>Payload of Subflow 4.2 - Confirm Estimate.</summary>
 public record EstimateConfirmationResource(string? PlanAdherence = null)
 {
-    /// <summary>«¿Esta comida estaba en tu plan?»: InPlan or OffPlan. Required.</summary>
+    /// <summary>"Was this meal in your plan?": InPlan or OffPlan. Required.</summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 }
 
@@ -147,12 +128,12 @@ public record AdjustEstimateResource(int ReferenceFoodId, decimal PortionGrams, 
     /// <summary>The portion the patient chose instead, in grams. Required.</summary>
     public decimal PortionGrams { get; init; } = PortionGrams;
 
-    /// <summary>«¿Esta comida estaba en tu plan?»: InPlan or OffPlan. Required.</summary>
+    /// <summary>"Was this meal in your plan?": InPlan or OffPlan. Required.</summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 }
 
 /// <summary>Payload of Subflow 4.5 - Record Self Weigh In.</summary>
-/// <remarks>IN-3: only <c>FastedState</c> is asked. The other two conditions are optional for older clients.</remarks>
+/// <remarks>Only <c>FastedState</c> is asked. The other two conditions are optional for older clients.</remarks>
 public record RecordSelfWeighInResource(
     int PatientId,
     decimal ValueKg,
@@ -170,13 +151,13 @@ public record RecordSelfWeighInResource(
     /// <summary>When it was taken, as the device reads it. Never rewritten by the server.</summary>
     public DateTimeOffset LocalTimestamp { get; init; } = LocalTimestamp;
 
-    /// <summary>«¿Te pesaste en ayunas?». The protocol condition (IN-3).</summary>
+    /// <summary>"Did you weigh yourself fasted?". The protocol condition.</summary>
     public bool FastedState { get; init; } = FastedState;
 
-    /// <summary>Optional. No longer asked (IN-3); stored as declared when an older client sends it.</summary>
+    /// <summary>Optional. No longer asked; stored as declared when an older client sends it.</summary>
     public bool? SameTimeOfDay { get; init; } = SameTimeOfDay;
 
-    /// <summary>Optional. No longer asked (IN-3); stored as declared when an older client sends it.</summary>
+    /// <summary>Optional. No longer asked; stored as declared when an older client sends it.</summary>
     public bool? SameScale { get; init; } = SameScale;
 }
 
@@ -198,7 +179,7 @@ public record PendingDiaryEntryResource(
     /// <summary>When it happened, as the device read it. The server refuses to rewrite this.</summary>
     public DateTimeOffset LocalTimestamp { get; init; } = LocalTimestamp;
 
-    /// <summary>Photo or Manual. Required. OffPlan is still accepted from older clients (legacy, IN-1).</summary>
+    /// <summary>Photo or Manual. Required. OffPlan is still accepted from older clients (legacy).</summary>
     public string Provenance { get; init; } = Provenance;
 
     /// <summary>Where the photo lives, when there is one.</summary>
@@ -214,19 +195,19 @@ public record PendingDiaryEntryResource(
     public decimal? Confidence { get; init; } = Confidence;
 
     /// <summary>
-    ///     False for a photo entry the patient had not confirmed yet («Por confirmar»): it is stored as
+    ///     False for a photo entry the patient had not confirmed yet: it is stored as
     ///     a proposal. Omitted by older clients, which confirm whatever carries a food.
     /// </summary>
     public bool? Confirmed { get; init; } = Confirmed;
 
     /// <summary>
-    ///     «¿Esta comida estaba en tu plan?»: InPlan or OffPlan, when the entry is confirmed. Omitted by
+    ///     "Was this meal in your plan?": InPlan or OffPlan, when the entry is confirmed. Omitted by
     ///     older clients; their entries are accepted and stay NotAnswered.
     /// </summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 }
 
-/// <summary>IN-4. One self weigh-in as the device queued it offline.</summary>
+/// <summary>One self weigh-in as the device queued it offline.</summary>
 public record PendingSelfWeighInResource(
     Guid ClientEntryId,
     decimal ValueKg,
@@ -244,17 +225,17 @@ public record PendingSelfWeighInResource(
     /// <summary>When it was taken, as the device read it. Never rewritten by the server.</summary>
     public DateTimeOffset LocalTimestamp { get; init; } = LocalTimestamp;
 
-    /// <summary>«¿Te pesaste en ayunas?». The protocol condition (IN-3).</summary>
+    /// <summary>"Did you weigh yourself fasted?". The protocol condition.</summary>
     public bool FastedState { get; init; } = FastedState;
 
-    /// <summary>Optional. No longer asked (IN-3).</summary>
+    /// <summary>Optional. No longer asked.</summary>
     public bool? SameTimeOfDay { get; init; } = SameTimeOfDay;
 
-    /// <summary>Optional. No longer asked (IN-3).</summary>
+    /// <summary>Optional. No longer asked.</summary>
     public bool? SameScale { get; init; } = SameScale;
 }
 
-/// <summary>IN-4. Payload of Sync Pending Self Weigh Ins: <c>{ entries: [...] }</c>.</summary>
+/// <summary>Payload of Sync Pending Self Weigh Ins: <c>{ entries: [...] }</c>.</summary>
 public record SyncSelfWeighInsResource(IReadOnlyList<PendingSelfWeighInResource>? Entries, int? PatientId = null)
 {
     /// <summary>The queued readings. Each one is reconciled on its own; the batch never fails whole.</summary>
@@ -274,18 +255,18 @@ public record SyncPendingEntriesResource(int PatientId, IReadOnlyList<PendingDia
     public IReadOnlyList<PendingDiaryEntryResource> Entries { get; init; } = Entries;
 }
 
-/// <summary>IA-3. Payload of «Ver ideas» and «Ver otras ideas» (PT14.4).</summary>
+/// <summary>Payload of "See ideas" and "See other ideas".</summary>
 public record GenerateMealIdeasResource(DateOnly? LocalDate, IReadOnlyList<string>? ExcludeIdeaIds = null)
 {
     /// <summary>Today on the patient's device (yyyy-MM-dd). Required.</summary>
     public DateOnly? LocalDate { get; init; } = LocalDate;
 
-    /// <summary>«Ver otras ideas»: the mealIdeaId of the ideas already seen, so the new ones are different.</summary>
+    /// <summary>"See other ideas": the mealIdeaId of the ideas already seen, so the new ones are different.</summary>
     public IReadOnlyList<string>? ExcludeIdeaIds { get; init; } = ExcludeIdeaIds;
 }
 
 /// <summary>
-///     IN-6. Payload of «Registrar esta comida» (PT14.5): one meal of several foods, logged as one entry per food
+///     Payload of "Log this meal": one meal of several foods, logged as one entry per food
 ///     sharing a meal group.
 /// </summary>
 public record LogMealGroupResource(
@@ -304,14 +285,14 @@ public record LogMealGroupResource(
     /// <summary>InPlan or OffPlan. Optional for an idea (InPlan); required otherwise.</summary>
     public string? PlanAdherence { get; init; } = PlanAdherence;
 
-    /// <summary><c>{ kind: "MealIdea", mealIdeaId }</c> when the meal comes from an idea of IA-3.</summary>
+    /// <summary><c>{ kind: "MealIdea", mealIdeaId }</c> when the meal comes from a meal idea.</summary>
     public MealGroupOriginResource? Origin { get; init; } = Origin;
 
     /// <summary>Optional; when present it must be the authenticated patient.</summary>
     public int? PatientId { get; init; } = PatientId;
 }
 
-/// <summary>IN-6. One food of the meal.</summary>
+/// <summary>One food of the meal.</summary>
 public record MealGroupItemResource(int ReferenceFoodId, decimal PortionGrams, Guid? ClientEntryId = null)
 {
     /// <summary>The catalog entry. Required.</summary>
@@ -321,13 +302,13 @@ public record MealGroupItemResource(int ReferenceFoodId, decimal PortionGrams, G
     public decimal PortionGrams { get; init; } = PortionGrams;
 
     /// <summary>
-    ///     IN-7. The device's identifier of the entry of this item. When every item carries one, resending the meal
+    ///     The device's identifier of the entry of this item. When every item carries one, resending the meal
     ///     returns the entries already stored, without new ones and without evaluating the day again.
     /// </summary>
     public Guid? ClientEntryId { get; init; } = ClientEntryId;
 }
 
-/// <summary>IN-6. Where the meal came from.</summary>
+/// <summary>Where the meal came from.</summary>
 public record MealGroupOriginResource(string? Kind, string? MealIdeaId = null)
 {
     /// <summary>MealIdea.</summary>

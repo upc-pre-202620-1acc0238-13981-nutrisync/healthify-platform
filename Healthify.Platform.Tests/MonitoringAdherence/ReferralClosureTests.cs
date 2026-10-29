@@ -16,7 +16,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     RM-4 (DECISIÓN §12-#8). A referral is Open ("en curso") until the practitioner who recorded it closes it by
+///     A referral is Open ("in progress") until the practitioner who recorded it closes it by
 ///     hand; it is closed once.
 /// </summary>
 public class ReferralClosureTests

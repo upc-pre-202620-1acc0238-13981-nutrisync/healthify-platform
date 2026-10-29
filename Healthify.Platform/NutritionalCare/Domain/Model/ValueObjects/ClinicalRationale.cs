@@ -23,7 +23,7 @@ public sealed record ClinicalRationale
     public string Value { get; }
 
     /// <summary>
-    ///     NC-4. Deterministic rationale written from the measurement, used when the practitioner picks
+    ///     Deterministic rationale written from the measurement, used when the practitioner picks
     ///     the code without writing one ("IMC 26.3 kg/m²; cintura 88 cm"). It keeps the spirit of
     ///     Clinical Rationale Required without asking for text. Clinical data is not translated.
     /// </summary>

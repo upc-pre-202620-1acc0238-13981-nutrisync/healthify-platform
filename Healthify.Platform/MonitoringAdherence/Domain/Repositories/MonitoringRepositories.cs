@@ -66,10 +66,10 @@ public interface IReferralRepository : IBaseRepository<Referral>
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>MA-4. The check ins, one per visit.</summary>
+/// <summary>The check ins, one per visit.</summary>
 public interface IPreVisitCheckInRepository : IBaseRepository<PreVisitCheckIn>
 {
-    /// <summary>Rule: One Check In Per Visit (MA-4).</summary>
+    /// <summary>Rule: One Check In Per Visit.</summary>
     Task<PreVisitCheckIn?> FindByFollowUpIdAsync(int followUpId, CancellationToken cancellationToken = default);
 
     /// <summary>The check ins of these visits, in one query.</summary>
@@ -87,29 +87,29 @@ public interface IScheduledFollowUpRepository : IBaseRepository<ScheduledFollowU
     Task<IEnumerable<ScheduledFollowUp>> ListByPractitionerIdAsync(int practitionerId,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-2. The agenda, optionally of one state and from a moment on, soonest first.</summary>
+    /// <summary>The agenda, optionally of one state and from a moment on, soonest first.</summary>
     Task<IEnumerable<ScheduledFollowUp>> ListByPractitionerIdAsync(int practitionerId, FollowUpState? state,
         DateTimeOffset? from, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     MA-2. The visit of this patient with this practitioner, still scheduled or flagged missed, whose
+    ///     The visit of this patient with this practitioner, still scheduled or flagged missed, whose
     ///     date falls in [<paramref name="from" />, <paramref name="to" />). Soonest first, at most one.
     /// </summary>
     Task<ScheduledFollowUp?> FindOpenForDayAsync(int patientId, int practitionerId, DateTimeOffset from,
         DateTimeOffset to, CancellationToken cancellationToken = default);
 
-    /// <summary>MA-2/RM-1. The scheduled visit of each of these patients, in one query.</summary>
+    /// <summary>The scheduled visit of each of these patients, in one query.</summary>
     Task<IEnumerable<ScheduledFollowUp>> ListScheduledByPatientIdsAsync(IReadOnlyCollection<int> patientIds,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     MA-4. The visits of this patient with this practitioner that are still open (Scheduled or Missed), most
+    ///     The visits of this patient with this practitioner that are still open (Scheduled or Missed), most
     ///     recent first.
     /// </summary>
     Task<IEnumerable<ScheduledFollowUp>> ListOpenByPatientAndPractitionerAsync(int patientId, int practitionerId,
         CancellationToken cancellationToken = default);
 
-    /// <summary>MA-3. The visits of one patient, optionally of one state, most recent first.</summary>
+    /// <summary>The visits of one patient, optionally of one state, most recent first.</summary>
     Task<IEnumerable<ScheduledFollowUp>> ListByPatientIdAsync(int patientId, FollowUpState? state,
         CancellationToken cancellationToken = default);
 
@@ -119,7 +119,7 @@ public interface IScheduledFollowUpRepository : IBaseRepository<ScheduledFollowU
 }
 
 /// <summary>
-///     IA-2. The weekly summaries, one per patient and week. Generated content: unlike the evaluated data of this
+///     The weekly summaries, one per patient and week. Generated content: unlike the evaluated data of this
 ///     context, it is removed when the AI consent is withdrawn, the function is turned off or its retention ends.
 /// </summary>
 public interface IWeeklySummaryRepository : IBaseRepository<WeeklySummary>
@@ -127,13 +127,13 @@ public interface IWeeklySummaryRepository : IBaseRepository<WeeklySummary>
     /// <summary>The summary of the most recent week, or null.</summary>
     Task<WeeklySummary?> FindLatestByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
 
-    /// <summary>Rule: One Summary Per Patient And Week (IA-2).</summary>
+    /// <summary>Rule: One Summary Per Patient And Week.</summary>
     Task<WeeklySummary?> FindByPatientIdAndWeekStartAsync(int patientId, DateOnly weekStart,
         CancellationToken cancellationToken = default);
 
     Task<IEnumerable<WeeklySummary>> ListByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
 
-    /// <summary>§12-#14. Summaries generated before the cut, oldest first.</summary>
+    /// <summary>Summaries generated before the cut, oldest first.</summary>
     Task<IEnumerable<WeeklySummary>> ListGeneratedBeforeAsync(DateTimeOffset cut, int batchSize,
         CancellationToken cancellationToken = default);
 }

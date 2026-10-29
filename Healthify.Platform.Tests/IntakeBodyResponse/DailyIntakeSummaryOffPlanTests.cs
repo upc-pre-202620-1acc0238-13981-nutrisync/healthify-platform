@@ -8,7 +8,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>MA-1 on the Intake facade: off-plan meals count, and are described, never judged.</summary>
+/// <summary>The Intake facade: off-plan meals count, and are described, never judged.</summary>
 public class DailyIntakeSummaryOffPlanTests
 {
     private const int PatientId = 1;

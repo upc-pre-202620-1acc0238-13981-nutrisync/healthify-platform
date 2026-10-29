@@ -1,12 +1,12 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-9. The practitioner's message to the patient for one plan version (PR14.IA "Mensaje para Ana: Notamos que
-///     tus cenas son más ligeras. Probemos con estas ideas."), shown in PT4 and PT3.M. Never empty, trimmed, at most
+///     The practitioner's message to the patient for one plan version (for example, noting that
+///     dinners are lighter and offering ideas), shown to the patient with the plan. Never empty, trimmed, at most
 ///     500 characters.
 /// </summary>
 /// <remarks>
-///     Business rule: A Person Confirms The Message (NC-9). Even when the AI drafts it (IA-8), it reaches a version
+///     Business rule: A Person Confirms The Message. Even when the AI drafts it, it reaches a version
 ///     only through a practitioner's action, so it is that person's message. It must never carry the diagnosis
 ///     (Diagnosis Never Leaves The Context): a soft rule for a human text, enforced on the AI draft by its validator.
 /// </remarks>

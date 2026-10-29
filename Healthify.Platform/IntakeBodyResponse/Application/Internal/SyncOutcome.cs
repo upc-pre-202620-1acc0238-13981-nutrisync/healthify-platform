@@ -28,7 +28,7 @@ public record SyncOutcome(
     int Rejected,
     IReadOnlyList<SyncedEntryOutcome> Entries);
 
-/// <summary>IN-4. What happened to one queued self weigh-in.</summary>
+/// <summary>What happened to one queued self weigh-in.</summary>
 /// <param name="ClientEntryId">The identifier the device generated while offline.</param>
 /// <param name="SelfWeighInId">The reading it became or already was, when there is one.</param>
 /// <param name="Outcome">Created, AlreadyPresent or Rejected (the values of <see cref="SyncedEntryOutcome" />).</param>
@@ -36,7 +36,7 @@ public record SyncOutcome(
 public record SyncedSelfWeighInOutcome(Guid ClientEntryId, int? SelfWeighInId, string Outcome, string? Reason);
 
 /// <summary>
-///     IN-4. What one run of Sync Pending Self Weigh Ins did.
+///     What one run of Sync Pending Self Weigh Ins did.
 /// </summary>
 /// <remarks>
 ///     A duplicate, resent or repeated inside the batch, is resolved in silence as AlreadyPresent: the device

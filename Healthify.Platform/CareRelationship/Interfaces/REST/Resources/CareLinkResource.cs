@@ -68,11 +68,11 @@ public record CareLinkResource(
     public int? LastAcknowledgedVersion { get; init; } = LastAcknowledgedVersion;
 
     /// <summary>
-    ///     CR-2. Whether the patient allows the AI functions to process their data. False when consent was
+    ///     Whether the patient allows the AI functions to process their data. False when consent was
     ///     withdrawn: withdrawing it also turns AI off.
     /// </summary>
     public bool AiProcessingGranted { get; init; } = AiProcessingGranted;
 
-    /// <summary>CR-2. When the patient last turned AI processing on or off; null while they never decided.</summary>
+    /// <summary>When the patient last turned AI processing on or off; null while they never decided.</summary>
     public DateTimeOffset? AiProcessingDecidedAt { get; init; } = AiProcessingDecidedAt;
 }

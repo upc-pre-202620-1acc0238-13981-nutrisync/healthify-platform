@@ -21,13 +21,13 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST;
 
 /// <summary>
-///     NC-2. The four steps of the guided consultation (EV-2 to EV-5). Each step persists on its own, so
-///     "Salir y continuar después" (EV-2.S) needs no endpoint: the consultation is resumed from PAC-1.C.
+///     The four steps of the guided consultation. Each step persists on its own, so leaving and coming back
+///     later needs no endpoint: the consultation is resumed from the patient record.
 /// </summary>
 /// <remarks>
 ///     Practitioner only, and only the practitioner leading the consultation saves its steps. The diagnosis of
 ///     step 2 stays pending, and the active diagnosis and plan version change together only when step 4
-///     publishes (NC-7).
+///     publishes.
 /// </remarks>
 [ApiController]
 [Route("api/v1/consultations")]

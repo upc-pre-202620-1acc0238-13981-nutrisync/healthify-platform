@@ -9,7 +9,7 @@ namespace Healthify.Platform.CareRelationship.Domain.Model.Aggregates;
 ///     rather than by convention.
 /// </summary>
 /// <remarks>
-///     Consent is stored as six columns (four, plus the two of AI processing since CR-2) and rebuilt
+///     Consent is stored as six columns (four, plus the two of AI processing) and rebuilt
 ///     as a value object by the <see cref="Consent" /> property. That follows the guidance for optional value objects: a nullable owned type is
 ///     fragile in EF Core, and consent is genuinely absent between establishing the link and the
 ///     patient granting it.
@@ -58,7 +58,7 @@ public partial class CareLink
     ///     Which path revoked the link. Null while the link is not revoked.
     /// </summary>
     /// <remarks>
-    ///     NOTE: technical field added by CR-1. Rows revoked before it existed were backfilled with
+    ///     NOTE: technical field added with practitioner switching. Rows revoked before it existed were backfilled with
     ///     ConsentWithdrawn, the only revocation path at the time.
     /// </remarks>
     public RevocationReason? RevocationReason { get; private set; }
@@ -81,8 +81,8 @@ public partial class CareLink
     public int? LastAcknowledgedVersion { get; private set; }
 
     /// <summary>
-    ///     CR-3. When the patient last acknowledged their targets (PAC-4 "Ana las vio el mismo día"). Null when they
-    ///     never did, and for acknowledgements given before CR-3, whose moment was not recorded.
+    ///     When the patient last acknowledged their targets ("Ana saw them the same day"). Null when they
+    ///     never did, and for acknowledgements given before the moment was recorded.
     /// </summary>
     public DateTimeOffset? LastAcknowledgedAt { get; private set; }
 
@@ -92,10 +92,10 @@ public partial class CareLink
     public DateTimeOffset? ConsentGrantedAt { get; private set; }
     public DateTimeOffset? ConsentWithdrawnAt { get; private set; }
 
-    /// <summary>CR-2. Persisted projection of <see cref="Consent.AiProcessingGranted" />.</summary>
+    /// <summary>Persisted projection of <see cref="Consent.AiProcessingGranted" />.</summary>
     public bool ConsentAiProcessingGranted { get; private set; }
 
-    /// <summary>CR-2. Persisted projection of <see cref="Consent.AiProcessingDecidedAt" />.</summary>
+    /// <summary>Persisted projection of <see cref="Consent.AiProcessingDecidedAt" />.</summary>
     public DateTimeOffset? ConsentAiProcessingDecidedAt { get; private set; }
 
     /// <summary>The consent value object, rebuilt from the mapped columns. Not itself a column.</summary>
@@ -105,7 +105,7 @@ public partial class CareLink
             ConsentAiProcessingGranted, ConsentAiProcessingDecidedAt);
 
     /// <summary>
-    ///     CR-2. Whether the AI functions may process this patient's data through this link right now: the link is
+    ///     Whether the AI functions may process this patient's data through this link right now: the link is
     ///     active and the patient said yes to AI. This is the answer behind HasAiProcessingConsent.
     /// </summary>
     public bool HasAiProcessingConsent => IsActive && ConsentAiProcessingGranted;
@@ -120,7 +120,7 @@ public partial class CareLink
     public bool IsRevoked => RevokedAt is not null;
 
     /// <summary>
-    ///     RM-1. Redeemed and still open, but the patient has not granted consent yet: the roster lists it as
+    ///     Redeemed and still open, but the patient has not granted consent yet: the roster lists it as
     ///     PendingConsent and nothing about the patient is readable through it. A withdrawn consent is not pending.
     /// </summary>
     public bool IsPendingConsent => ConsentGrantedAt is null && RevokedAt is null && DischargedAt is null;
@@ -139,7 +139,7 @@ public partial class CareLink
         // Business rule: Consent Scope Recorded (Care Relationship, Subflow 2.3)
         // The value object refuses an empty scope, so a consent without a recorded scope
         // cannot exist.
-        // CR-2: AI processing is part of the same consent, and off unless the patient turned it on. Leaving the
+        // AI processing is part of the same consent, and off unless the patient turned it on. Leaving the
         // switch off is not recorded as a decision.
         var now = DateTimeOffset.UtcNow;
         var consent = new Consent(true, command.Scope, now, null, command.AiProcessingGranted,
@@ -148,11 +148,11 @@ public partial class CareLink
         Apply(consent);
     }
 
-    /// <summary>CR-2. The patient turns AI processing on (PT2 "Usar funciones con IA").</summary>
+    /// <summary>The patient turns AI processing on (the "Use AI functions" switch).</summary>
     /// <returns>False when it was already on: nothing changes and nothing is published.</returns>
     public bool GrantAiProcessing()
     {
-        // Business rule: AI Processing Needs Live Consent (CR-2). Only an active link can be processed.
+        // Business rule: AI Processing Needs Live Consent. Only an active link can be processed.
         if (!IsActive)
             throw new InvalidOperationException("AI processing can only be granted on an active care link.");
         if (ConsentAiProcessingGranted) return false;
@@ -162,13 +162,13 @@ public partial class CareLink
     }
 
     /// <summary>
-    ///     CR-2. The patient turns AI processing off (PT21.IA). Always possible, like consent itself, and it changes
+    ///     The patient turns AI processing off. Always possible, like consent itself, and it changes
     ///     neither the plan nor the records.
     /// </summary>
     /// <returns>False when it was already off: nothing changes and nothing is published.</returns>
     public bool RevokeAiProcessing()
     {
-        // Business rule: Consent Always Revocable (Subflow 2.3), applied to AI processing (CR-2).
+        // Business rule: Consent Always Revocable (Subflow 2.3), applied to AI processing.
         if (!ConsentAiProcessingGranted) return false;
 
         Apply(Consent!.WithAiProcessing(false, DateTimeOffset.UtcNow));
@@ -184,7 +184,7 @@ public partial class CareLink
         if (Consent is not { IsGranted: true })
             throw new InvalidOperationException("There is no live consent to withdraw.");
 
-        // CR-2: withdrawing the whole consent also turns AI processing off.
+        // Withdrawing the whole consent also turns AI processing off.
         Apply(Consent.Withdraw(DateTimeOffset.UtcNow));
     }
 
@@ -200,7 +200,7 @@ public partial class CareLink
 
     /// <summary>
     ///     Subflow 2.5 - Revoke Care Link. Reached from the consent withdrawal policy, and from a
-    ///     redemption that explicitly replaces the active link (CR-1).
+    ///     redemption that explicitly replaces the active link.
     /// </summary>
     public void Revoke(RevocationReason reason)
     {
@@ -229,7 +229,7 @@ public partial class CareLink
     }
 
     /// <summary>
-    ///     Business rule: AI Processing Ends With The Link (CR-2). A revoked (any reason, a switch of practitioner
+    ///     Business rule: AI Processing Ends With The Link. A revoked (any reason, a switch of practitioner
     ///     included) or discharged link never keeps the consent to AI processing: it goes off in the same change,
     ///     at the same moment, so the content generated through it can be purged. A new link starts without it.
     /// </summary>

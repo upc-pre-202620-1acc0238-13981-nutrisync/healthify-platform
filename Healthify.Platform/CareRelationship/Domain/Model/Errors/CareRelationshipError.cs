@@ -60,15 +60,15 @@ public enum CareRelationshipError
     CareLinkNotActive,
 
     /// <summary>
-    ///     Rule: Switching Requires Another Practitioner (CR-1). A redemption that replaces the active
+    ///     Rule: Switching Requires Another Practitioner. A redemption that replaces the active
     ///     link was asked for, but the active link is already with the practitioner who issued the
     ///     invitation.
     /// </summary>
     AlreadyLinkedToThisPractitioner,
 
     /// <summary>
-    ///     Rule: AI Preferences Require Consent (IA-1). An AI function was turned on while the patient does not
-    ///     consent to AI processing (CR-2).
+    ///     Rule: AI Preferences Require Consent. An AI function was turned on while the patient does not
+    ///     consent to AI processing.
     /// </summary>
     AiConsentRequiredToEnableFeature,
 

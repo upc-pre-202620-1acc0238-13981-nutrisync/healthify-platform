@@ -10,7 +10,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-2. The invariants of the <see cref="Consultation" /> aggregate and its value objects: steps in order,
+///     The invariants of the <see cref="Consultation" /> aggregate and its value objects: steps in order,
 ///     only a consultation in progress moves, completion, discarding, the publication draft and the
 ///     Idempotency-Key; plus the guards of the publication draft and the key in the command service.
 /// </summary>

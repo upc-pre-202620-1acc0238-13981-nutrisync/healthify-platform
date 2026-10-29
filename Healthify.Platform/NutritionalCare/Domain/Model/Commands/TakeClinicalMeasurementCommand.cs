@@ -2,8 +2,8 @@ namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
 /// <summary>Subflow 3.1 - Take Clinical Measurement. Only a practitioner measures.</summary>
 /// <remarks>
-///     NC-3 keeps the free text protocol and the height required on the stand-alone endpoint, and
-///     appends the optional <paramref name="ProtocolChecks" /> of the EV-2 checklist.
+///     The free text protocol and the required height stay for measurements taken before the guided
+///     consultation, and the optional <paramref name="ProtocolChecks" /> of the step 1 checklist are appended.
 /// </remarks>
 public record TakeClinicalMeasurementCommand(
     int AssessmentId,

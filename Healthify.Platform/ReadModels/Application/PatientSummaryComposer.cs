@@ -7,8 +7,8 @@ using Healthify.Platform.NutritionalCare.Interfaces.Acl;
 namespace Healthify.Platform.ReadModels.Application;
 
 /// <summary>
-///     RM-2. The summary of one patient the practitioner opens from the roster (PAC-1), or the empty state of a
-///     patient without baseline (PAC-0).
+///     The summary of one patient the practitioner opens from the roster, or the empty state of a
+///     patient without baseline.
 /// </summary>
 /// <remarks>
 ///     Every section is nullable and degrades on its own: a facade that cannot answer leaves its section empty
@@ -17,12 +17,12 @@ namespace Healthify.Platform.ReadModels.Application;
 /// </remarks>
 /// <param name="PatientId">Whose summary.</param>
 /// <param name="Identity">"Ana Flores", or null when Iam cannot answer.</param>
-/// <param name="Care">The link that grants access ("vinculada desde 12 mar. 2026"), or null.</param>
-/// <param name="ActivePlanVersion">"Plan versión 3", or null when nothing is published ("sin plan").</param>
-/// <param name="Baseline">"Mujer · 31 años · 168 cm · hipotiroidismo"; null means PAC-0.</param>
-/// <param name="NextFollowUp">"Próxima consulta", or null.</param>
-/// <param name="ConsultationInProgress">PAC-1.C "Consulta en curso · Paso 1 de 4", or null.</param>
-/// <param name="SinceLastConsultation">"DESDE LA ÚLTIMA CONSULTA".</param>
+/// <param name="Care">The link that grants access and since when, or null.</param>
+/// <param name="ActivePlanVersion">The plan version in force, or null when nothing is published.</param>
+/// <param name="Baseline">Sex, age, height and conditions; null means the empty state.</param>
+/// <param name="NextFollowUp">The next consultation, or null.</param>
+/// <param name="ConsultationInProgress">The consultation in progress and its step, or null.</param>
+/// <param name="SinceLastConsultation">What changed since the last consultation.</param>
 public record PatientSummaryComposition(
     int PatientId,
     UserIdentityItem? Identity,
@@ -34,8 +34,8 @@ public record PatientSummaryComposition(
     SinceLastConsultationSection SinceLastConsultation);
 
 /// <summary>
-///     RM-2. PAC-1 "DESDE LA ÚLTIMA CONSULTA: Peso (autopesaje) −0,3 kg/sem · Tendencia · 4 semanas; Cumplimiento
-///     5 de 7 días".
+///     Since the last consultation: the home weigh in trend per week over four weeks, and compliance as
+///     "5 of 7 days".
 /// </summary>
 /// <param name="FromDate">The first day the section covers.</param>
 /// <param name="LastConsultationAt">When the last consultation was published, or null when there is none.</param>
@@ -50,11 +50,11 @@ public record SinceLastConsultationSection(
     ComplianceSummaryItem? Compliance);
 
 /// <summary>
-///     Composes the Patient Summary read model (RM-2) from the ACL contracts of the five contexts, and nothing
+///     Composes the Patient Summary read model from the ACL contracts of the five contexts, and nothing
 ///     else.
 /// </summary>
 /// <remarks>
-///     "Desde la última consulta" starts on the day the last consultation was published. Before the first one,
+///     The section since the last consultation starts on the day the last consultation was published. Before the first one,
 ///     the compliance covers the last 7 days and the weight trend the last 4 weeks. Days are UTC calendar days,
 ///     as everywhere else in Monitoring.
 /// </remarks>
@@ -66,10 +66,10 @@ public class PatientSummaryComposer(
     IMonitoringContextFacade monitoringContextFacade,
     TimeProvider timeProvider)
 {
-    /// <summary>Compliance window before the first consultation ("5 de 7 días · Últimos 7 días").</summary>
+    /// <summary>Compliance window before the first consultation (the last 7 days).</summary>
     public const int FirstConsultationComplianceDays = 7;
 
-    /// <summary>Weight trend window before the first consultation ("Tendencia · 4 semanas").</summary>
+    /// <summary>Weight trend window before the first consultation (the last 4 weeks).</summary>
     public const int FirstConsultationTrendWeeks = 4;
 
     /// <summary>Assembles the summary. Never throws: every facade degrades on its own.</summary>

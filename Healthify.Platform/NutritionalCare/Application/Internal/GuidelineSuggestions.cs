@@ -1,8 +1,8 @@
 namespace Healthify.Platform.NutritionalCare.Application.Internal;
 
 /// <summary>
-///     IA-7. The guideline chips EV-5 pre-selects for the diagnosis of step 2: catalog codes only, never free text.
-///     From the AI when it is available, valid and consented to; otherwise from the fixed table of NC-6
+///     The guideline chips step 4 pre-selects for the diagnosis of step 2: catalog codes only, never free text.
+///     From the AI when it is available, valid and consented to; otherwise from the fixed default table
 ///     (<c>NutritionalCare:DefaultGuidelinesByDiagnosis</c>).
 /// </summary>
 /// <param name="Suggested">Codes of the guideline catalog, each once.</param>

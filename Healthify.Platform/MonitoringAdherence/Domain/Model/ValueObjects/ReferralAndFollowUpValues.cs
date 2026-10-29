@@ -70,8 +70,8 @@ public sealed record ReferralReason
 ///     end of this aggregate's story and nothing else's: no command anywhere reads it to revoke a
 ///     link, and there is no path from a missed visit to a discharge.
 ///     <c>Completed</c> is reached when a consultation of the guided flow is published for the visit
-///     (MA-2, policy on Consultation Completed). <c>Cancelled</c> is reached by the practitioner or by a
-///     discharge (MA-2/MA-5, CR-4); it is not a judgement on the patient either.
+///     (policy on Consultation Completed). <c>Cancelled</c> is reached by the practitioner or by a
+///     discharge; it is not a judgement on the patient either.
 /// </remarks>
 public sealed record FollowUpState
 {
@@ -107,8 +107,7 @@ public sealed record FollowUpState
 }
 
 /// <summary>
-///     MA-2. How the patient should prepare for the visit (PR17 "¿Cómo debe prepararse?", PT25.1 "CÓMO
-///     PREPARARTE").
+///     How the patient should prepare for the visit, as the practitioner sets it and the patient reads it.
 /// </summary>
 /// <remarks>
 ///     A closed list on purpose: the patient reads these in their app as instructions their practitioner
@@ -135,7 +134,7 @@ public sealed record PreparationInstruction
 
     /// <summary>
     ///     The instructions of one visit: each one validated, duplicates removed, in the order given.
-    ///     Null or empty means "sin indicaciones de preparación" (PT25.1.V).
+    ///     Null or empty means no preparation instructions.
     /// </summary>
     public static IReadOnlyList<PreparationInstruction> ListOf(IEnumerable<string>? values)
     {
@@ -148,7 +147,7 @@ public sealed record PreparationInstruction
     }
 }
 
-/// <summary>MA-2. Whether the visit is in person (the default, PT25 "presencial") or remote.</summary>
+/// <summary>Whether the visit is in person (the default) or remote.</summary>
 public sealed record ConsultationModality
 {
     public const string InPerson = "InPerson";

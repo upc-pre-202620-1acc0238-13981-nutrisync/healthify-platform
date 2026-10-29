@@ -18,7 +18,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.Iam;
 
 /// <summary>
-///     IAM-2. «¿Olvidaste tu contraseña?»: a six-digit code goes by email; verifying it within
+///     Forgot password: a six-digit code goes by email; verifying it within
 ///     <c>Iam:PasswordResetCodeMinutes</c> and five attempts hands out a reset token, and the token sets a new
 ///     password once, within <c>Iam:PasswordResetTokenMinutes</c>. Every session of the account ends.
 /// </summary>

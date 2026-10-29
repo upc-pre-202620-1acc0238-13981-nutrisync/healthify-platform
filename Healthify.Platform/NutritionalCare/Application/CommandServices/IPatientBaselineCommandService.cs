@@ -7,11 +7,11 @@ namespace Healthify.Platform.NutritionalCare.Application.CommandServices;
 
 public interface IPatientBaselineCommandService
 {
-    /// <summary>NC-1 - Record the patient baseline.</summary>
+    /// <summary>Record the patient baseline.</summary>
     Task<Result<PatientBaseline, NutritionalCareError>> Handle(RecordPatientBaselineCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>NC-1 - Edit the patient baseline.</summary>
+    /// <summary>Edit the patient baseline.</summary>
     Task<Result<PatientBaseline, NutritionalCareError>> Handle(UpdatePatientBaselineCommand command,
         CancellationToken cancellationToken = default);
 }

@@ -9,7 +9,7 @@ using static Healthify.Platform.Tests.TestSupport.ProblemResponses;
 
 namespace Healthify.Platform.Tests.Iam;
 
-/// <summary>X-3. Every Iam problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
+/// <summary>Every Iam problem carries <c>extensions.code</c>; status, title and detail do not change.</summary>
 public class ErrorCodeExtensionTests
 {
     private readonly Microsoft.Extensions.Localization.IStringLocalizer<IamMessages> _localizer =

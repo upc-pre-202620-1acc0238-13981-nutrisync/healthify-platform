@@ -4,7 +4,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
-///     NC-8. JSON shape of <c>nutrition_plans.patient_change_summary</c>:
+///     JSON shape of <c>nutrition_plans.patient_change_summary</c>:
 ///     <c>[{ "type": "GuidelineAdded", "code": "ReduceSalt" }, { "type": "EnergyChanged", "from": 1796, "to": 1650 }]</c>.
 ///     Absent properties are omitted. Stored rows are rehydrated without validation.
 /// </summary>

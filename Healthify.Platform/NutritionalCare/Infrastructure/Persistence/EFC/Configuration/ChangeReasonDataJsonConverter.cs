@@ -5,7 +5,7 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
-///     X-2. JSON shape of <c>nutrition_plans.change_reason_data</c>: <c>{ "date": "2026-09-18" }</c> for
+///     JSON shape of <c>nutrition_plans.change_reason_data</c>: <c>{ "date": "2026-09-18" }</c> for
 ///     NewConsultation, <c>{ "date": "2026-09-08", "signalType": "SustainedDeviation" }</c> for SignalAdjustment.
 ///     Absent properties are omitted; the backfill of <c>Nutrition_ChangeReasonCodes</c> writes the same shape.
 /// </summary>

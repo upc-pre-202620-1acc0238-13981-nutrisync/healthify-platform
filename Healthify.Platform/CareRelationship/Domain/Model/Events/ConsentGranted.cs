@@ -8,7 +8,7 @@ namespace Healthify.Platform.CareRelationship.Domain.Model.Events;
 ///     to a past fact. No other context may declare a handler for this event.
 /// </summary>
 /// <remarks>
-///     CR-2 appends <c>AiProcessingGranted</c>. When it is true, <see cref="AiProcessingConsentChanged" /> is
+///     <c>AiProcessingGranted</c> is last and optional. When it is true, <see cref="AiProcessingConsentChanged" /> is
 ///     published as well: that is the event the AI functions react to.
 /// </remarks>
 public record ConsentGranted(int CareLinkId, int PatientId, int PractitionerId, string Scope,

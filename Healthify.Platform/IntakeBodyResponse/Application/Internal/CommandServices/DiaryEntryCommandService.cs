@@ -34,16 +34,16 @@ public class DiaryEntryCommandService(
 {
     private const int DefaultRetroactiveLoggingWindowHours = 48;
 
-    /// <summary>IN-6. DECISIÓN IN-6: an idea has two to eight ingredients (IA-3); ten leaves room for a hand-made group.</summary>
+    /// <summary>An idea has two to eight ingredients; ten leaves room for a hand-made group.</summary>
     public const int MaximumMealGroupItems = 10;
 
     /// <summary>Subflow 4.2 - Log Meal By Photo.</summary>
     /// <remarks>
-    ///     IN-7: with an <c>analysisId</c>, the proposal is the one the AI made on the server from the photo
-    ///     (<see cref="LogAnalyzedPhotoMeal" />). Without it, the legacy flow of IN-2: the reference food, the portion
+    ///     With an <c>analysisId</c>, the proposal is the one the AI made on the server from the photo
+    ///     (<see cref="LogAnalyzedPhotoMeal" />). Without it, the legacy flow: the reference food, the portion
     ///     and the confidence arrive already computed on the device. This method creates the entry and announces it;
     ///     without a confirmation, the policy of Subflow 4.2 is what stores the proposal.
-    ///     IN-7: a <c>clientEntryId</c> already stored for this patient returns that entry, with no new entry and no
+    ///     A <c>clientEntryId</c> already stored for this patient returns that entry, with no new entry and no
     ///     event (the day is not evaluated again). It is checked first, so a retry is answered even after the
     ///     analysis expired.
     /// </remarks>
@@ -52,7 +52,7 @@ public class DiaryEntryCommandService(
     {
         if (command.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
 
-        // Business rule: Idempotency By Aggregate Id (Subflow 4.6, IN-7)
+        // Business rule: Idempotency By Aggregate Id (Subflow 4.6)
         if (await ReplayAsync(command.PatientId, command.ClientEntryId, cancellationToken) is { } replay)
             return replay;
 
@@ -77,8 +77,8 @@ public class DiaryEntryCommandService(
         var timestamp = BuildLocalTimestamp(command.LocalTimestamp, out var timestampError);
         if (timestamp is null) return Failure(timestampError);
 
-        // IN-2: the patient already confirmed or adjusted on the device (PT7). Without a
-        // confirmation, nothing below changes: the entry waits as «Por confirmar».
+        // The patient already confirmed or adjusted on the device. Without a
+        // confirmation, nothing below changes: the entry waits to be confirmed.
         if (command.Confirmation is not null)
             return await LogConfirmedPhotoMeal(command, command.Confirmation, timestamp, confidence,
                 cancellationToken);
@@ -87,7 +87,7 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-7. A photo meal whose proposal the AI made on the server (<c>POST /patients/{id}/meal-photo-analyses</c>).
+    ///     A photo meal whose proposal the AI made on the server (<c>POST /patients/{id}/meal-photo-analyses</c>).
     /// </summary>
     /// <remarks>
     ///     The order is the specification:
@@ -147,7 +147,7 @@ public class DiaryEntryCommandService(
             : await LogUnconfirmedPhotoMeal(proposed, timestamp, confidence, analysis, cancellationToken);
     }
 
-    /// <summary>Subflow 4.2 as before IN-2: the entry waits as «Por confirmar» and the policy stores the proposal.</summary>
+    /// <summary>Subflow 4.2 as before device confirmation: the entry waits to be confirmed and the policy stores the proposal.</summary>
     private async Task<Result<DiaryEntry, IntakeError>> LogUnconfirmedPhotoMeal(LogMealByPhotoCommand command,
         LocalTimestamp timestamp, Confidence confidence, MealPhotoAnalysis? analysis,
         CancellationToken cancellationToken)
@@ -179,15 +179,15 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-2. A photo meal saved already confirmed: the proposal the device computed and what the
+    ///     A photo meal saved already confirmed: the proposal the device computed and what the
     ///     patient decided about it are stored together, in one transaction.
     /// </summary>
     /// <remarks>
     ///     Business rule: Proposal Kept Alongside Confirmation (Subflow 4.2). The proposal is stored
-    ///     first and the confirmation beside it, so «Lo que propusimos: 320 g» survives a 300 g answer.
+    ///     first and the confirmation beside it, so "what we proposed: 320 g" survives a 300 g answer.
     ///     The events leave in the same order as the two-request flow, and MealLogged says the
     ///     confirmation follows, so the estimation policy does not store the proposal a second time and
-    ///     Monitoring evaluates the day once (MA-1).
+    ///     Monitoring evaluates the day once.
     /// </remarks>
     private async Task<Result<DiaryEntry, IntakeError>> LogConfirmedPhotoMeal(LogMealByPhotoCommand command,
         PhotoConfirmation confirmation, LocalTimestamp timestamp, Confidence confidence,
@@ -201,7 +201,7 @@ public class DiaryEntryCommandService(
         if (isAdjusted && (confirmation.ReferenceFoodId is not > 0 || confirmation.PortionGrams is not > 0m))
             return Failure(IntakeError.InvalidEstimateConfirmation);
 
-        // Business rule: Plan Adherence Required On Confirmation (IN-1)
+        // Business rule: Plan Adherence Required On Confirmation
         var adherence = BuildAnswer(command.PlanAdherence, out var adherenceError);
         if (adherence is null) return Failure(adherenceError);
 
@@ -219,7 +219,7 @@ public class DiaryEntryCommandService(
             var entry = new DiaryEntry(command.PatientId, timestamp, new Provenance(Provenance.Photo),
                 new SyncState(SyncState.Synced), command.PhotoRef, command.ClientEntryId);
 
-            // IN-7: with an analysis, the proposal is the AI's, traced to its generation.
+            // With an analysis, the proposal is the AI's, traced to its generation.
             entry.ProposeEstimate(analysis?.ToProposal(DateTimeOffset.UtcNow) ??
                                   new ProposedEstimate(command.ReferenceFoodId, command.PortionGrams, confidence,
                                       DateTimeOffset.UtcNow));
@@ -322,7 +322,7 @@ public class DiaryEntryCommandService(
     public async Task<Result<DiaryEntry, IntakeError>> Handle(ConfirmEstimateCommand command,
         CancellationToken cancellationToken = default)
     {
-        // Business rule: Plan Adherence Required On Confirmation (IN-1)
+        // Business rule: Plan Adherence Required On Confirmation
         var adherence = BuildAnswer(command.PlanAdherence, out var adherenceError);
         if (adherence is null) return Failure(adherenceError);
 
@@ -363,7 +363,7 @@ public class DiaryEntryCommandService(
     public async Task<Result<DiaryEntry, IntakeError>> Handle(AdjustEstimateCommand command,
         CancellationToken cancellationToken = default)
     {
-        // Business rule: Plan Adherence Required On Confirmation (IN-1)
+        // Business rule: Plan Adherence Required On Confirmation
         var adherence = BuildAnswer(command.PlanAdherence, out var adherenceError);
         if (adherence is null) return Failure(adherenceError);
 
@@ -422,14 +422,14 @@ public class DiaryEntryCommandService(
     {
         if (command.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
 
-        // Business rule: Idempotency By Aggregate Id (Subflow 4.6, IN-7). A retry returns the stored entry.
+        // Business rule: Idempotency By Aggregate Id (Subflow 4.6). A retry returns the stored entry.
         if (await ReplayAsync(command.PatientId, command.ClientEntryId, cancellationToken) is { } replay)
             return replay;
 
         var timestamp = BuildLocalTimestamp(command.LocalTimestamp, out var timestampError);
         if (timestamp is null) return Failure(timestampError);
 
-        // Business rule: Plan Adherence Required On Confirmation (IN-1). What the patient types is a
+        // Business rule: Plan Adherence Required On Confirmation. What the patient types is a
         // confirmation from the start, so it answers the question from the start.
         var adherence = BuildAnswer(command.PlanAdherence, out var adherenceError);
         if (adherence is null) return Failure(adherenceError);
@@ -454,7 +454,7 @@ public class DiaryEntryCommandService(
                     : Failure(IntakeError.DuplicatedClientEntryId);
 
             // ConfirmedOnCreation: the confirmation below follows in this same request, so the day is
-            // evaluated once, with its final totals (MA-1).
+            // evaluated once, with its final totals.
             await mediator.PublishAsync(
                 new MealLogged(entry.Id.Value, entry.PatientId, entry.DeclaredLocalTimestamp,
                     entry.Provenance.Value, null, null, null, entry.PlanAdherence.Value,
@@ -476,20 +476,20 @@ public class DiaryEntryCommandService(
         }
     }
 
-    /// <summary>IN-6 - Log a meal in a group (§12-#4, option A).</summary>
+    /// <summary>Log a meal in a group.</summary>
     /// <remarks>
-    ///     DECISIÓN §12-#4: N <c>Manual</c> entries with a shared <c>MealGroupId</c> (option A), not an entry with
+    ///     N <c>Manual</c> entries with a shared <c>MealGroupId</c>, not an entry with
     ///     several items: the model, Monitoring and synchronisation stay as they are.
     ///     The order is the specification:
     ///     1. the moment (with the retroactive window, as every interactive log), the items (1 to 10, each with a
-    ///     food and a positive portion), the origin and the answer: «¿Estaba en tu plan?» is InPlan by default for an
-    ///     idea, which respects the plan by construction (IA-3), and an explicit answer of the patient is kept;
+    ///     food and a positive portion), the origin and the answer: "was it in your plan?" is InPlan by default for an
+    ///     idea, which respects the plan by construction, and an explicit answer of the patient is kept;
     ///     2. every food resolved in the local catalog (Food Resolved From Local Catalog); one that is not leaves
-    ///     nothing stored, and the app lets the patient adjust it (PT8/PT9);
+    ///     nothing stored, and the app lets the patient adjust it;
     ///     3. the entries, confirmed from the start, in one save: all of them or none;
     ///     4. the events after the commit: each entry announces itself as a manual log does, but leaves the day to
     ///     <see cref="MealGroupLogged" />, so Monitoring evaluates the day once.
-    ///     DECISIÓN IN-6: <c>origin.mealIdeaId</c> is accepted but not stored: the MD adds only <c>origin</c> and
+    ///     <c>origin.mealIdeaId</c> is accepted but not stored: the spec adds only <c>origin</c> and
     ///     <c>meal_group_id</c>, and an idea lives two hours in a cache.
     /// </remarks>
     public async Task<Result<MealGroupLogOutcome, IntakeError>> Handle(LogMealGroupManuallyCommand command,
@@ -517,12 +517,12 @@ public class DiaryEntryCommandService(
                 return GroupFailure(IntakeError.InvalidEntryOrigin);
             }
 
-        // IN-7. Business rule: Idempotency By Aggregate Id (Subflow 4.6), per item: a resent meal returns the
+        // Business rule: Idempotency By Aggregate Id (Subflow 4.6), per item: a resent meal returns the
         // entries it already became.
         var replay = await ReplayGroupAsync(command.PatientId, items, cancellationToken);
         if (replay is not null) return replay;
 
-        // Business rule: Plan Adherence Required On Confirmation (IN-1). An idea of IA-3 is in the plan unless the
+        // Business rule: Plan Adherence Required On Confirmation. A meal idea is in the plan unless the
         // patient says otherwise.
         var declared = string.IsNullOrWhiteSpace(command.PlanAdherence) && origin is { IsMealIdea: true }
             ? PlanAdherence.InPlan
@@ -564,7 +564,7 @@ public class DiaryEntryCommandService(
                 throw;
             }
 
-            // 4. Each entry as a manual log, the day once for the whole meal (MA-1).
+            // 4. Each entry as a manual log, the day once for the whole meal.
             foreach (var entry in entries)
             {
                 await mediator.PublishAsync(
@@ -590,46 +590,6 @@ public class DiaryEntryCommandService(
         {
             logger.LogError(ex, "Could not log a meal group for patient {PatientId}", command.PatientId);
             return GroupFailure(IntakeError.UnexpectedError);
-        }
-    }
-
-    /// <summary>Subflow 4.4 - Log Off Plan Meal. One tap.</summary>
-    /// <remarks>
-    ///     Business rules: No Detail Requested, No Deviation Computed, No Visual Penalty and Streak
-    ///     Rewards Logging Not Deficit (Subflow 4.4). Notice how short this method is. Nothing asks
-    ///     what was eaten, nothing computes anything from it, and the event that leaves carries the
-    ///     fact and the moment. The whole point is that declaring costs less than omitting.
-    /// </remarks>
-    public async Task<Result<DiaryEntry, IntakeError>> Handle(LogOffPlanMealCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        if (command.PatientId <= 0) return Failure(IntakeError.PatientWriteOnly);
-
-        var timestamp = BuildLocalTimestamp(command.LocalTimestamp, out var timestampError);
-        if (timestamp is null) return Failure(timestampError);
-
-        try
-        {
-            // Deprecated by IN-1: kept working, unchanged, for clients that still send the one tap.
-            var entry = DiaryEntry.LegacyOffPlan(command.PatientId, timestamp, new SyncState(SyncState.Synced));
-
-            await diaryEntryRepository.AddAsync(entry, cancellationToken);
-            await unitOfWork.CompleteAsync(cancellationToken);
-
-            await mediator.PublishAsync(
-                new MealLogged(entry.Id.Value, entry.PatientId, entry.DeclaredLocalTimestamp,
-                    entry.Provenance.Value, null, null, null, entry.PlanAdherence.Value), cancellationToken);
-            await mediator.PublishAsync(
-                new OffPlanEntryLogged(entry.Id.Value, entry.PatientId, entry.DeclaredLocalTimestamp),
-                cancellationToken);
-
-            return Success(entry);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Could not log an off-plan meal for patient {PatientId}",
-                command.PatientId);
-            return Failure(IntakeError.UnexpectedError);
         }
     }
 
@@ -679,7 +639,7 @@ public class DiaryEntryCommandService(
             }
         }
 
-        // MA-1: Late Entry Re Evaluates Its Own Day Only, once per day per batch. The per-entry events
+        // Late Entry Re Evaluates Its Own Day Only, once per day per batch. The per-entry events
         // above say they leave the evaluation to this announcement.
         if (touchedDays.Count > 0)
             await mediator.PublishAsync(new DiaryBatchSynchronized(command.PatientId, touchedDays.ToList()),
@@ -716,7 +676,7 @@ public class DiaryEntryCommandService(
             if (!TryBuildSyncAnswer(pending, out var resentAnswer))
                 return Rejected(pending, IntakeError.InvalidPlanAdherence);
 
-            // IN-1: a copy that is still «Por confirmar» on the device carries nothing to reconcile.
+            // A copy that still waits to be confirmed on the device carries nothing to reconcile.
             if (pending.ReferenceFoodId is null || pending.PortionGrams is null || pending.Confirmed == false)
             {
                 await MarkSynchronizedAsync(existing, cancellationToken);
@@ -727,7 +687,7 @@ public class DiaryEntryCommandService(
             // Business rule: Last Write Wins (Subflow 4.6), applied to the estimate and to nothing
             // else. The moment is not a field this can reach.
             existing.MarkConflicted();
-            // IN-1: the answer travels with the confirmation and is recorded once, never rewritten.
+            // The answer travels with the confirmation and is recorded once, never rewritten.
             var changed = existing.ResolveWithLatest(pending.ReferenceFoodId.Value,
                 pending.PortionGrams.Value, DateTimeOffset.UtcNow, resentAnswer);
             existing.MarkSynchronized();
@@ -782,7 +742,7 @@ public class DiaryEntryCommandService(
 
         // The entry is written in the state it had on the device, then moved forward as its own
         // committed step, so that the queue is real rather than a formality. A queue sent by a client
-        // older than IN-1 may still declare OffPlan as a provenance: it is accepted as the legacy entry
+        // that predates the plan question may still declare OffPlan as a provenance: it is accepted as the legacy entry
         // it is, rather than discarding something the patient recorded.
         var entry = provenance.IsOffPlan
             ? DiaryEntry.LegacyOffPlan(patientId, localTimestamp, new SyncState(SyncState.Pending),
@@ -798,7 +758,7 @@ public class DiaryEntryCommandService(
 
             if (pending.Confirmed == false && provenance.IsPhoto && pending.Confidence is not null)
             {
-                // IN-1: a photo entry the patient had not confirmed yet («Por confirmar») is stored as
+                // A photo entry the patient had not confirmed yet is stored as
                 // the proposal it is, and does not count towards the day until confirmed.
                 Confidence confidence;
                 try
@@ -851,14 +811,14 @@ public class DiaryEntryCommandService(
         diaryEntryRepository.Update(entry);
         await unitOfWork.CompleteAsync(cancellationToken);
 
-        // Only reached from synchronisation: the batch announces the day once (MA-1).
+        // Only reached from synchronisation: the batch announces the day once.
         await mediator.PublishAsync(
             new EntrySynchronized(entry.Id.Value, entry.PatientId, entry.DeclaredLocalTimestamp,
                 ReEvaluatesDay: false), cancellationToken);
     }
 
     /// <summary>
-    ///     IN-7. Business rule: Idempotency By Aggregate Id (Subflow 4.6) for the interactive logs. The entry a
+    ///     Business rule: Idempotency By Aggregate Id (Subflow 4.6) for the interactive logs. The entry a
     ///     <paramref name="clientEntryId" /> already became, as the answer to a retry; null when it is new.
     /// </summary>
     /// <remarks>
@@ -885,7 +845,7 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-7. The entries a resent meal group already became: every item with its <c>clientEntryId</c> stored for
+    ///     The entries a resent meal group already became: every item with its <c>clientEntryId</c> stored for
     ///     this patient, in one group. Null when none of them is stored (a new meal). Any other mix (some stored,
     ///     another patient's, or an identifier repeated in the request) is <see cref="IntakeError.DuplicatedClientEntryId" />.
     /// </summary>
@@ -923,7 +883,7 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-7. Saves a new entry. When the save loses a race against a retry of the same log (the unique index on
+    ///     Saves a new entry. When the save loses a race against a retry of the same log (the unique index on
     ///     the client identifier or on the photo analysis kept the other row), returns the entry that won; null when
     ///     this one was stored.
     /// </summary>
@@ -988,7 +948,7 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-1. Builds the patient's answer to «¿Esta comida estaba en tu plan?» for a confirmation.
+    ///     Builds the patient's answer to "was this meal in your plan?" for a confirmation.
     /// </summary>
     /// <remarks>
     ///     Missing, blank or NotAnswered is <see cref="IntakeError.PlanAdherenceRequired" />: a
@@ -1025,7 +985,7 @@ public class DiaryEntryCommandService(
     }
 
     /// <summary>
-    ///     IN-1, synchronisation. The answer is optional here: a queue from an older client never
+    ///     Synchronisation. The answer is optional here: a queue from an older client never
     ///     asked the question and is accepted as legacy (it stays NotAnswered). A value that is
     ///     present must still be a valid one.
     /// </summary>

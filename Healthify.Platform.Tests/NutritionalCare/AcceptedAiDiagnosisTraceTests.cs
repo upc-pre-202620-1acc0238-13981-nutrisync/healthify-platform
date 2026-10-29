@@ -9,7 +9,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     IA-6 / NC-4. Business rule: Accepted Suggestion Is Traceable. "Usar sugerencia" sends back the
+///     Business rule: Accepted Suggestion Is Traceable. "Use suggestion" sends back the
 ///     <c>aiGenerationId</c> of the suggestion card; it travels resource → command → pending diagnosis → active
 ///     diagnosis at step 4, and is what <c>nutritional_diagnoses.ai_generation_id</c> keeps
 ///     (<see cref="SecondConsultationMySqlTests" /> reads the column back).
@@ -35,7 +35,7 @@ public class AcceptedAiDiagnosisTraceTests
         var consultationId = await ConsultationFlow.StartAsync(_care.Consultation, PatientId, PractitionerId);
         await ConsultationFlow.MeasureAsync(_care.Consultation, consultationId, PractitionerId, 74.2m);
 
-        // The body of PUT /consultations/{id}/diagnosis after "Usar sugerencia".
+        // The body of PUT /consultations/{id}/diagnosis after "Use suggestion".
         var command = ConsultationCommandAssembler.ToCommand(consultationId, PractitionerId,
             new IssueConsultationDiagnosisResource(DiagnosisCode.OverweightGradeI, DiagnosisSource.AiSuggestionAccepted,
                 GenerationId, "IMC 26.3 kg/m² con cintura de 88 cm."));

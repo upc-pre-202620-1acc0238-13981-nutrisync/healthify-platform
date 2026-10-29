@@ -13,12 +13,12 @@ public sealed record DailyIntakeTotals(
 
 /// <summary>
 ///     The day's totals, shared by the Intake facade (what Monitoring and the composers read) and the meal ideas
-///     (IA-3, what is left today), so both add up the same way.
+///     (what is left today), so both add up the same way.
 /// </summary>
 /// <remarks>
 ///     Computed rather than stored: a stored total would drift the moment a catalog entry is corrected. The catalog
 ///     holds nutrients per 100 grams, the entry holds the portion. Only confirmed estimates are counted: a proposal
-///     the patient has not spoken about is a model's guess. MA-1: every confirmed entry counts, whatever its
+///     the patient has not spoken about is a model's guess. Every confirmed entry counts, whatever its
 ///     answer; an off-plan meal logged with a food and a portion is part of the day's intake.
 /// </remarks>
 public static class DailyIntakeCalculator

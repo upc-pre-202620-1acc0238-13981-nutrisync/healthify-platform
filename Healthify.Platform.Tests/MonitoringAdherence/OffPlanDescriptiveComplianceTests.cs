@@ -3,7 +3,7 @@ using Healthify.Platform.MonitoringAdherence.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
-/// <summary>MA-1. Off-plan is described on the day and never moves Met, Exceeded or Short.</summary>
+/// <summary>Off-plan is described on the day and never moves Met, Exceeded or Short.</summary>
 public class OffPlanDescriptiveComplianceTests
 {
     private static readonly DateOnly Thursday = new(2026, 9, 10);

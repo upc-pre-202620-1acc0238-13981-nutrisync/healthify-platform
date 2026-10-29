@@ -11,9 +11,9 @@ namespace Healthify.Platform.IntakeBodyResponse.Interfaces.Acl;
 ///     <paramref name="HasAnyEntry" /> exists so that a consumer can tell an unlogged day from a day
 ///     that was logged and added up to little. Those are different facts and only one of them is
 ///     about eating.
-///     <paramref name="OffPlanEntryCount" /> counts the entries the patient answered as off the plan
-///     (IN-1), legacy one-tap entries included, and <paramref name="OffPlanEnergyKcal" /> is the part
-///     of <paramref name="EnergyKcal" /> they confirmed (MA-1). Both are descriptive, not a verdict.
+///     <paramref name="OffPlanEntryCount" /> counts the entries the patient answered as off the plan,
+///     legacy one-tap entries included, and <paramref name="OffPlanEnergyKcal" /> is the part
+///     of <paramref name="EnergyKcal" /> they confirmed. Both are descriptive, not a verdict.
 /// </remarks>
 public record DailyIntakeSummaryItem(
     int PatientId,
@@ -31,7 +31,7 @@ public record DailyIntakeSummaryItem(
 public record WeightTrendPointItem(DateOnly Date, decimal SmoothedValueKg);
 
 /// <summary>
-///     RM-2/IN-5. Where the smoothed home series went over the last weeks ("−0,3 kg/sem · 4 semanas").
+///     Where the smoothed home series went over the last weeks (such as -0.3 kg per week over 4 weeks).
 ///     Primitives only; never a single day's reading. Slope and change are null with fewer than two points.
 /// </summary>
 public record WeightTrendSummaryItem(decimal? SlopeKgPerWeek, decimal? ChangeKg, int PointCount);
@@ -53,7 +53,7 @@ public record WeightTrendSummaryItem(decimal? SlopeKgPerWeek, decimal? ChangeKg,
 /// </remarks>
 /// <param name="DiaryEntryId">Identifier of the entry.</param>
 /// <param name="LocalTimestamp">The moment the patient declared, exactly as their device gave it.</param>
-/// <param name="Provenance">Photo or Manual; OffPlan only on legacy entries (IN-1).</param>
+/// <param name="Provenance">Photo or Manual; OffPlan only on legacy entries.</param>
 /// <param name="SyncState">Pending, Synced or Conflicted.</param>
 /// <param name="ProposedReferenceFoodId">What the estimator proposed, or null while it has not run.</param>
 /// <param name="ProposedFoodName">Local name of the proposed food, or null.</param>
@@ -64,11 +64,11 @@ public record WeightTrendSummaryItem(decimal? SlopeKgPerWeek, decimal? ChangeKg,
 /// <param name="ConfirmedPortionGrams">The confirmed portion in grams, or null.</param>
 /// <param name="ConfirmedAt">When the patient spoke, or null.</param>
 /// <param name="PlanAdherence">
-///     IN-1. InPlan, OffPlan, or NotAnswered while the entry waits to be confirmed. Descriptive only:
+///     InPlan, OffPlan, or NotAnswered while the entry waits to be confirmed. Descriptive only:
 ///     it is there to help the practitioner understand the week, never to grade it.
 /// </param>
-/// <param name="IsCountedTowardsTargets">RM-3. Whether it adds to the day: only a confirmed entry is intake.</param>
-/// <param name="FoodName">RM-3. The food the entry shows: the confirmed one, or the proposed one while it waits.</param>
+/// <param name="IsCountedTowardsTargets">Whether it adds to the day: only a confirmed entry is intake.</param>
+/// <param name="FoodName">The food the entry shows: the confirmed one, or the proposed one while it waits.</param>
 public record DiaryEntryItem(
     int DiaryEntryId,
     DateTimeOffset LocalTimestamp,
@@ -87,7 +87,7 @@ public record DiaryEntryItem(
     string? FoodName = null);
 
 /// <summary>
-///     IA-2/IA-4/IA-5. When an entry was declared and whether it counts, nothing more: no food, no portion, no
+///     When an entry was declared and whether it counts, nothing more: no food, no portion, no
 ///     photo. Enough for the AI facts of Monitoring to tell breakfast from dinner. Primitives only.
 /// </summary>
 /// <param name="Date">The local calendar day the patient was living.</param>
@@ -113,8 +113,8 @@ public record DiaryEntryMomentItem(
 /// <param name="FatG">Fat of that portion, or null.</param>
 /// <param name="IsConfirmed">Whether the patient confirmed it (only a confirmed entry is intake).</param>
 /// <param name="PlanAdherence">InPlan, OffPlan or NotAnswered.</param>
-/// <param name="Provenance">Photo or Manual; OffPlan only on legacy entries (IN-1).</param>
-/// <param name="Origin">MealIdea for an entry logged from a meal idea (IN-6), otherwise null.</param>
+/// <param name="Provenance">Photo or Manual; OffPlan only on legacy entries.</param>
+/// <param name="Origin">MealIdea for an entry logged from a meal idea, otherwise null.</param>
 public record DiaryExportEntryItem(
     DateTimeOffset LocalTimestamp,
     string? FoodName,
@@ -135,7 +135,7 @@ public record DiaryExportEntryItem(
 /// <param name="LocalTimestamp">The moment declared, on the device clock and offset.</param>
 /// <param name="ValueKg">The reading in kilograms.</param>
 /// <param name="Fasted">Whether the patient said they were fasting.</param>
-/// <param name="FollowsProtocol">Whether it follows the protocol in force (IN-3), so it smooths the trend.</param>
+/// <param name="FollowsProtocol">Whether it follows the protocol in force, so it smooths the trend.</param>
 public record SelfWeighInExportItem(DateTimeOffset LocalTimestamp, decimal ValueKg, bool Fasted, bool FollowsProtocol);
 
 /// <summary>
@@ -162,17 +162,17 @@ public interface IIntakeContextFacade
         CancellationToken ct = default);
 
     /// <summary>
-    ///     RM-2/IN-5. Slope and change of the smoothed series over the last <paramref name="weeks" /> weeks
+    ///     Slope and change of the smoothed series over the last <paramref name="weeks" /> weeks
     ///     (clamped to 1..52), or null when there is no trend or the lookup fails.
     /// </summary>
     /// <remarks>
-    ///     IN-5: the same range and figures as <c>GET /patients/{id}/weight-trend?weeks=</c>, for the composers
-    ///     (RM-2, RM-3, RM-4) and, later, the AI facts (IA-2, IA-5).
+    ///     The same range and figures as <c>GET /patients/{id}/weight-trend?weeks=</c>, for the composers
+    ///     and, later, the AI facts.
     /// </remarks>
     Task<WeightTrendSummaryItem?> GetWeightTrendSummary(int patientId, int weeks, CancellationToken ct = default);
 
     /// <summary>
-    ///     IA-2. Slope and change of the smoothed series over an explicit range of local days (<paramref name="from" />
+    ///     Slope and change of the smoothed series over an explicit range of local days (<paramref name="from" />
     ///     to <paramref name="to" />, both included), whatever day it is asked; null when there is no trend, the range
     ///     is reversed or the lookup fails.
     /// </summary>
@@ -202,7 +202,7 @@ public interface IIntakeContextFacade
         CancellationToken ct = default);
 
     /// <summary>
-    ///     IA-2/IA-4/IA-5. The moments of the entries of a range of local days, oldest first, from one read instead
+    ///     The moments of the entries of a range of local days, oldest first, from one read instead
     ///     of one per day. An empty list when there are none or the lookup fails.
     /// </summary>
     Task<IReadOnlyList<DiaryEntryMomentItem>> GetDiaryEntryMoments(int patientId, DateOnly from, DateOnly to,

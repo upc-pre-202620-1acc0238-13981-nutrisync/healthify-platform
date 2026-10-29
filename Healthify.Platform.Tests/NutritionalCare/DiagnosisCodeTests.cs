@@ -6,7 +6,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-4. The closed diagnosis list of EV-3, who chose it, the deterministic rationale and the
+///     The closed diagnosis list of step 2, who chose it, the deterministic rationale and the
 ///     invariants of a coded diagnosis.
 /// </summary>
 public class DiagnosisCodeTests

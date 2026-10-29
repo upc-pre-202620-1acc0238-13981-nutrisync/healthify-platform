@@ -22,7 +22,7 @@ namespace Healthify.Platform.NutritionalCare.Interfaces.REST;
 ///     Monitoring, and this is where the automation stops: there is no route, automatic or manual,
 ///     from a signal to a plan change. Adjusting the plan is a separate, deliberate act on a
 ///     different endpoint.
-///     NC-10: a sustained deviation may carry an AI plan proposal (PR14.IA). Reading it changes nothing; the plan
+///     A sustained deviation may carry an AI plan proposal. Reading it changes nothing; the plan
 ///     changes only through <c>POST /plan-proposal/acceptance</c>, the explicit action of the practitioner.
 /// </remarks>
 [ApiController]
@@ -36,7 +36,7 @@ public class ReviewItemsController(
     IPlanProposalCommandService planProposalCommandService,
     IStringLocalizer<NutritionalCareMessages> localizer) : ControllerBase
 {
-    /// <summary>NC-10. Seconds the client waits before asking again for a proposal being generated.</summary>
+    /// <summary>Seconds the client waits before asking again for a proposal being generated.</summary>
     private const int PlanProposalRetryAfterSeconds = 5;
 
     [HttpGet]
@@ -160,7 +160,7 @@ public class ReviewItemsController(
         var command = ResolveReviewItemCommandAssembler.ToCommand(
             reviewItemId, this.GetAuthenticatedUserId(), resource);
         var result = await commandService.Handle(command, HttpContext.RequestAborted);
-        // NC-11: the same fields as GET /review-items, the patient's name included.
+        // The same fields as GET /review-items, the patient's name included.
         var entry = result.IsSuccess
             ? await queryService.Handle(new GetReviewInboxEntryByIdQuery(reviewItemId), HttpContext.RequestAborted)
             : null;

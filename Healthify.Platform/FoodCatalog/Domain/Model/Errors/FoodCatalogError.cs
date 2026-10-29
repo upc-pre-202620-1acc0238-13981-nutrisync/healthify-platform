@@ -27,12 +27,12 @@ public enum FoodCatalogError
     DuplicatedLocalOverride,
 
     /// <summary>
-    ///     Rule: AI Estimated Nutrients Coherent (IN-7). kcal 0–900 per 100 g, each macronutrient 0–100 g and together
+    ///     Rule: AI Estimated Nutrients Coherent. kcal 0–900 per 100 g, each macronutrient 0–100 g and together
     ///     at most 100 g, and the energy within 15 % of 4P + 4C + 9G.
     /// </summary>
     InconsistentNutrients,
 
-    /// <summary>IN-7. An AI-estimated food is traced to the generation that estimated it.</summary>
+    /// <summary>An AI-estimated food is traced to the generation that estimated it.</summary>
     AiGenerationRequired,
 
     UnexpectedError

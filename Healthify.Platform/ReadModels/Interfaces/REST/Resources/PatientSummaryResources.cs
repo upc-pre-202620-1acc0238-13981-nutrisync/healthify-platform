@@ -1,17 +1,17 @@
 namespace Healthify.Platform.ReadModels.Interfaces.REST.Resources;
 
 /// <summary>
-///     RM-2. The summary of one patient (PAC-1). <c>Baseline</c> null means the patient has no baseline yet and
-///     the app shows PAC-0.
+///     The summary of one patient. <c>Baseline</c> null means the patient has no baseline yet and
+///     the app shows the empty state.
 /// </summary>
 /// <param name="PatientId">Identifier of the patient.</param>
 /// <param name="FullName">"Ana Flores", or null when it could not be read.</param>
 /// <param name="LinkedSince">When the care link was established, or null when it could not be read.</param>
 /// <param name="LinkStatus">Active or PendingConsent.</param>
-/// <param name="ActivePlanVersion">The published version in force, or null ("sin plan").</param>
-/// <param name="Baseline">Sex, age, height and medical history; null means PAC-0.</param>
+/// <param name="ActivePlanVersion">The published version in force, or null (no plan).</param>
+/// <param name="Baseline">Sex, age, height and medical history; null means the empty state.</param>
 /// <param name="NextFollowUp">The next visit on the calendar, or null.</param>
-/// <param name="ConsultationInProgress">The consultation to resume (PAC-1.C), or null.</param>
+/// <param name="ConsultationInProgress">The consultation to resume, or null.</param>
 /// <param name="SinceLastConsultation">How things went since the last consultation.</param>
 public record PatientSummaryResource(
     int PatientId,
@@ -30,29 +30,29 @@ public record PatientSummaryResource(
     /// <summary>"Ana Flores", for the header. Null when Iam could not answer.</summary>
     public string? FullName { get; init; } = FullName;
 
-    /// <summary>"Vinculada desde 12 mar. 2026". Null when Care Relationship could not answer.</summary>
+    /// <summary>When the link was established. Null when Care Relationship could not answer.</summary>
     public DateTimeOffset? LinkedSince { get; init; } = LinkedSince;
 
     /// <summary>Active or PendingConsent.</summary>
     public string LinkStatus { get; init; } = LinkStatus;
 
-    /// <summary>"Plan versión 3". Null when no plan is published ("sin plan").</summary>
+    /// <summary>The plan version in force. Null when no plan is published.</summary>
     public int? ActivePlanVersion { get; init; } = ActivePlanVersion;
 
-    /// <summary>"Datos base". Null means the patient has none yet: the app shows PAC-0.</summary>
+    /// <summary>The baseline. Null means the patient has none yet: the app shows the empty state.</summary>
     public PatientBaselineSummaryResource? Baseline { get; init; } = Baseline;
 
-    /// <summary>"Próxima consulta". Null when nothing is on the calendar.</summary>
+    /// <summary>The next consultation. Null when nothing is on the calendar.</summary>
     public NextFollowUpResource? NextFollowUp { get; init; } = NextFollowUp;
 
-    /// <summary>PAC-1.C "Consulta en curso". Null when there is none.</summary>
+    /// <summary>The consultation in progress. Null when there is none.</summary>
     public ConsultationInProgressResource? ConsultationInProgress { get; init; } = ConsultationInProgress;
 
-    /// <summary>"DESDE LA ÚLTIMA CONSULTA".</summary>
+    /// <summary>What changed since the last consultation.</summary>
     public SinceLastConsultationResource SinceLastConsultation { get; init; } = SinceLastConsultation;
 }
 
-/// <summary>RM-2. "Datos base · Mujer · 31 años · 168 cm · hipotiroidismo". Practitioner only.</summary>
+/// <summary>The baseline: sex, age, height and conditions. Practitioner only.</summary>
 /// <param name="BiologicalSex">Female or Male.</param>
 /// <param name="AgeYears">Completed years today.</param>
 /// <param name="HeightCm">Height in centimetres.</param>
@@ -76,7 +76,7 @@ public record PatientBaselineSummaryResource(
     public IReadOnlyList<string> Conditions { get; init; } = Conditions;
 }
 
-/// <summary>RM-2. "Próxima consulta". No clinical note travels with it.</summary>
+/// <summary>The next consultation. No clinical note travels with it.</summary>
 /// <param name="FollowUpId">Identifier of the visit.</param>
 /// <param name="ScheduledFor">When it is.</param>
 /// <param name="Modality">InPerson or Remote.</param>
@@ -105,7 +105,7 @@ public record NextFollowUpResource(
     public DateTimeOffset? ScheduledAt { get; init; } = ScheduledAt;
 }
 
-/// <summary>RM-2. PAC-1.C "Consulta en curso · Paso 1 de 4 · se guardó hoy".</summary>
+/// <summary>The consultation in progress: its step out of 4 and when it was last saved.</summary>
 /// <param name="ConsultationId">The consultation to resume.</param>
 /// <param name="StepNumber">1 to 4.</param>
 /// <param name="StepName">Measurement, Diagnosis, Targets or Publication.</param>
@@ -119,19 +119,19 @@ public record ConsultationInProgressResource(
     /// <summary>The consultation to resume.</summary>
     public int ConsultationId { get; init; } = ConsultationId;
 
-    /// <summary>"Paso n de 4".</summary>
+    /// <summary>The step, out of 4.</summary>
     public int StepNumber { get; init; } = StepNumber;
 
     /// <summary>Measurement, Diagnosis, Targets or Publication.</summary>
     public string StepName { get; init; } = StepName;
 
-    /// <summary>"Se guardó hoy": when a step was last saved.</summary>
+    /// <summary>When a step was last saved.</summary>
     public DateTimeOffset LastSavedAt { get; init; } = LastSavedAt;
 }
 
 /// <summary>
-///     RM-2. "DESDE LA ÚLTIMA CONSULTA: Peso (autopesaje) −0,3 kg/sem · Tendencia · 4 semanas; Cumplimiento 5 de 7
-///     días". Never a single day's weight.
+///     Since the last consultation: the home weigh in trend per week over four weeks, and compliance as "5 of 7
+///     days". Never a single day's weight.
 /// </summary>
 /// <param name="FromDate">The day the section starts: the last consultation, or 7 days ago before the first.</param>
 /// <param name="WeightSlopeKgPerWeek">Slope of the smoothed home series, or null without enough points.</param>
@@ -146,18 +146,18 @@ public record SinceLastConsultationResource(
     /// <summary>The first day covered: the day of the last consultation, or 7 days ago before the first one.</summary>
     public DateOnly FromDate { get; init; } = FromDate;
 
-    /// <summary>"−0,3 kg/sem". Null with fewer than two smoothed points.</summary>
+    /// <summary>Kilograms per week. Null with fewer than two smoothed points.</summary>
     public decimal? WeightSlopeKgPerWeek { get; init; } = WeightSlopeKgPerWeek;
 
-    /// <summary>"Tendencia · 4 semanas".</summary>
+    /// <summary>How many weeks the trend covers.</summary>
     public int TrendWeeks { get; init; } = TrendWeeks;
 
-    /// <summary>"5 de 7 días". Null when Monitoring could not answer.</summary>
+    /// <summary>"5 of 7 days". Null when Monitoring could not answer.</summary>
     public ComplianceRatioResource? Compliance { get; init; } = Compliance;
 }
 
 /// <summary>
-///     RM-2. "5 de 7 días": days within targets out of calendar days. A day nobody logged is in the total and
+///     "5 of 7 days": days within targets out of calendar days. A day nobody logged is in the total and
 ///     never counts as below target.
 /// </summary>
 /// <param name="Met">Days within targets.</param>

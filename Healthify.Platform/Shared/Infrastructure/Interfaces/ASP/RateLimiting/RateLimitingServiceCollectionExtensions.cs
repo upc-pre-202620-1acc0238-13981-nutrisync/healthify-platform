@@ -16,14 +16,14 @@ using Microsoft.Extensions.Localization;
 namespace Healthify.Platform.Shared.Infrastructure.Interfaces.ASP.RateLimiting;
 
 /// <summary>
-///     D-RL. Request rate limiting with the native <c>Microsoft.AspNetCore.RateLimiting</c> middleware: the three
+///     Request rate limiting with the native <c>Microsoft.AspNetCore.RateLimiting</c> middleware: the three
 ///     policies of <see cref="RateLimitingPolicies" /> and the 429 problem (<c>TooManyRequests</c>).
 /// </summary>
 /// <remarks>
 ///     <c>app.UseRateLimiter()</c> goes after authentication (the user partitions read the session) and after request
 ///     localization (the 429 texts follow <c>Accept-Language</c>). The client IP is
 ///     <see cref="ConnectionInfo.RemoteIpAddress" />: behind a reverse proxy every request shares the proxy IP until
-///     forwarded headers are configured (not done in D-RL).
+///     forwarded headers are configured (not done yet).
 /// </remarks>
 public static class RateLimitingServiceCollectionExtensions
 {
@@ -57,7 +57,7 @@ public static class RateLimitingServiceCollectionExtensions
                             AutoReplenishment = true
                         }));
 
-            // DECISIÓN D-RL: one quota per user shared by every endpoint that calls the AI provider. Without a
+            // One quota per user shared by every endpoint that calls the AI provider. Without a
             // session (the endpoint answers 401 anyway) the request is counted by IP.
             options.AddPolicy(RateLimitingPolicies.AiPhoto, context =>
                 !settings.Enabled
@@ -106,7 +106,7 @@ public static class RateLimitingServiceCollectionExtensions
     }
 
     /// <summary>
-    ///     RFC 7807 problem with <c>extensions.code = TooManyRequests</c> (X-3), localized title and detail, and a
+    ///     RFC 7807 problem with <c>extensions.code = TooManyRequests</c>, localized title and detail, and a
     ///     <c>Retry-After</c> header in seconds. The body never carries the IP, the partition or the limits.
     /// </summary>
     private static async ValueTask WriteTooManyRequestsAsync(HttpContext context, RateLimitLease lease,

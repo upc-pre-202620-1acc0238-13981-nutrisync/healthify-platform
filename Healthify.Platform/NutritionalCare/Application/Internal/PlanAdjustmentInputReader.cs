@@ -10,16 +10,16 @@ using Healthify.Platform.NutritionalCare.Domain.Services;
 namespace Healthify.Platform.NutritionalCare.Application.Internal;
 
 /// <summary>
-///     IA-8. Reads the input of the plan adjustment proposal for a sustained deviation (MD IA-8 "Input"): the evidence
-///     of the item, the slots logged on the deviated days (Monitoring and Intake, by facade), the weight trend (IN-5),
+///     Reads the input of the plan adjustment proposal for a sustained deviation: the evidence
+///     of the item, the slots logged on the deviated days (Monitoring and Intake, by facade), the weight trend,
 ///     the version in force, the active diagnosis and the calorie floor for the patient's sex.
 /// </summary>
 /// <remarks>
 ///     Read only. It loads the plan to describe it and never writes it: it has no unit of work and the plan
 ///     repository is used for reading alone.
-///     DECISIÓN IA-8: "comidas por franja de los días desviados" is read as the days of the last 14 (the evaluation
+///     "Meals per slot on the deviated days" is read as the days of the last 14 (the evaluation
 ///     horizon of Monitoring is shorter) whose outcome went in the direction of the deviation, Short or Exceeded,
-///     and, for each, which slots had a counted entry. Slots as in IA-2: Breakfast 05:00–10:59, Lunch 11:00–15:59,
+///     and, for each, which slots had a counted entry. Slots as in meal photo recognition: Breakfast 05:00–10:59, Lunch 11:00–15:59,
 ///     Dinner 18:00–22:59, Other the rest.
 /// </remarks>
 public class PlanAdjustmentInputReader(
@@ -60,7 +60,7 @@ public class PlanAdjustmentInputReader(
             cancellationToken);
 
         var trend = await intakeContextFacade.GetWeightTrendSummary(patientId, WeightTrendWeeks, cancellationToken);
-        // X-2: each part in the language of whoever reads it.
+        // Each part in the language of whoever reads it.
         var patientLanguage = await iamContextFacade.GetPreferredLanguage(patientId, cancellationToken);
         var practitionerLanguage =
             await iamContextFacade.GetPreferredLanguage(reviewItem.PractitionerId, cancellationToken);
@@ -89,7 +89,7 @@ public class PlanAdjustmentInputReader(
         return string.Equals(preferred?.Trim(), "en", StringComparison.OrdinalIgnoreCase) ? "en" : "es";
     }
 
-    /// <summary>The recorded sex: the baseline (NC-1), else the assessment behind the active diagnosis.</summary>
+    /// <summary>The recorded sex: the baseline, else the assessment behind the active diagnosis.</summary>
     public async Task<string?> BiologicalSexOfAsync(int patientId, NutritionalDiagnosis? diagnosis,
         CancellationToken cancellationToken)
     {

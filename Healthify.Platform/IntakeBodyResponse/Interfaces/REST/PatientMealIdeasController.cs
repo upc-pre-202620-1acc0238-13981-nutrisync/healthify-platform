@@ -16,12 +16,12 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.IntakeBodyResponse.Interfaces.REST;
 
 /// <summary>
-///     IA-3. «Ideas con IA»: meal ideas that fit what is left of today's targets and respect the plan.
+///     Meal ideas that fit what is left of today's targets and respect the plan.
 /// </summary>
 /// <remarks>
 ///     Patient only, for their own day. What is left is computed here from the published targets and the diary;
 ///     the AI never receives the diagnosis nor the calculation basis. The ideas are suggestions: logging one goes
-///     through <c>POST /diary-entries/manual-logs/batch</c> (IN-6).
+///     through <c>POST /diary-entries/manual-logs/batch</c>.
 /// </remarks>
 [ApiController]
 [Route("api/v1/patients/{patientId:int}/meal-ideas")]

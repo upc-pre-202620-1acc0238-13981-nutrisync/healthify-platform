@@ -1,8 +1,8 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-10. Where an AI plan proposal stands: Proposed until a practitioner decides; AcceptedAsIs or
-///     AcceptedWithEdits when they assign it ("Resolver" / "Asignar plan ajustado"); Dismissed when they resolve the
+///     Where an AI plan proposal stands: Proposed until a practitioner decides; AcceptedAsIs or
+///     AcceptedWithEdits when they assign it ("Resolve" / "Assign adjusted plan"); Dismissed when they resolve the
 ///     item without assigning it. Only Proposed moves.
 /// </summary>
 public sealed record PlanProposalStatus

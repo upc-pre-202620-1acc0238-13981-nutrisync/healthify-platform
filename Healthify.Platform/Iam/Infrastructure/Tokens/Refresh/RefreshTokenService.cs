@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace Healthify.Platform.Iam.Infrastructure.Tokens.Refresh;
 
 /// <summary>
-///     IAM-4. Refresh tokens are 32 bytes (base64url) and are stored as their SHA-256. A plain hash is enough
+///     Refresh tokens are 32 bytes (base64url) and are stored as their SHA-256. A plain hash is enough
 ///     here, unlike passwords: the token is random and long, so there is nothing to brute force.
 /// </summary>
 /// <remarks>

@@ -16,7 +16,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-5. A moment that is not in the future is its own 400 (it used to be 404). Only the practitioner whose
+///     A moment that is not in the future is its own 400 (it used to be 404). Only the practitioner whose
 ///     agenda the visit is on cancels or reschedules it, only while it is scheduled; rescheduling keeps the
 ///     pre-visit check in.
 /// </summary>

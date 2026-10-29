@@ -60,11 +60,11 @@ public sealed record SourceHash
     }
 
     /// <summary>
-    ///     IN-7. Digest for a food the AI estimated: <c>"ai:" + normalized name</c>, so the same dish (whatever its
+    ///     Digest for a food the AI estimated: <c>"ai:" + normalized name</c>, so the same dish (whatever its
     ///     case, accents or spacing) is always the same row, and the unique index decides between two that race.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN IN-7: the change asks for <c>source_hash = "ai:" + nombre normalizado</c>; the column holds a 64
+    ///     The design asks for <c>source_hash = "ai:" + normalized name</c>; the column holds a 64
     ///     character hexadecimal digest and a raw name would break that invariant (and could exceed it), so the
     ///     material is that string and the stored value its SHA-256.
     /// </remarks>
@@ -73,7 +73,7 @@ public sealed record SourceHash
         return Of(AiMaterial(localName));
     }
 
-    /// <summary>IN-7. The material of <see cref="ForAiEstimated" />: <c>ai:</c> and the name in lower case, without accents, single spaces.</summary>
+    /// <summary>The material of <see cref="ForAiEstimated" />: <c>ai:</c> and the name in lower case, without accents, single spaces.</summary>
     public static string AiMaterial(string localName)
     {
         return "ai:" + FoodNameMatcher.Normalize(localName);

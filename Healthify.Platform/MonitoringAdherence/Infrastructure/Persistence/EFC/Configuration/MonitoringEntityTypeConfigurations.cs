@@ -173,7 +173,7 @@ public class ConsistencyIndexEntityTypeConfiguration : IEntityTypeConfiguration<
 
         builder.Property(i => i.FirstFlaggedAt).HasColumnName("first_flagged_at");
         builder.Property(i => i.ShownToPatientAt).HasColumnName("shown_to_patient_at");
-        // MA-7. The prompt issued, apart from the patient seeing it.
+        // The prompt issued, apart from the patient seeing it.
         builder.Property(i => i.PromptIssuedAt).HasColumnName("prompt_issued_at");
         builder.Ignore(i => i.IsPatientPromptPending);
         builder.Property(i => i.EscalatedAt).HasColumnName("escalated_at");
@@ -213,7 +213,7 @@ public class ReferralEntityTypeConfiguration : IEntityTypeConfiguration<Referral
         builder.Property(r => r.IssuedBy).HasColumnName("issued_by").IsRequired();
         builder.Property(r => r.IssuedAt).HasColumnName("issued_at").IsRequired();
 
-        // RM-4. Open or Closed; existing referrals are Open.
+        // Open or Closed; existing referrals are Open.
         builder.Property(r => r.Status).HasColumnName("status").HasMaxLength(10).IsRequired()
             .HasDefaultValue(Referral.Open);
         builder.Property(r => r.ClosedAt).HasColumnName("closed_at");
@@ -256,7 +256,7 @@ public class ScheduledFollowUpEntityTypeConfiguration : IEntityTypeConfiguration
 
         builder.Property(f => f.MissedAt).HasColumnName("missed_at");
 
-        // MA-2. The preparation codes as JSON through their backing field. The value comparer is not
+        // The preparation codes as JSON through their backing field. The value comparer is not
         // optional: without it EF never notices a change and updates are silently lost.
         builder.Property<List<string>>("_preparation")
             .HasConversion(
@@ -287,7 +287,7 @@ public class ScheduledFollowUpEntityTypeConfiguration : IEntityTypeConfiguration
     }
 }
 
-/// <summary>MA-4. Table pre_visit_check_ins: one row per visit.</summary>
+/// <summary>Table pre_visit_check_ins: one row per visit.</summary>
 public class PreVisitCheckInEntityTypeConfiguration : IEntityTypeConfiguration<PreVisitCheckIn>
 {
     private static readonly ValueComparer<List<string>> StringListComparer = new(
@@ -310,7 +310,7 @@ public class PreVisitCheckInEntityTypeConfiguration : IEntityTypeConfiguration<P
             .HasConversion(id => id.Value, value => PreVisitCheckInId.FromRaw(value))
             .ValueGeneratedOnAdd();
 
-        // Business rule: One Check In Per Visit (MA-4). A unique index, so two concurrent first answers cannot
+        // Business rule: One Check In Per Visit. A unique index, so two concurrent first answers cannot
         // both be stored.
         builder.Property(c => c.FollowUpId).HasColumnName("follow_up_id").IsRequired();
         builder.HasIndex(c => c.FollowUpId).IsUnique().HasDatabaseName("ux_pre_visit_check_ins_follow_up_id");
@@ -356,7 +356,7 @@ public class PreVisitCheckInEntityTypeConfiguration : IEntityTypeConfiguration<P
     }
 }
 
-/// <summary>IA-2. Table <c>weekly_summaries</c>: one row per patient and week.</summary>
+/// <summary>Table <c>weekly_summaries</c>: one row per patient and week.</summary>
 public class WeeklySummaryEntityTypeConfiguration : IEntityTypeConfiguration<WeeklySummary>
 {
     private static readonly ValueComparer<List<string>> StringListComparer = new(
@@ -384,7 +384,7 @@ public class WeeklySummaryEntityTypeConfiguration : IEntityTypeConfiguration<Wee
             .HasConversion(d => d.ToDateTime(TimeOnly.MinValue), v => DateOnly.FromDateTime(v))
             .HasColumnName("week_end").HasColumnType("date").IsRequired();
 
-        // Business rule: One Summary Per Patient And Week (IA-2). Two concurrent runs cannot both store a week.
+        // Business rule: One Summary Per Patient And Week. Two concurrent runs cannot both store a week.
         builder.HasIndex(s => new { s.PatientId, s.WeekStart }).IsUnique()
             .HasDatabaseName("ux_weekly_summaries_patient_id_week_start");
 

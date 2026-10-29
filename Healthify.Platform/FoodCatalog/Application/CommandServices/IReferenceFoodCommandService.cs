@@ -31,14 +31,14 @@ public interface IReferenceFoodCommandService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     IN-7 - Create AI Estimated Food. Reached only through the ACL. Idempotent by the normalized name, also
+    ///     Create AI Estimated Food. Reached only through the ACL. Idempotent by the normalized name, also
     ///     under a race: the existing food is returned.
     /// </summary>
     Task<Result<ReferenceFood, FoodCatalogError>> Handle(CreateAiEstimatedFoodCommand command,
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     IN-7 - Search Food with the external providers, then the entry the name stands for (FC-2 matching).
+    ///     Search Food with the external providers, then the entry the name stands for (ingredient matching).
     ///     The resolution carries no food when nothing matches.
     /// </summary>
     Task<Result<FoodNameResolution, FoodCatalogError>> Handle(ResolveFoodWithProvidersCommand command,

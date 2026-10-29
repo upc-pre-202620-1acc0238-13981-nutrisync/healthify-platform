@@ -49,7 +49,7 @@ using System.Security.Claims;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-7. «Viendo tu foto…»: the photo checked, stripped of metadata and sent alone to the AI (real shared pipeline,
+///     Photo recognition: the photo checked, stripped of metadata and sent alone to the AI (real shared pipeline,
 ///     fake model); the dish resolved local catalog → providers → created from the estimate (real Food Catalog in
 ///     memory, with its unique index); the gates before any call; the analysis kept without any image; the purges.
 /// </summary>

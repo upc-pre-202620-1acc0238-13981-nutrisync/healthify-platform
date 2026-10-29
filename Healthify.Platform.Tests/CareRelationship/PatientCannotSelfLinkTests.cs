@@ -36,7 +36,7 @@ public class PatientCannotSelfLinkTests
             new InvitationId(1));
         _invitationRepository.FindByTokenAsync(Arg.Any<InvitationToken>(), Arg.Any<CancellationToken>())
             .Returns(_invitation);
-        // CR-1: the redemption reads the unclosed link itself (it may have to revoke it), instead of
+        // The redemption reads the unclosed link itself (it may have to revoke it), instead of
         // only asking whether one exists. No link here, as before.
         _careLinkRepository.FindUnclosedByPatientIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((CareLink?)null);
@@ -69,7 +69,7 @@ public class PatientCannotSelfLinkTests
     [Fact]
     public async Task The_issuer_cannot_self_link_even_when_confirming_a_switch_and_nothing_is_revoked()
     {
-        // CR-1: the self-link guard runs before the replace-active-link path.
+        // The self-link guard runs before the replace-active-link path.
         var currentLink = Identity.Assign(
             new CareLink(new EstablishCareLinkCommand(PractitionerId, PractitionerId + 7, 99)),
             new CareLinkId(5));

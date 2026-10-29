@@ -9,8 +9,8 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-9. The practitioner's message to the patient belongs to one plan version: it comes in with the consultation
-///     publication or the adjustment (optional), travels in ActiveTargetsUpdated to the Intake cache (PT4/PT3.M),
+///     The practitioner's message to the patient belongs to one plan version: it comes in with the consultation
+///     publication or the adjustment (optional), travels in ActiveTargetsUpdated to the Intake cache,
 ///     stays with its version and is not carried over to the next one.
 /// </summary>
 public class PatientMessagePerVersionTests

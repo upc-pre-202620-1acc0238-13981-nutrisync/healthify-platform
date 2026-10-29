@@ -1,20 +1,20 @@
 namespace Healthify.Platform.Iam.Domain.Services;
 
-/// <summary>IAM-2. A reset code as issued: the digits for the email and what the server keeps of them.</summary>
+/// <summary>A reset code as issued: the digits for the email and what the server keeps of them.</summary>
 /// <param name="Code">Six digits, handed to the email only. Never stored, never logged.</param>
 /// <param name="Hash">Keyed hash (hex, 64 chars) of <paramref name="Code" />: the only thing persisted.</param>
 /// <param name="IssuedAt">When it was issued.</param>
 /// <param name="ExpiresAt">When it stops being accepted.</param>
 public record IssuedPasswordResetCode(string Code, string Hash, DateTimeOffset IssuedAt, DateTimeOffset ExpiresAt);
 
-/// <summary>IAM-2. A reset token as issued: the value for the client and what the server keeps of it.</summary>
+/// <summary>A reset token as issued: the value for the client and what the server keeps of it.</summary>
 /// <param name="Token">The opaque value handed to the client once. Never stored, never logged.</param>
 /// <param name="Hash">SHA-256 (hex, 64 chars) of <paramref name="Token" />: the only thing persisted.</param>
 /// <param name="ExpiresAt">When it stops being accepted.</param>
 public record IssuedPasswordResetToken(string Token, string Hash, DateTimeOffset ExpiresAt);
 
 /// <summary>
-///     IAM-2. Issues and hashes password reset codes and the reset tokens their verification hands out. Lifetimes:
+///     Issues and hashes password reset codes and the reset tokens their verification hands out. Lifetimes:
 ///     <c>Iam:PasswordResetCodeMinutes</c> (15 by default) and <c>Iam:PasswordResetTokenMinutes</c> (10 by default).
 /// </summary>
 public interface IPasswordResetCodeService

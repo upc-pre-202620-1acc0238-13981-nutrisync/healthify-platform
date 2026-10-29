@@ -29,7 +29,7 @@ using NSubstitute.ExceptionExtensions;
 namespace Healthify.Platform.Tests.CareRelationship;
 
 /// <summary>
-///     IA-1. The patient's AI functions: coherent with the consent switch (CR-2), 409 when one is turned on without
+///     The patient's AI functions: coherent with the consent switch, 409 when one is turned on without
 ///     it, all on when it is granted, all off (and the audit purged) when it is withdrawn, and the consent policy
 ///     the AI pipeline asks on every generation.
 /// </summary>
@@ -117,7 +117,7 @@ public class AiPreferencesTests
         var service = Service();
 
         var granted = Success(await service.Handle(new SyncAiPreferencesWithConsentCommand(PatientId, true)));
-        // Changed on purpose by IN-7: granting the consent also turns meal photo recognition on (four functions).
+        // Changed on purpose with meal photo recognition: granting the consent also turns meal photo recognition on (four functions).
         Assert.Equal(new AiPreferencesStatus(PatientId, true, true, true, true, true), granted);
 
         _stored!.Change(false, true, false, true); // the patient later keeps only meal ideas
@@ -213,7 +213,7 @@ public class AiPreferencesTests
     [InlineData(true, true, false, false, "WeeklySummary", true)]
     [InlineData(true, true, false, false, "MealIdeas", false)]
     [InlineData(true, false, false, true, "SuggestedQuestions", true)]
-    // Practitioner functions: the consent only (§12-#5), whatever the patient's own tools are.
+    // Practitioner functions: the consent only, whatever the patient's own tools are.
     [InlineData(true, false, false, false, "DiagnosisSuggestion", true)]
     [InlineData(true, false, false, false, "PlanAdjustmentProposal", true)]
     [InlineData(false, true, true, true, "PractitionerMonitoringSummary", false)]

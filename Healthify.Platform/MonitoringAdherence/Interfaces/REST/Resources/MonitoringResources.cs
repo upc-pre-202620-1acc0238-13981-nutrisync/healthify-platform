@@ -33,8 +33,8 @@ public record RecordReferralResource(
 /// </summary>
 /// <param name="PatientId">Who is being seen.</param>
 /// <param name="ScheduledFor">When.</param>
-/// <param name="Preparation">MA-2. How the patient should prepare; may be empty.</param>
-/// <param name="Modality">MA-2. InPerson (default) or Remote.</param>
+/// <param name="Preparation">How the patient should prepare; may be empty.</param>
+/// <param name="Modality">InPerson (default) or Remote.</param>
 public record ScheduleFollowUpResource(
     [Required] int PatientId,
     [Required] DateTimeOffset ScheduledFor,
@@ -48,20 +48,20 @@ public record ScheduleFollowUpResource(
     public DateTimeOffset ScheduledFor { get; init; } = ScheduledFor;
 
     /// <summary>
-    ///     MA-2. How the patient should prepare, from the closed list Fasting, LightClothing, BringBloodTests,
+    ///     How the patient should prepare, from the closed list Fasting, LightClothing, BringBloodTests,
     ///     EmptyBladder. The patient sees them in their app. Empty or absent means no instructions.
     /// </summary>
     public IReadOnlyList<string>? Preparation { get; init; } = Preparation;
 
-    /// <summary>MA-2. InPerson or Remote. Absent means InPerson.</summary>
+    /// <summary>InPerson or Remote. Absent means InPerson.</summary>
     public string? Modality { get; init; } = Modality;
 }
 
-/// <summary>MA-4. One question of the check in (PT25.2 "¿Algo que quieras preguntarle?").</summary>
+/// <summary>One question of the check in for the practitioner.</summary>
 /// <param name="Text">The question, 3 to 300 characters.</param>
 /// <param name="Origin">Patient (default) or AiSuggested, when it is a suggestion the patient added.</param>
 /// <param name="AiGenerationId">The AI generation it came from, when suggested.</param>
-/// <param name="Language">X-2. es or en: the language of the suggestion (the one IA-4 returned).</param>
+/// <param name="Language">Es or en: the language of the suggestion (the one the suggested questions returned).</param>
 public record CheckInQuestionInputResource(
     [Required] [MaxLength(300)] string Text,
     string? Origin = null,
@@ -74,18 +74,18 @@ public record CheckInQuestionInputResource(
     /// <summary>Patient or AiSuggested. Absent means Patient.</summary>
     public string? Origin { get; init; } = Origin;
 
-    /// <summary>The AI generation the suggestion came from (IA-4), for the audit. Ignored when the origin is Patient.</summary>
+    /// <summary>The AI generation the suggestion came from, for the audit. Ignored when the origin is Patient.</summary>
     public long? AiGenerationId { get; init; } = AiGenerationId;
 
     /// <summary>
-    ///     X-2. es or en: the <c>language</c> of the suggestions it came from. Ignored when the origin is Patient. When
+    ///     Es or en: the <c>language</c> of the suggestions it came from. Ignored when the origin is Patient. When
     ///     an AiSuggested question comes without it, the language of the request is kept.
     /// </summary>
     public string? Language { get; init; } = Language;
 }
 
 /// <summary>
-///     MA-4. The check in the patient sends, or edits, before the visit (PT25.2 "Enviar a mi nutricionista").
+///     The check in the patient sends, or edits, before the visit.
 /// </summary>
 /// <param name="Feeling">Good, Fair or Hard. Required.</param>
 /// <param name="Difficulties">Dinners, Weekends, EatingOut, Schedules, Cravings; may be empty.</param>
@@ -95,17 +95,17 @@ public record SubmitPreVisitCheckInResource(
     IReadOnlyList<string>? Difficulties = null,
     IReadOnlyList<CheckInQuestionInputResource>? Questions = null)
 {
-    /// <summary>"¿Cómo te sentiste con tu plan?": Good, Fair or Hard. Required.</summary>
+    /// <summary>How the patient felt about the plan: Good, Fair or Hard. Required.</summary>
     public string? Feeling { get; init; } = Feeling;
 
-    /// <summary>"¿Qué te costó más?": Dinners, Weekends, EatingOut, Schedules, Cravings. Optional.</summary>
+    /// <summary>What was hardest: Dinners, Weekends, EatingOut, Schedules, Cravings. Optional.</summary>
     public IReadOnlyList<string>? Difficulties { get; init; } = Difficulties;
 
-    /// <summary>"¿Algo que quieras preguntarle?", with the AI suggestions the patient added. Optional.</summary>
+    /// <summary>Questions for the practitioner, with the AI suggestions the patient added. Optional.</summary>
     public IReadOnlyList<CheckInQuestionInputResource>? Questions { get; init; } = Questions;
 }
 
-/// <summary>MA-5. Cancel a visit. Practitioner only.</summary>
+/// <summary>Cancel a visit. Practitioner only.</summary>
 /// <param name="Reason">Short reason, at most 30 characters; optional.</param>
 public record CancelFollowUpResource([MaxLength(30)] string? Reason = null)
 {
@@ -113,7 +113,7 @@ public record CancelFollowUpResource([MaxLength(30)] string? Reason = null)
     public string? Reason { get; init; } = Reason;
 }
 
-/// <summary>MA-5. Move a visit to another future moment. Practitioner only.</summary>
+/// <summary>Move a visit to another future moment. Practitioner only.</summary>
 /// <param name="ScheduledFor">The new moment; it has to be in the future.</param>
 /// <param name="Preparation">New preparation codes; absent keeps the current ones.</param>
 public record RescheduleFollowUpResource([Required] DateTimeOffset ScheduledFor,

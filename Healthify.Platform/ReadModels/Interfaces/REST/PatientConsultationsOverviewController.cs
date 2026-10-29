@@ -13,7 +13,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.ReadModels.Interfaces.REST;
 
 /// <summary>
-///     RM-5. PT25 "Mis consultas", composed across contexts.
+///     The patient's consultations screen, composed across contexts.
 /// </summary>
 /// <remarks>
 ///     The patient reads their own, and the practitioner with an active care link reads the same view. Like every

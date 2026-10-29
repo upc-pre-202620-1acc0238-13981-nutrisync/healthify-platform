@@ -13,7 +13,7 @@ public sealed record RateLimitPolicySettings(int PermitLimit, TimeSpan Window, i
 }
 
 /// <summary>
-///     D-RL. The <c>RateLimiting</c> configuration section, read once at start-up with its defaults in code. Every
+///     The <c>RateLimiting</c> configuration section, read once at start-up with its defaults in code. Every
 ///     value can be overridden by environment variable (<c>RateLimiting__Auth__PermitLimit=20</c>).
 /// </summary>
 public sealed record RateLimitingSettings(
@@ -29,10 +29,10 @@ public sealed record RateLimitingSettings(
         var section = configuration.GetSection(SectionName);
         return new RateLimitingSettings(
             section.GetValue<bool?>("Enabled") ?? true,
-            // DECISIÓN D-RL: "auth" is a sliding window (as asked) of 6 segments: a client that hit the limit gets
+            // "auth" is a sliding window (as asked) of 6 segments: a client that hit the limit gets
             // permits back every 10 s instead of waiting for the whole minute.
             ReadPolicy(section.GetSection("Auth"), 10, 60, 6),
-            // DECISIÓN D-RL: "ai-photo" and "global" are fixed windows, so the Retry-After is exact (the limiter
+            // "ai-photo" and "global" are fixed windows, so the Retry-After is exact (the limiter
             // reports it). The AI daily quota of the pipeline (AiRateLimited) still applies on top.
             ReadPolicy(section.GetSection("AiPhoto"), 20, 3600),
             ReadPolicy(section.GetSection("Global"), 300, 60));

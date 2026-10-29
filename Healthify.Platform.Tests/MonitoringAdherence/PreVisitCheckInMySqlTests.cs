@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-4 against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the questions stored as JSON
+///     The check in against a real MySQL (Category=MySql; skipped without HEALTHIFY_IT_MYSQL): the questions stored as JSON
 ///     come back as value objects with their origin, an edit is noticed by the value comparers, and the unique
 ///     index keeps one check in per visit.
 /// </summary>

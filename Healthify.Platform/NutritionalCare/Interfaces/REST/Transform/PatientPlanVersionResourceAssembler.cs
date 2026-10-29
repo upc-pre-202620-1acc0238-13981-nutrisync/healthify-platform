@@ -3,7 +3,7 @@ using Healthify.Platform.NutritionalCare.Interfaces.REST.Resources;
 
 namespace Healthify.Platform.NutritionalCare.Interfaces.REST.Transform;
 
-/// <summary>NC-8. Takes the patient DTO, never the aggregate.</summary>
+/// <summary>Takes the patient DTO, never the aggregate.</summary>
 public static class PatientPlanVersionResourceAssembler
 {
     public static PatientPlanVersionResource ToResource(PatientPlanVersion version)

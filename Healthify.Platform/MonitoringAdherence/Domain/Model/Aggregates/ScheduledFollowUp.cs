@@ -11,23 +11,23 @@ namespace Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates;
 ///     <see cref="FollowUpState.Missed" /> to revoke a link, discharge a patient or change anything at all
 ///     outside this row, and the absence of that path is the rule: somebody who could not make it on
 ///     Tuesday is still somebody's patient on Wednesday.
-///     MA-2: the visit carries how to prepare for it and its modality, and it can end in
+///     The visit carries how to prepare for it and its modality, and it can end in
 ///     <see cref="FollowUpState.Completed" /> (a consultation was published for it) or
-///     <see cref="FollowUpState.Cancelled" />. MA-5: the practitioner cancels or reschedules it through its own
-///     endpoints; rescheduling keeps the pre-visit check in (MA-4).
+///     <see cref="FollowUpState.Cancelled" />. The practitioner cancels or reschedules it through its own
+///     endpoints; rescheduling keeps the pre-visit check in.
 /// </remarks>
 public partial class ScheduledFollowUp
 {
     /// <summary>NOTE: technical constant, the size of the cancellation_reason column.</summary>
     public const int CancellationReasonMaxLength = 30;
 
-    /// <summary>MA-5. The reason stored when the practitioner cancels without giving one.</summary>
+    /// <summary>The reason stored when the practitioner cancels without giving one.</summary>
     public const string CancelledByPractitionerReason = "CancelledByPractitioner";
 
-    /// <summary>CR-4. The reason stored when the patient is discharged (PR18).</summary>
+    /// <summary>The reason stored when the patient is discharged.</summary>
     public const string DischargedReason = "Discharged";
 
-    /// <summary>CR-4. The reason stored when the patient switches practitioner (CR-1).</summary>
+    /// <summary>The reason stored when the patient switches practitioner.</summary>
     public const string SwitchedPractitionerReason = "SwitchedPractitioner";
 
     private List<string> _preparation = [];
@@ -71,32 +71,32 @@ public partial class ScheduledFollowUp
     /// <summary>NOTE: technical field, not part of the domain model. When the visit was flagged missed.</summary>
     public DateTimeOffset? MissedAt { get; private set; }
 
-    /// <summary>MA-2. How to prepare (PT25.1). Empty means "sin indicaciones de preparación".</summary>
+    /// <summary>How to prepare. Empty means no preparation instructions.</summary>
     public IReadOnlyCollection<PreparationInstruction> Preparation =>
         _preparation.Select(p => new PreparationInstruction(p)).ToList();
 
-    /// <summary>MA-2. In person by default.</summary>
+    /// <summary>In person by default.</summary>
     public ConsultationModality Modality { get; private set; } = new(ConsultationModality.InPerson);
 
-    /// <summary>MA-2. "Agendada el 4 de septiembre": the moment the visit was put on the calendar.</summary>
+    /// <summary>"Scheduled on 4 September": the moment the visit was put on the calendar.</summary>
     public DateTimeOffset? ScheduledAt => CreatedAt;
 
-    /// <summary>MA-2. When the consultation that completed it was published.</summary>
+    /// <summary>When the consultation that completed it was published.</summary>
     public DateTimeOffset? CompletedAt { get; private set; }
 
-    /// <summary>MA-2. Cross-context reference to the consultation (Nutritional Care). A plain int.</summary>
+    /// <summary>Cross-context reference to the consultation (Nutritional Care). A plain int.</summary>
     public int? CompletedByConsultationId { get; private set; }
 
-    /// <summary>MA-2. When it was cancelled.</summary>
+    /// <summary>When it was cancelled.</summary>
     public DateTimeOffset? CancelledAt { get; private set; }
 
-    /// <summary>MA-2. Why it was cancelled ("Discharged", or the practitioner's short reason).</summary>
+    /// <summary>Why it was cancelled ("Discharged", or the practitioner's short reason).</summary>
     public string? CancellationReason { get; private set; }
 
     public bool IsScheduled => State.IsScheduled;
 
     /// <summary>
-    ///     MA-4. Rule: Check In Editable Until The Visit. The patient can send or edit the check in of this visit
+    ///     Rule: Check In Editable Until The Visit. The patient can send or edit the check in of this visit
     ///     while it is still scheduled and its hour has not arrived.
     /// </summary>
     /// <param name="now">The moment of the request.</param>
@@ -123,7 +123,7 @@ public partial class ScheduledFollowUp
     }
 
     /// <summary>
-    ///     MA-2 - A consultation of the guided flow was published for this visit, so the visit happened.
+    ///     A consultation of the guided flow was published for this visit, so the visit happened.
     /// </summary>
     /// <remarks>
     ///     A visit already flagged missed can still be completed: the missed-visit policy runs on a timer,
@@ -146,7 +146,7 @@ public partial class ScheduledFollowUp
         return true;
     }
 
-    /// <summary>MA-2/MA-5 - Cancel a visit that is still on the calendar.</summary>
+    /// <summary>Cancel a visit that is still on the calendar.</summary>
     /// <param name="reason">Short reason, at most 30 characters ("Discharged").</param>
     /// <exception cref="ArgumentException">When the reason is missing or too long.</exception>
     /// <exception cref="InvalidOperationException">When the visit is no longer scheduled.</exception>
@@ -165,10 +165,10 @@ public partial class ScheduledFollowUp
         CancellationReason = reason.Trim();
     }
 
-    /// <summary>MA-2/MA-5 - Move a visit that is still on the calendar to another future moment.</summary>
+    /// <summary>Move a visit that is still on the calendar to another future moment.</summary>
     /// <param name="newMoment">The new moment; it has to be in the future.</param>
     /// <param name="preparation">
-    ///     MA-5. New preparation codes of the closed list, replacing the current ones; null keeps them.
+    ///     New preparation codes of the closed list, replacing the current ones; null keeps them.
     /// </param>
     /// <exception cref="ArgumentException">When the new moment is not in the future, or a code is unknown.</exception>
     /// <exception cref="InvalidOperationException">When the visit is no longer scheduled.</exception>

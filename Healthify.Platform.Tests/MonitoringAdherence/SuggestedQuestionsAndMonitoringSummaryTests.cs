@@ -13,7 +13,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     IA-4. Suggest Questions: the AI gates before the diary is read, the visit must be the patient's, one
+///     Suggest Questions: the AI gates before the diary is read, the visit must be the patient's, one
 ///     generation per visit renewed when the check in changes, three logged days, and never the diagnosis.
 /// </summary>
 public class SuggestedQuestionsTests
@@ -166,8 +166,8 @@ public class SuggestedQuestionsTests
 }
 
 /// <summary>
-///     IA-5. Summarize Monitoring: only a practitioner with an active care link; the deterministic facts without the
-///     patient's AI consent (§12-#5); the consistency index only after a ConsistencyEscalation (Patient Shown First);
+///     Summarize Monitoring: only a practitioner with an active care link; the deterministic facts without the
+///     patient's AI consent; the consistency index only after a ConsistencyEscalation (Patient Shown First);
 ///     six hours of cache per patient and range; the practitioner's language.
 /// </summary>
 public class MonitoringSummaryTests

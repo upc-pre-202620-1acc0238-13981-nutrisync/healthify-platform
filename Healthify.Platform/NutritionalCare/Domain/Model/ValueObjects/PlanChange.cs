@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-8. One line of "Qué cambió en esta versión" (PT4): what this version changed against the previous
+///     One line of "what changed in this version": what this version changed against the previous
 ///     one, in terms the patient already receives (targets, guidelines and restrictions). Never the diagnosis,
 ///     the calculation basis or the override reason.
 /// </summary>
@@ -46,7 +46,7 @@ public sealed record PlanChange
     /// <summary>The guideline or restriction code, for the guideline and restriction types.</summary>
     public string? Code { get; }
 
-    /// <summary>A custom guideline text, or a legacy restriction text left out (NC-6).</summary>
+    /// <summary>A custom guideline text, or a legacy restriction text left out.</summary>
     public string? Custom { get; }
 
     /// <summary><see cref="Protein" />, <see cref="Carb" /> or <see cref="Fat" />, for <see cref="MacroChanged" />.</summary>
@@ -75,7 +75,7 @@ public sealed record PlanChange
         return new PlanChange(RestrictionRemoved, code, null, null, null, null);
     }
 
-    /// <summary>NC-6. A free text restriction of the previous version that this version did not carry over.</summary>
+    /// <summary>A free text restriction of the previous version that this version did not carry over.</summary>
     public static PlanChange LegacyRestrictionWasRemoved(string text)
     {
         return new PlanChange(RestrictionRemoved, null, text, null, null, null);

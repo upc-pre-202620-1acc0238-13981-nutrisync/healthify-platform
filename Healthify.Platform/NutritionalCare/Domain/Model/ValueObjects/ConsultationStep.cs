@@ -1,6 +1,6 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
-/// <summary>NC-2/NC-3. The step of the guided consultation the practitioner is on (EV-2 to EV-5).</summary>
+/// <summary>The step of the guided consultation the practitioner is on.</summary>
 public sealed record ConsultationStep
 {
     public const string Measurement = "Measurement";
@@ -20,7 +20,7 @@ public sealed record ConsultationStep
 
     public string Value { get; }
 
-    /// <summary>1 to 4, as shown in "PASO n DE 4".</summary>
+    /// <summary>1 to 4, as shown in "STEP n OF 4".</summary>
     public int Number => Array.IndexOf(Ordered, Value) + 1;
 
     public override string ToString()

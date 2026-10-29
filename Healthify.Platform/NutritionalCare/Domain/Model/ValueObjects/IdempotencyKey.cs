@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-2. The <c>Idempotency-Key</c> header of the publication (EV-5.E "Volver a intentarlo"): repeating the
+///     The <c>Idempotency-Key</c> header of the publication (retried after a failure): repeating the
 ///     request with the same key returns the same result and never publishes a second version.
 /// </summary>
 public sealed record IdempotencyKey

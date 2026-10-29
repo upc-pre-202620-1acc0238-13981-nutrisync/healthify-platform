@@ -3,7 +3,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     RM-2/IN-5. "−0,3 kg/sem · Tendencia · 4 semanas": a least squares slope over the smoothed points of the
+///     "−0.3 kg/week, 4-week trend": a least squares slope over the smoothed points of the
 ///     range, never a single day's reading.
 /// </summary>
 public class WeightTrendSummaryTests

@@ -43,41 +43,41 @@ public partial class UserSession
     public bool IsActive => TerminatedAt is null;
 
     /// <summary>
-    ///     IAM-4. SHA-256 (hex) of the refresh token currently valid for this session. The token itself is never
-    ///     stored. Null on sessions opened before IAM-4 and after sign-out.
+    ///     SHA-256 (hex) of the refresh token currently valid for this session. The token itself is never
+    ///     stored. Null after sign-out and on sessions opened before refresh tokens existed.
     /// </summary>
     public string? RefreshTokenHash { get; private set; }
 
-    /// <summary>IAM-4. When the current refresh token stops being accepted (30 days by default).</summary>
+    /// <summary>When the current refresh token stops being accepted (30 days by default).</summary>
     public DateTimeOffset? RefreshTokenExpiresAt { get; private set; }
 
     /// <summary>
-    ///     IAM-4. SHA-256 (hex) of the refresh token this session rotated away from. Presenting it again is
+    ///     SHA-256 (hex) of the refresh token this session rotated away from. Presenting it again is
     ///     reuse: somebody else holds a copy, and the session is terminated.
     /// </summary>
     public string? PreviousRefreshTokenHash { get; private set; }
 
     /// <summary>
-    ///     IAM-4. When the current refresh token was issued, to the second. It is the issue time of the access
+    ///     When the current refresh token was issued, to the second. It is the issue time of the access
     ///     token that went with it, which is what lets a retried refresh get the very same pair back.
     /// </summary>
     public DateTimeOffset? RefreshTokenRotatedAt { get; private set; }
 
-    /// <summary>IAM-4. Whether <paramref name="tokenHash" /> is the current, unexpired refresh token.</summary>
+    /// <summary>Whether <paramref name="tokenHash" /> is the current, unexpired refresh token.</summary>
     public bool AcceptsRefreshToken(string tokenHash, DateTimeOffset now)
     {
         return IsActive && RefreshTokenHash is not null && RefreshTokenHash == tokenHash
                && RefreshTokenExpiresAt > now;
     }
 
-    /// <summary>IAM-4. Whether <paramref name="tokenHash" /> is the refresh token this session already rotated.</summary>
+    /// <summary>Whether <paramref name="tokenHash" /> is the refresh token this session already rotated.</summary>
     public bool IsRotatedRefreshToken(string tokenHash)
     {
         return PreviousRefreshTokenHash is not null && PreviousRefreshTokenHash == tokenHash;
     }
 
     /// <summary>
-    ///     IAM-4. Business rule: Refresh Retry Within Grace Is Not Reuse. The token just rotated away from is
+    ///     Business rule: Refresh Retry Within Grace Is Not Reuse. The token just rotated away from is
     ///     presented again within <paramref name="grace" /> of the rotation, and the token it was rotated into
     ///     (<paramref name="successorHash" />) is still the current one, unused: the client lost the answer and
     ///     retried, or two requests raced. The rotation is replayed, not repeated.
@@ -97,7 +97,7 @@ public partial class UserSession
     }
 
     /// <summary>
-    ///     IAM-4. Issues a new refresh token for this session and invalidates the current one, which is kept
+    ///     Issues a new refresh token for this session and invalidates the current one, which is kept
     ///     only as the rotated token, so that its reuse can be recognised.
     /// </summary>
     /// <param name="newTokenHash">SHA-256 (hex) of the new token.</param>
@@ -156,7 +156,7 @@ public partial class UserSession
 
         TerminatedAt = DateTimeOffset.UtcNow;
 
-        // IAM-4: sign-out deletes the refresh token. The rotated hash goes too: once nothing can be
+        // sign-out deletes the refresh token. The rotated hash goes too: once nothing can be
         // refreshed there is nothing left to detect.
         RefreshTokenHash = null;
         RefreshTokenExpiresAt = null;

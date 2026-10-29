@@ -1,16 +1,16 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-11. What raised a review item, as numbers the client turns into a sentence in its own language (PR13/PR14:
-///     "registró en promedio 40 % menos de su meta de energía en 5 de sus últimos 9 días registrados"), instead of the
+///     What raised a review item, as numbers the client turns into a sentence in its own language (for example
+///     "logged on average 40 % below the energy target on 5 of the last 9 logged days"), instead of the
 ///     one-language <c>Evidence</c> text, which is kept.
 /// </summary>
 /// <remarks>
 ///     Evidence, not a verdict: a size, a direction and counts of logged days. Business rule: Only Logged Days Count
 ///     (Monitoring, Subflow 5.6): the denominator is logged days, never calendar days, so an unlogged day can never
 ///     read as a deviated one. Every field is optional because each signal type fills its own: a sustained deviation
-///     the four first and the kcal (X-2), a scheduled recheck (NC-10) the counts since the adjustment and the date of
-///     it, a consistency escalation (X-2) the index, its state, since when and for how many weeks it has been in alert
+///     the four first and the kcal, a scheduled recheck the counts since the adjustment and the date of
+///     it, a consistency escalation the index, its state, since when and for how many weeks it has been in alert
 ///     and when the patient acknowledged the prompt.
 /// </remarks>
 public sealed record ReviewItemEvidence
@@ -78,35 +78,35 @@ public sealed record ReviewItemEvidence
     /// <summary>Above or Below the target.</summary>
     public string? Direction { get; }
 
-    /// <summary>NC-10. Scheduled recheck: the day the plan was adjusted ("tras ajuste del 8 sept.").</summary>
+    /// <summary>Scheduled recheck: the day the plan was adjusted ("after the adjustment of 8 Sept.").</summary>
     public DateOnly? AdjustedOn { get; }
 
-    /// <summary>NC-10. Scheduled recheck: the version assigned on that day.</summary>
+    /// <summary>Scheduled recheck: the version assigned on that day.</summary>
     public int? AdjustedPlanVersion { get; }
 
-    /// <summary>X-2. Sustained deviation: mean distance from the energy target in kcal per day, signed like the percent.</summary>
+    /// <summary>Sustained deviation: mean distance from the energy target in kcal per day, signed like the percent.</summary>
     public decimal? AverageEnergyKcalFromTarget { get; }
 
-    /// <summary>X-2. Consistency escalation: unexplained weight movement, kg per week (the index).</summary>
+    /// <summary>Consistency escalation: unexplained weight movement, kg per week (the index).</summary>
     public decimal? ConsistencyKgPerWeek { get; }
 
-    /// <summary>X-2. Consistency escalation: the state of the index (Alert).</summary>
+    /// <summary>Consistency escalation: the state of the index (Alert).</summary>
     public string? ConsistencyState { get; }
 
-    /// <summary>X-2. Consistency escalation: the day the index entered the alert.</summary>
+    /// <summary>Consistency escalation: the day the index entered the alert.</summary>
     public DateOnly? AlertSinceOn { get; }
 
-    /// <summary>X-2. Consistency escalation: whole weeks in alert when it was escalated.</summary>
+    /// <summary>Consistency escalation: whole weeks in alert when it was escalated.</summary>
     public int? WeeksInAlert { get; }
 
-    /// <summary>X-2. Consistency escalation: the day the patient acknowledged the prompt (MA-7).</summary>
+    /// <summary>Consistency escalation: the day the patient acknowledged the prompt.</summary>
     public DateOnly? ShownToPatientOn { get; }
 
     /// <summary>
     ///     A sustained deviation, from what Monitoring publishes: <paramref name="magnitude" /> is the unsigned mean
-    ///     fraction (0.40), so the sign comes from the direction. Null when the producer predates NC-11 (no counts).
+    ///     fraction (0.40), so the sign comes from the direction. Null when an older producer sends no counts.
     /// </summary>
-    /// <remarks>X-2: <paramref name="energyKcal" /> is the unsigned kcal per day, null from producers before X-2.</remarks>
+    /// <remarks><paramref name="energyKcal" /> is the unsigned kcal per day, null from older producers.</remarks>
     public static ReviewItemEvidence? FromSustainedDeviation(decimal magnitude, string direction, int deviatedDays,
         int loggedDaysConsidered, decimal? energyKcal = null)
     {
@@ -122,8 +122,8 @@ public sealed record ReviewItemEvidence
     }
 
     /// <summary>
-    ///     X-2. A consistency escalation, from what Monitoring publishes. Null when the producer predates X-2 (no
-    ///     state on the event): the English text evidence still opens the item.
+    ///     A consistency escalation, from what Monitoring publishes. Null when an older producer sends no
+    ///     state on the event: the English text evidence still opens the item.
     /// </summary>
     public static ReviewItemEvidence? FromConsistencyEscalation(decimal kgPerWeek, string? state,
         DateOnly? alertSinceOn, int? weeksInAlert, DateOnly? shownToPatientOn)

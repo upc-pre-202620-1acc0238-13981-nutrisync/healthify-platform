@@ -9,7 +9,7 @@ using MvcProblemDetailsFactory = Microsoft.AspNetCore.Mvc.Infrastructure.Problem
 
 namespace Healthify.Platform.Tests.Shared;
 
-/// <summary>X-3. The codes the framework responses get from Shared: validation, 5xx and the bearer challenge.</summary>
+/// <summary>The codes the framework responses get from Shared: validation, 5xx and the bearer challenge.</summary>
 public class ProblemDetailsErrorCodesTests
 {
     [Fact]

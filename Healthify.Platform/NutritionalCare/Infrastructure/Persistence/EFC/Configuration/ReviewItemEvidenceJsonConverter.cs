@@ -5,12 +5,12 @@ using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 namespace Healthify.Platform.NutritionalCare.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
-///     NC-11. JSON shape of <c>review_items.evidence_data</c>:
+///     JSON shape of <c>review_items.evidence_data</c>:
 ///     <c>{ "averagePercentFromTarget": -40, "deviatedDays": 5, "loggedDaysConsidered": 9, "direction": "Below" }</c>,
-///     plus <c>adjustedOn</c> (<c>yyyy-MM-dd</c>) and <c>adjustedPlanVersion</c> for a scheduled recheck (NC-10),
+///     plus <c>adjustedOn</c> (<c>yyyy-MM-dd</c>) and <c>adjustedPlanVersion</c> for a scheduled recheck,
 ///     <c>averageEnergyKcalFromTarget</c> for a sustained deviation and <c>consistencyKgPerWeek</c>,
 ///     <c>consistencyState</c>, <c>alertSinceOn</c>, <c>weeksInAlert</c> and <c>shownToPatientOn</c> for a consistency
-///     escalation (X-2). Absent properties are omitted.
+///     escalation. Absent properties are omitted.
 /// </summary>
 public static class ReviewItemEvidenceJsonConverter
 {

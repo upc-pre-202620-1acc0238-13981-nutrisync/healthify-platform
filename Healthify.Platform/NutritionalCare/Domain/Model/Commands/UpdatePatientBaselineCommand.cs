@@ -1,6 +1,6 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Commands;
 
-/// <summary>NC-1 - Edit the patient baseline from the Summary tab or from EV-2.</summary>
+/// <summary>Edit the patient baseline from the Summary tab or from step 1 of the consultation.</summary>
 public record UpdatePatientBaselineCommand(
     int PatientId,
     int PractitionerId,

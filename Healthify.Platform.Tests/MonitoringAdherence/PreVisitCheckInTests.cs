@@ -6,7 +6,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.MonitoringAdherence;
 
 /// <summary>
-///     MA-4. The invariants of the check in: feeling required, at most three questions of each origin, 3 to 300
+///     The invariants of the check in: feeling required, at most three questions of each origin, 3 to 300
 ///     characters, the origin of each question kept, only the patient of the visit writes it, and it can be edited
 ///     until the hour of the visit.
 /// </summary>

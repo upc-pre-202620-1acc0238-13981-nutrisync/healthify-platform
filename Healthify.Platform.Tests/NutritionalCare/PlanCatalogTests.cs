@@ -6,8 +6,8 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-6. The closed catalogs of EV-5: restrictions (no "Otra restricción"), guidelines as a code or a
-///     custom text ("Otra indicación", 3 to 140 characters, at most 5 per version).
+///     The closed catalogs of step 4: restrictions (no "other restriction"), guidelines as a code or a
+///     custom text ("other guideline", 3 to 140 characters, at most 5 per version).
 /// </summary>
 public class PlanCatalogTests
 {

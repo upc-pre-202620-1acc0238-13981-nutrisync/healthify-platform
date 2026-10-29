@@ -159,36 +159,6 @@ public class DiaryEntriesController(
         return IntakeActionResultAssembler.ToMealGroupResult(result, names, localizer);
     }
 
-    [HttpPost("off-plan-logs")]
-    [Consumes("application/json")]
-    [Obsolete("Deprecated by IN-1: use planAdherence=OffPlan on manual-logs or photo-logs.")]
-    [SwaggerOperation(
-        Summary = "Log an off-plan meal (deprecated)",
-        Description =
-            "Deprecated: log the meal by hand or from a photo and mark it as outside the plan instead, so it has a " +
-            "food and a portion and counts towards the day. It still works the same way for older versions of the " +
-            "app. Records with one tap that the patient ate something outside the plan, and nothing else: no food, " +
-            "no portion and no reason. Nothing is calculated from it and nothing is penalised, because declaring " +
-            "should be easier than leaving it out.")]
-    [SwaggerResponse(StatusCodes.Status201Created, "The entry was logged.", typeof(DiaryEntryResource))]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "The moment is missing.", typeof(ProblemDetails))]
-    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication is required.")]
-    [SwaggerResponse(StatusCodes.Status403Forbidden, "Only the patient writes their own diary.",
-        typeof(ProblemDetails))]
-    [SwaggerResponse(StatusCodes.Status422UnprocessableEntity,
-        "The moment falls outside the retroactive window.", typeof(ProblemDetails))]
-    public async Task<IActionResult> LogOffPlanMeal([FromBody] LogOffPlanMealResource resource)
-    {
-        var patientId = this.GetAuthenticatedUserId();
-        if (resource.PatientId != patientId) return PatientWriteOnly();
-
-        var result = await commandService.Handle(
-            LogOffPlanMealCommandAssembler.ToCommand(patientId, resource), HttpContext.RequestAborted);
-
-        return IntakeActionResultAssembler.ToDiaryEntryResult(result, localizer,
-            StatusCodes.Status201Created);
-    }
-
     [HttpPost("{diaryEntryId:int}/estimate-confirmation")]
     [SwaggerOperation(
         Summary = "Confirm the proposed estimate",
@@ -274,7 +244,7 @@ public class DiaryEntriesController(
         return IntakeActionResultAssembler.ToSyncResult(result, localizer);
     }
 
-    /// <summary>IN-1. The name of the food a just-written entry shows, or null.</summary>
+    /// <summary>The name of the food a just-written entry shows, or null.</summary>
     private async Task<string?> FoodNameOf(Result<DiaryEntry, IntakeError> result)
     {
         if (result is not Result<DiaryEntry, IntakeError>.Success success) return null;

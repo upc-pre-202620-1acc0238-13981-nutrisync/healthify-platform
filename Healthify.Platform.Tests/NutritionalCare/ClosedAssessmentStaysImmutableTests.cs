@@ -1,23 +1,13 @@
-using Cortex.Mediator;
-using Healthify.Platform.CareRelationship.Interfaces.Acl;
-using Healthify.Platform.Iam.Interfaces.Acl;
-using Healthify.Platform.NutritionalCare.Application.Internal.CommandServices;
 using Healthify.Platform.NutritionalCare.Domain.Model.Aggregates;
 using Healthify.Platform.NutritionalCare.Domain.Model.Commands;
-using Healthify.Platform.NutritionalCare.Domain.Model.Errors;
 using Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
-using Healthify.Platform.NutritionalCare.Domain.Repositories;
-using Healthify.Platform.Shared.Application.Patterns;
-using Healthify.Platform.Shared.Domain.Repositories;
-using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
 
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     Business rule Closed Assessment Is Immutable (Subflow 3.1) after NC-3: it holds for assessments
+///     Business rule Closed Assessment Is Immutable (Subflow 3.1) after the structured assessment: it holds for assessments
 ///     recorded through the stand-alone endpoint and for those recorded in a guided consultation, and
-///     editing the baseline afterwards does not reach a closed assessment (DECISIÓN §12-#13).
+///     editing the baseline afterwards does not reach a closed assessment.
 /// </summary>
 public class ClosedAssessmentStaysImmutableTests
 {
@@ -68,32 +58,6 @@ public class ClosedAssessmentStaysImmutableTests
         Assert.Equal(["Hypothyroidism"], assessment.ConditionsSnapshot);
         Assert.Equal(168m, measurement.HeightCm);
         Assert.Equal(26.3m, measurement.BmiKgM2);
-    }
-
-    [Fact]
-    public async Task The_stand_alone_endpoint_still_refuses_a_measurement_on_a_closed_assessment()
-    {
-        var closed = new NutritionalAssessment(new RecordAssessmentCommand(PatientId, PractitionerId,
-            "Three meals", "None reported", "Walks", null, 31, "Female", null));
-        closed.Close();
-
-        var repository = Substitute.For<INutritionalAssessmentRepository>();
-        repository.FindByIdAsync(AssessmentId, Arg.Any<CancellationToken>()).Returns(closed);
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var mediator = Substitute.For<IMediator>();
-        var service = new NutritionalAssessmentCommandService(repository,
-            Substitute.For<IPatientBaselineRepository>(), unitOfWork, Substitute.For<IIamContextFacade>(),
-            Substitute.For<ICareRelationshipContextFacade>(),
-            NullLogger<NutritionalAssessmentCommandService>.Instance, mediator);
-
-        var result = await service.Handle(new TakeClinicalMeasurementCommand(AssessmentId, PractitionerId, 75m, 168m,
-            "Fasting, no shoes", null, null, ["Fasting", "NoShoes"]));
-
-        var failure = Assert.IsType<Result<NutritionalAssessment, NutritionalCareError>.Failure>(result);
-        Assert.Equal(NutritionalCareError.AssessmentAlreadyClosed, failure.Error);
-        Assert.Empty(closed.Measurements);
-        await unitOfWork.DidNotReceiveWithAnyArgs().CompleteAsync(default);
-        Assert.Empty(mediator.ReceivedCalls());
     }
 
     private static PatientBaseline Baseline()

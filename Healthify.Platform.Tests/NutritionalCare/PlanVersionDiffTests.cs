@@ -8,7 +8,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-8. <see cref="PlanVersionDiff" />: "Qué cambió en esta versión", calculated once at publication from what
+///     <see cref="PlanVersionDiff" />: "what changed in this version", calculated once at publication from what
 ///     the patient receives (targets, guidelines and restrictions) and stored with the version.
 /// </summary>
 public class PlanVersionDiffTests
@@ -27,7 +27,7 @@ public class PlanVersionDiffTests
     [Fact]
     public void An_added_guideline_with_the_same_targets_reads_as_PT4()
     {
-        // PT4: «Se agregó "Reduce la sal". Las metas de energía y macronutrientes no cambiaron.»
+        // "Added 'Reduce salt'. The energy and macronutrient targets did not change."
         var v2 = Published(1, 2, [Guideline.FromCode(Guideline.PrioritizeVegetables)], []);
         var v3 = Published(2, 3,
             [Guideline.FromCode(Guideline.PrioritizeVegetables), Guideline.FromCode(Guideline.ReduceSalt)], []);

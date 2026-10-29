@@ -34,16 +34,16 @@ public record ClinicalMeasurementResource(
     /// <summary>When it was taken.</summary>
     public DateTimeOffset TakenAt { get; init; } = TakenAt;
 
-    /// <summary>NC-3. Body mass index in kg/m², one decimal, with the height of that day.</summary>
+    /// <summary>Body mass index in kg/m², one decimal, with the height of that day.</summary>
     public decimal Bmi { get; init; } = Bmi;
 
     /// <summary>
-    ///     NC-3. WHO category: Underweight, NormalWeight, OverweightGradeI, ObesityGradeI, ObesityGradeII,
+    ///     WHO category: Underweight, NormalWeight, OverweightGradeI, ObesityGradeI, ObesityGradeII,
     ///     ObesityGradeIII. Professional information only.
     /// </summary>
     public string BmiCategory { get; init; } = BmiCategory;
 
-    /// <summary>NC-3. The EV-2 protocol checklist, or null when only the free text protocol was recorded.</summary>
+    /// <summary>The protocol checklist of step 1, or null when only the free text protocol was recorded.</summary>
     public IReadOnlyList<string>? ProtocolChecks { get; init; } = ProtocolChecks;
 }
 
@@ -110,22 +110,22 @@ public record NutritionalAssessmentResource(
     /// <summary>The clinical measurements taken during this assessment.</summary>
     public IReadOnlyList<ClinicalMeasurementResource> Anthropometry { get; init; } = Anthropometry;
 
-    /// <summary>NC-3. Sedentary, Light, Moderate or Intense, if recorded.</summary>
+    /// <summary>Sedentary, Light, Moderate or Intense, if recorded.</summary>
     public string? ActivityLevel { get; init; } = ActivityLevel;
 
-    /// <summary>NC-3. Structured eating habits, if recorded.</summary>
+    /// <summary>Structured eating habits, if recorded.</summary>
     public EatingHabitsResource? EatingHabits { get; init; } = EatingHabits;
 
-    /// <summary>NC-3. Structured biochemistry in mg/dL, if recorded.</summary>
+    /// <summary>Structured biochemistry in mg/dL, if recorded.</summary>
     public BiochemistryPanelResource? BiochemistryPanel { get; init; } = BiochemistryPanel;
 
     /// <summary>
-    ///     NC-3. The baseline medical history as it was when this assessment was recorded. Null when the
+    ///     The baseline medical history as it was when this assessment was recorded. Null when the
     ///     assessment predates the baseline; empty when it listed none.
     /// </summary>
     public IReadOnlyList<string>? ConditionsSnapshot { get; init; } = ConditionsSnapshot;
 
-    /// <summary>NC-3. The guided consultation this assessment belongs to, if any.</summary>
+    /// <summary>The guided consultation this assessment belongs to, if any.</summary>
     public int? ConsultationId { get; init; } = ConsultationId;
 }
 
@@ -163,13 +163,13 @@ public record NutritionalDiagnosisResource(
     /// <summary>Whether it is the one currently grounding the plan.</summary>
     public bool IsActive { get; init; } = IsActive;
 
-    /// <summary>NC-4. Closed list code, or null on historic free text diagnoses.</summary>
+    /// <summary>Closed list code, or null on historic free text diagnoses.</summary>
     public string? Code { get; init; } = Code;
 
-    /// <summary>NC-4. AiSuggestionAccepted or PractitionerSelected; null on historic rows.</summary>
+    /// <summary>AiSuggestionAccepted or PractitionerSelected; null on historic rows.</summary>
     public string? Source { get; init; } = Source;
 
-    /// <summary>NC-4. Body mass index of the measurement it read, kg/m². Practitioner only.</summary>
+    /// <summary>Body mass index of the measurement it read, kg/m². Practitioner only.</summary>
     public decimal? BmiAtIssue { get; init; } = BmiAtIssue;
 }
 
@@ -289,7 +289,7 @@ public record NutritionPlanResource(
     /// <summary>Guidance: a catalog code or the custom text of each guideline (see <see cref="GuidelineItems" />).</summary>
     public IReadOnlyList<string> Guidelines { get; init; } = Guidelines;
 
-    /// <summary>What the patient should avoid: DietaryRestriction codes (NC-6).</summary>
+    /// <summary>What the patient should avoid: DietaryRestriction codes.</summary>
     public IReadOnlyList<string> Restrictions { get; init; } = Restrictions;
 
     /// <summary>Whether this is the one active version for the patient.</summary>
@@ -301,36 +301,36 @@ public record NutritionPlanResource(
     /// <summary>When a newer version replaced it, or null.</summary>
     public DateTimeOffset? SupersededAt { get; init; } = SupersededAt;
 
-    /// <summary>NC-6. The guidelines, each a catalog code or a custom text.</summary>
+    /// <summary>The guidelines, each a catalog code or a custom text.</summary>
     public IReadOnlyList<GuidelineItemResource> GuidelineItems { get; init; } = GuidelineItems ?? [];
 
     /// <summary>
-    ///     NC-6. Free text restrictions from before the closed list that match no code (PAC-4). Map them to a
+    ///     Free text restrictions from before the closed list that match no code. Map them to a
     ///     code in the next version; whatever is not mapped is left out of it.
     /// </summary>
     public IReadOnlyList<string> LegacyRestrictions { get; init; } = LegacyRestrictions ?? [];
 
-    /// <summary>NC-6. Legacy restrictions of the previous version that this version left out.</summary>
+    /// <summary>Legacy restrictions of the previous version that this version left out.</summary>
     public IReadOnlyList<string> DroppedLegacyRestrictions { get; init; } = DroppedLegacyRestrictions ?? [];
 
-    /// <summary>NC-9. The message the patient received with this version, or null.</summary>
+    /// <summary>The message the patient received with this version, or null.</summary>
     public string? PatientMessage { get; init; } = PatientMessage;
 
     /// <summary>
-    ///     X-2. Custom (the practitioner wrote <c>ChangeReason</c>: show it as written), NewConsultation or
+    ///     Custom (the practitioner wrote <c>ChangeReason</c>: show it as written), NewConsultation or
     ///     SignalAdjustment (word it in the reader's language from <c>ChangeReasonData</c>; <c>ChangeReason</c> is the
     ///     Spanish fallback). Null on a first version, which has no reason.
     /// </summary>
     public string? ChangeReasonCode { get; init; } = ChangeReasonCode;
 
-    /// <summary>X-2. Parameters of <c>ChangeReasonCode</c>; null for Custom and on a first version.</summary>
+    /// <summary>Parameters of <c>ChangeReasonCode</c>; null for Custom and on a first version.</summary>
     public ChangeReasonDataResource? ChangeReasonData { get; init; } = ChangeReasonData;
 }
 
 /// <summary>
-///     X-2. Parameters of a plan change reason code: <c>{ date: "2026-09-18" }</c> for NewConsultation ("Nueva consulta
-///     del 18 sept. 2026" / "New consultation on Sep 18, 2026"), <c>{ date, signalType: "SustainedDeviation" }</c> for
-///     SignalAdjustment ("Ajuste por señal: desviación sostenida del 8 sept. 2026").
+///     Parameters of a plan change reason code: <c>{ date: "2026-09-18" }</c> for NewConsultation ("New
+///     consultation on Sep 18, 2026"), <c>{ date, signalType: "SustainedDeviation" }</c> for
+///     SignalAdjustment ("Signal adjustment: sustained deviation on Sep 8, 2026").
 /// </summary>
 public record ChangeReasonDataResource(DateOnly? Date, string? SignalType)
 {
@@ -341,13 +341,13 @@ public record ChangeReasonDataResource(DateOnly? Date, string? SignalType)
     public string? SignalType { get; init; } = SignalType;
 }
 
-/// <summary>NC-6. One guideline of a plan version: a catalog code or a custom text, never both.</summary>
+/// <summary>One guideline of a plan version: a catalog code or a custom text, never both.</summary>
 public record GuidelineItemResource(string? Code, string? Custom)
 {
     /// <summary>Catalog code (the client translates it), or null for a custom guideline.</summary>
     public string? Code { get; init; } = Code;
 
-    /// <summary>"Otra indicación" as written. Clinical data: never translated.</summary>
+    /// <summary>The custom guideline as written. Clinical data: never translated.</summary>
     public string? Custom { get; init; } = Custom;
 }
 
@@ -392,7 +392,7 @@ public record ReviewItemResource(
 
     /// <summary>
     ///     The note: the practitioner's text when <c>ResolutionNoteCode</c> is Custom, the Spanish fallback of a system
-    ///     code otherwise (X-2), or null.
+    ///     code otherwise, or null.
     /// </summary>
     public string? ResolutionNote { get; init; } = ResolutionNote;
 
@@ -402,33 +402,33 @@ public record ReviewItemResource(
     /// <summary>When the signal arrived.</summary>
     public DateTimeOffset? CreatedAt { get; init; } = CreatedAt;
 
-    /// <summary>NC-11. "Ana Flores" (IAM-1), or null when the name could not be read.</summary>
+    /// <summary>"Ana Flores", or null when the name could not be read.</summary>
     public string? PatientFullName { get; init; } = PatientFullName;
 
-    /// <summary>NC-11/NC-10. Whether an AI plan proposal is attached: PR14.IA opens instead of PR14.</summary>
+    /// <summary>Whether an AI plan proposal is attached: the client opens the proposal instead of the plain item.</summary>
     public bool HasPlanProposal { get; init; } = HasPlanProposal;
 
     /// <summary>
-    ///     NC-11. The evidence as numbers, for the client to word in its language. Null for items opened before NC-11
-    ///     (and, for a consistency escalation, before X-2). <c>Evidence</c> keeps the original English sentence as the
+    ///     The evidence as numbers, for the client to word in its language. Null for items opened before numeric
+    ///     evidence existed (and, for a consistency escalation, before localized evidence). <c>Evidence</c> keeps the original English sentence as the
     ///     legacy fallback.
     /// </summary>
     public ReviewItemEvidenceResource? EvidenceData { get; init; } = EvidenceData;
 
     /// <summary>
-    ///     X-2. Custom (show <c>ResolutionNote</c> as written), PlanAssignedAsIs or PlanAssignedWithEdits (word it from
+    ///     Custom (show <c>ResolutionNote</c> as written), PlanAssignedAsIs or PlanAssignedWithEdits (word it from
     ///     <c>ResolutionNoteData.PlanVersion</c>), ProposalDiscarded (no data). Null while open, or when resolved without
     ///     a note and without a proposal.
     /// </summary>
     public string? ResolutionNoteCode { get; init; } = ResolutionNoteCode;
 
-    /// <summary>X-2. Parameters of <c>ResolutionNoteCode</c>, or null.</summary>
+    /// <summary>Parameters of <c>ResolutionNoteCode</c>, or null.</summary>
     public ResolutionNoteDataResource? ResolutionNoteData { get; init; } = ResolutionNoteData;
 }
 
 /// <summary>
-///     X-2. Parameters of a resolution note code: <c>{ planVersion: 2 }</c> for PlanAssignedAsIs ("Plan v2 asignado
-///     (propuesta IA aceptada tal cual)" / "Plan v2 assigned (AI proposal accepted as is)") and PlanAssignedWithEdits.
+///     Parameters of a resolution note code: <c>{ planVersion: 2 }</c> for PlanAssignedAsIs ("Plan v2
+///     assigned (AI proposal accepted as is)") and PlanAssignedWithEdits.
 /// </summary>
 public record ResolutionNoteDataResource(int? PlanVersion)
 {
@@ -437,7 +437,7 @@ public record ResolutionNoteDataResource(int? PlanVersion)
 }
 
 /// <summary>
-///     NC-11. Structured evidence of a review item: <c>{ averagePercentFromTarget: -40, deviatedDays: 5,
+///     Structured evidence of a review item: <c>{ averagePercentFromTarget: -40, deviatedDays: 5,
 ///     loggedDaysConsidered: 9, direction: "Below" }</c>. Days without a record are not counted.
 /// </summary>
 public record ReviewItemEvidenceResource(
@@ -460,38 +460,38 @@ public record ReviewItemEvidenceResource(
     /// <summary>Logged days that deviated in the direction.</summary>
     public int? DeviatedDays { get; init; } = DeviatedDays;
 
-    /// <summary>Logged days read ("de sus últimos 9 días registrados"). Unlogged days are not counted.</summary>
+    /// <summary>Logged days read ("of their last 9 logged days"). Unlogged days are not counted.</summary>
     public int? LoggedDaysConsidered { get; init; } = LoggedDaysConsidered;
 
     /// <summary>Above or Below the target.</summary>
     public string? Direction { get; init; } = Direction;
 
-    /// <summary>NC-10. Scheduled recheck: the day the plan was adjusted ("tras ajuste del 8 sept.").</summary>
+    /// <summary>Scheduled recheck: the day the plan was adjusted ("after the adjustment of Sep 8").</summary>
     public DateOnly? AdjustedOn { get; init; } = AdjustedOn;
 
-    /// <summary>NC-10. Scheduled recheck: the version assigned that day.</summary>
+    /// <summary>Scheduled recheck: the version assigned that day.</summary>
     public int? AdjustedPlanVersion { get; init; } = AdjustedPlanVersion;
 
-    /// <summary>X-2. Sustained deviation: kcal per day from the target, signed like the percent (-220 = 220 kcal below).</summary>
+    /// <summary>Sustained deviation: kcal per day from the target, signed like the percent (-220 = 220 kcal below).</summary>
     public decimal? AverageEnergyKcalFromTarget { get; init; } = AverageEnergyKcalFromTarget;
 
-    /// <summary>X-2. Consistency escalation: unexplained weight movement, kg per week.</summary>
+    /// <summary>Consistency escalation: unexplained weight movement, kg per week.</summary>
     public decimal? ConsistencyKgPerWeek { get; init; } = ConsistencyKgPerWeek;
 
-    /// <summary>X-2. Consistency escalation: the state of the index (Alert).</summary>
+    /// <summary>Consistency escalation: the state of the index (Alert).</summary>
     public string? ConsistencyState { get; init; } = ConsistencyState;
 
-    /// <summary>X-2. Consistency escalation: the day the alert began.</summary>
+    /// <summary>Consistency escalation: the day the alert began.</summary>
     public DateOnly? AlertSinceOn { get; init; } = AlertSinceOn;
 
-    /// <summary>X-2. Consistency escalation: whole weeks in alert when it was escalated.</summary>
+    /// <summary>Consistency escalation: whole weeks in alert when it was escalated.</summary>
     public int? WeeksInAlert { get; init; } = WeeksInAlert;
 
-    /// <summary>X-2. Consistency escalation: the day the patient acknowledged the prompt.</summary>
+    /// <summary>Consistency escalation: the day the patient acknowledged the prompt.</summary>
     public DateOnly? ShownToPatientOn { get; init; } = ShownToPatientOn;
 }
 
-/// <summary>NC-1 - Read model Patient Baseline. Practitioner only.</summary>
+/// <summary>Read model Patient Baseline. Practitioner only.</summary>
 public record PatientBaselineResource(
     int PatientId,
     DateOnly BirthDate,

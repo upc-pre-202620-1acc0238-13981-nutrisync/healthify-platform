@@ -41,11 +41,11 @@ public class CareLinkCommandService(
                 return new Result<CareLink, CareRelationshipError>.Failure(
                     CareRelationshipError.PatientAlreadyHasActiveLink);
 
-            // Switching practitioners (CR-1) never reaches this point with the previous link still
+            // Switching practitioners never reaches this point with the previous link still
             // open: Redeem Invitation revokes it, with reason SwitchedPractitioner, in the same
             // commit that burns the token, and only when the patient explicitly confirmed it.
             // Without that confirmation the guard above keeps answering with a conflict.
-            // Source: event storming, Subflow 2.5 hotspot 1, resolved by CR-1.
+            // Source: event storming, Subflow 2.5 hotspot 1.
 
             var careLink = new CareLink(command);
 
@@ -109,7 +109,7 @@ public class CareLinkCommandService(
                 new ConsentGranted(careLink.Id.Value, careLink.PatientId, careLink.PractitionerId,
                     careLink.Consent!.Scope, careLink.ConsentAiProcessingGranted), cancellationToken);
 
-            // CR-2: the AI switch was turned on in the same consent. This one does cross the boundary.
+            // The AI switch was turned on in the same consent. This one does cross the boundary.
             if (careLink.ConsentAiProcessingGranted)
                 await mediator.PublishAsync(
                     new AiProcessingConsentChanged(careLink.PatientId, true,
@@ -146,7 +146,7 @@ public class CareLinkCommandService(
                     CareRelationshipError.CareLinkNotFound);
 
             // Business rules: Consent Always Revocable, No Justification Required (Subflows 2.3, 2.5)
-            // CR-2: withdrawing the whole consent also turns AI processing off.
+            // Withdrawing the whole consent also turns AI processing off.
             var aiProcessingWasGranted = careLink.ConsentAiProcessingGranted;
             careLink.WithdrawConsent();
 
@@ -158,7 +158,7 @@ public class CareLinkCommandService(
                 new ConsentWithdrawn(careLink.Id.Value, careLink.PatientId,
                     careLink.Consent!.WithdrawnAt!.Value), cancellationToken);
 
-            // CR-2: the AI switch went off with it; the AI content of the patient is purged (§12-#14).
+            // The AI switch went off with it; the AI content of the patient is purged.
             if (aiProcessingWasGranted)
                 await mediator.PublishAsync(
                     new AiProcessingConsentChanged(careLink.PatientId, false, careLink.ConsentWithdrawnAt!.Value),
@@ -178,7 +178,7 @@ public class CareLinkCommandService(
     }
 
     /// <summary>
-    ///     CR-2 - Change AI Processing Consent. Turning it on needs an active link; turning it off is always
+    ///     Change AI Processing Consent. Turning it on needs an active link; turning it off is always
     ///     possible. Asking for the state it already has is a no-op that publishes nothing.
     /// </summary>
     public async Task<Result<CareLink, CareRelationshipError>> Handle(ChangeAiProcessingConsentCommand command,
@@ -191,7 +191,7 @@ public class CareLinkCommandService(
                 return new Result<CareLink, CareRelationshipError>.Failure(
                     CareRelationshipError.CareLinkNotFound);
 
-            // Business rule: AI Processing Needs Live Consent (CR-2)
+            // Business rule: AI Processing Needs Live Consent
             if (command.Granted && !careLink.IsActive)
                 return new Result<CareLink, CareRelationshipError>.Failure(
                     careLink.IsDischarged ? CareRelationshipError.DischargedLinkCannotBeReactivated
@@ -204,8 +204,8 @@ public class CareLinkCommandService(
             careLinkRepository.Update(careLink);
             await unitOfWork.CompleteAsync(cancellationToken);
 
-            // Crosses the boundary: preferences (IA-1) follow it, and every context purges its AI content when it
-            // goes off (§12-#14).
+            // Crosses the boundary: preferences follow it, and every context purges its AI content when it
+            // goes off.
             await mediator.PublishAsync(
                 new AiProcessingConsentChanged(careLink.PatientId, careLink.ConsentAiProcessingGranted,
                     careLink.ConsentAiProcessingDecidedAt!.Value), cancellationToken);
@@ -244,7 +244,7 @@ public class CareLinkCommandService(
 
             // Business rule: Revoked Link Kept With Revocation Date (Subflow 2.5). This command is
             // only issued by the consent withdrawal policy, so that is the reason it records.
-            // Business rule: AI Processing Ends With The Link (CR-2). Normally already off: the withdrawal turned it
+            // Business rule: AI Processing Ends With The Link. Normally already off: the withdrawal turned it
             // off and published it.
             var aiProcessingWasGranted = careLink.ConsentAiProcessingGranted;
             careLink.Revoke(RevocationReason.ConsentWithdrawn);
@@ -309,7 +309,7 @@ public class CareLinkCommandService(
                     CareRelationshipError.PractitionerOnly);
 
             // Business rule: Discharged Link Never Reactivated (Subflow 2.5)
-            // Business rule: AI Processing Ends With The Link (CR-2)
+            // Business rule: AI Processing Ends With The Link
             var aiProcessingWasGranted = careLink.ConsentAiProcessingGranted;
             careLink.Discharge(reason);
 
@@ -325,7 +325,7 @@ public class CareLinkCommandService(
                 new TreatmentDischarged(careLink.Id.Value, careLink.PatientId, careLink.PractitionerId,
                     reason.Value, careLink.DischargedAt!.Value), cancellationToken);
 
-            // CR-2: the AI consent ended with the treatment; preferences go off and AI content is purged (§12-#14).
+            // The AI consent ended with the treatment; preferences go off and AI content is purged.
             if (aiProcessingWasGranted)
                 await mediator.PublishAsync(
                     new AiProcessingConsentChanged(careLink.PatientId, false, careLink.DischargedAt.Value),

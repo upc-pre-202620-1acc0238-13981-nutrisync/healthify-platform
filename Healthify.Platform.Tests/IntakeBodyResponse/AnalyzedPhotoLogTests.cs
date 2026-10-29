@@ -17,7 +17,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-7, registration: a photo log that references an analysis takes its proposal from the analysis and keeps it
+///     Registration: a photo log that references an analysis takes its proposal from the analysis and keeps it
 ///     beside what the patient confirmed (Proposal Kept Alongside Confirmation); the analysis must be the patient's
 ///     and alive; and the same clientEntryId (photo-logs, manual-logs, manual-logs/batch) never creates a second
 ///     entry nor evaluates the day again.
@@ -73,7 +73,7 @@ public class AnalyzedPhotoLogTests
         _analyses.Seed(second);
         var pending = Success(await Service().Handle(PhotoLog(null, second.Id, plan: null)));
 
-        // «Por confirmar»: the policy stores the proposal from the event, which carries the analysis' values.
+        // Pending confirmation: the policy stores the proposal from the event, which carries the analysis' values.
         Assert.False(pending.HasConfirmedEstimate);
         Assert.Equal(second.Id, pending.MealPhotoAnalysisId);
         var logged = Fakes.Published(_mediator).OfType<MealLogged>().Last();
@@ -255,7 +255,7 @@ public class AnalyzedPhotoLogTests
     }
 
     /// <summary>
-    ///     The diary in memory, with the two unique indexes of IN-7 enforced at commit (client entry id and photo
+    ///     The diary in memory, with the two unique indexes of the photo log enforced at commit (client entry id and photo
     ///     analysis), as MySQL does. Reads see only what was committed.
     /// </summary>
     private sealed class InMemoryDiary : IDiaryEntryRepository, IUnitOfWork

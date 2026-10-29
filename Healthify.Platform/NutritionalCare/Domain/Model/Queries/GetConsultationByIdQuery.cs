@@ -1,4 +1,4 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Queries;
 
-/// <summary>NC-2 - A consultation with what each saved step produced, to rehydrate EV-2 to EV-5.</summary>
+/// <summary>A consultation with what each saved step produced, to rehydrate steps 1 to 4.</summary>
 public record GetConsultationByIdQuery(int ConsultationId);

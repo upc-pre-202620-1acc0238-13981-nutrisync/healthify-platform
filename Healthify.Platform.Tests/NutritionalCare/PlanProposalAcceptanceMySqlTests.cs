@@ -26,12 +26,12 @@ using Xunit;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-10 against a real MySQL server: accepting a plan proposal writes the new version, the superseded one and the
+///     Against a real MySQL server: accepting a plan proposal writes the new version, the superseded one and the
 ///     resolved item in one transaction. When the save of the item fails after the versions were written, nothing
 ///     remains: the version in force stays in force, there is no v2, the item stays open with its proposal Proposed.
-///     Then the same acceptance succeeds and everything reads back from the database (NC-10 and NC-11 columns).
+///     Then the same acceptance succeeds and everything reads back from the database (proposal and inbox columns).
 /// </summary>
-/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (CLAUDE.md §5).</remarks>
+/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (see CLAUDE.md).</remarks>
 [Collection(MySqlCollection.Name)]
 [Trait("Category", "MySql")]
 public class PlanProposalAcceptanceMySqlTests
@@ -113,7 +113,7 @@ public class PlanProposalAcceptanceMySqlTests
     }
 
     /// <summary>
-    ///     IA-8. The patient's AI processing ended: the unaccepted proposal row is deleted from
+    ///     The patient's AI processing ended: the unaccepted proposal row is deleted from
     ///     <c>review_item_plan_proposals</c>, the accepted one stays, and both review items stay.
     /// </summary>
     [MySqlFact]

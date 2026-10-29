@@ -1,7 +1,7 @@
 namespace Healthify.Platform.NutritionalCare.Domain.Model.ValueObjects;
 
 /// <summary>
-///     Which kind of signal opened a review item. Two come from Monitoring; NC-10 adds the scheduled recheck, a
+///     Which kind of signal opened a review item. Two come from Monitoring; the third is the scheduled recheck, a
 ///     reminder the practitioner set when they assigned an adjusted plan. None of them can change a plan.
 /// </summary>
 public sealed record SignalType
@@ -10,7 +10,7 @@ public sealed record SignalType
     public const string ConsistencyEscalation = "ConsistencyEscalation";
 
     /// <summary>
-    ///     NC-10 (DECISIÓN §12-#12): "Revisar de nuevo en 7 días" as an item of the inbox, opened by the clock when
+    ///     "Check again in 7 days" as an item of the inbox, opened by the clock when
     ///     <c>ResolvedAt + RecheckAfterDays</c> arrives.
     /// </summary>
     public const string ScheduledRecheck = "ScheduledRecheck";
@@ -29,7 +29,7 @@ public sealed record SignalType
 
     public string Value { get; }
 
-    /// <summary>NC-10. Only a sustained deviation gets an AI plan proposal (DECISIÓN §12-#11).</summary>
+    /// <summary>Only a sustained deviation gets an AI plan proposal.</summary>
     public bool IsSustainedDeviation => Value == SustainedDeviation;
 
     public override string ToString()

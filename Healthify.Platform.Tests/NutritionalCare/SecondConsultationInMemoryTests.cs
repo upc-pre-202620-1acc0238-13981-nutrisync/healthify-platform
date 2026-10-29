@@ -8,7 +8,7 @@ using Healthify.Platform.Tests.TestSupport;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-2/NC-7 acceptance test: a patient goes through a first and a second complete consultation with the real
+///     Acceptance test: a patient goes through a first and a second complete consultation with the real
 ///     command services, the real publication policy and the real Intake cache. The second one leaves diagnosis 2
 ///     active and 1 superseded, version 2 active and 1 superseded, the cache on version 2, and at no save were
 ///     there two active at once. Repeating the publication with the same Idempotency-Key does not create v3.

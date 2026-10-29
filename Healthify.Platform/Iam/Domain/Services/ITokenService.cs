@@ -15,12 +15,12 @@ public interface ITokenService
     string GenerateToken(User user, UserSession session);
 
     /// <summary>
-    ///     IAM-4. Same token as <see cref="GenerateToken(User, UserSession)" />, issued at <paramref name="issuedAt" />
+    ///     Same token as <see cref="GenerateToken(User, UserSession)" />, issued at <paramref name="issuedAt" />
     ///     with the identifier <paramref name="tokenId" />. With the same inputs it returns the same string, which is
     ///     what a retried refresh hands back.
     /// </summary>
     string GenerateToken(User user, UserSession session, DateTimeOffset issuedAt, string tokenId);
 
-    /// <summary>IAM-4. When a token generated now stops being accepted (<c>TokenSettings:ExpiresInMinutes</c>).</summary>
+    /// <summary>When a token generated now stops being accepted (<c>TokenSettings:ExpiresInMinutes</c>).</summary>
     DateTimeOffset ExpiresAt(DateTimeOffset issuedAt);
 }

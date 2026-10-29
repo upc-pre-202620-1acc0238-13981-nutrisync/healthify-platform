@@ -12,8 +12,8 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.NutritionalCare;
 
 /// <summary>
-///     NC-6. The fixed table DiagnosisCode → guideline codes (NutritionalCare:DefaultGuidelinesByDiagnosis),
-///     the deterministic base of IA-7: only catalog codes ever come out of it.
+///     The fixed table DiagnosisCode → guideline codes (NutritionalCare:DefaultGuidelinesByDiagnosis),
+///     the deterministic base of the guideline suggestion: only catalog codes ever come out of it.
 /// </summary>
 public class DefaultGuidelinesProviderTests
 {

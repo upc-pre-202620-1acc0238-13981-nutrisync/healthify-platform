@@ -24,7 +24,7 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
         // Second line of defence for the rule Unique Email Required (Subflow 1.1).
         builder.HasIndex(u => u.Email).IsUnique().HasDatabaseName("ix_users_email");
 
-        // IAM-1. Two flat columns rather than an owned PersonName: see the note on User.GivenNames.
+        // Two flat columns rather than an owned PersonName: see the note on User.GivenNames.
         builder.Property(u => u.GivenNames)
             .HasColumnName("given_names").HasMaxLength(80).IsRequired();
         builder.Property(u => u.FamilyNames)
@@ -37,7 +37,7 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(role => role.Value, value => new Role(value))
             .HasColumnName("role").HasMaxLength(20).IsRequired();
 
-        // IAM-3. varchar(5) NOT NULL DEFAULT 'es': every account that existed before IAM-3 reads as Spanish.
+        // varchar(5) NOT NULL DEFAULT 'es': accounts that existed before the setting read as Spanish.
         builder.Property(u => u.PreferredLanguage)
             .HasConversion(language => language.Value, value => new PreferredLanguage(value))
             .HasColumnName("preferred_language").HasMaxLength(5).IsRequired()

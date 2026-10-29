@@ -15,7 +15,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.MonitoringAdherence.Interfaces.REST;
 
 /// <summary>
-///     MA-7 - The patient's acknowledgement of the consistency prompt (PT3 "Algo no cuadra", PT16).
+///     The patient's acknowledgement of the consistency prompt (the "something doesn't add up" card).
 /// </summary>
 /// <remarks>
 ///     Business rules: Patient First Always and Patient Prompt Required Before Escalation (Subflows 5.7 and 5.8).

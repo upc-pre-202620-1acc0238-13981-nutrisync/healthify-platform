@@ -9,7 +9,7 @@ public interface IClinicalDateProvider
     DateOnly Today();
 
     /// <summary>
-    ///     NC-10. The practice's calendar date of an instant ("desviación sostenida del 8 sept."). The default reads
+    ///     The practice's calendar date of an instant ("sustained deviation of 8 Sept."). The default reads
     ///     the instant in UTC; the configured provider reads it in the clinical time zone.
     /// </summary>
     DateOnly DateOf(DateTimeOffset instant)

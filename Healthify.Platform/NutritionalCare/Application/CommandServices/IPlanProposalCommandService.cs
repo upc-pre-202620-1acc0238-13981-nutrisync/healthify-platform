@@ -6,7 +6,7 @@ using Healthify.Platform.Shared.Application.Patterns;
 namespace Healthify.Platform.NutritionalCare.Application.CommandServices;
 
 /// <summary>
-///     NC-10 - The explicit action of the practitioner on an AI plan proposal. The only path from a review item to a
+///     The explicit action of the practitioner on an AI plan proposal. The only path from a review item to a
 ///     plan change, and it starts at the practitioner's POST: no policy, worker or handler resolves this service.
 /// </summary>
 public interface IPlanProposalCommandService

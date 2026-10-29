@@ -24,7 +24,7 @@ using NSubstitute;
 namespace Healthify.Platform.Tests.TestSupport;
 
 /// <summary>
-///     IA-2/IA-4/IA-5. The AI functions of Monitoring and Adherence with their real pieces: the shared pipeline with
+///     The AI functions of Monitoring and Adherence with their real pieces: the shared pipeline with
 ///     its real settings, prompt catalog (the embedded prompts) and audit in memory, the fake language model, the
 ///     real lexicon, cache and facts reader; the other contexts are substitutes. The clock is Tuesday 15 September
 ///     2026 (UTC calendar), so the week to summarize is Monday 7 to Sunday 13.
@@ -149,7 +149,7 @@ public sealed class MonitoringAiScenario
     }
 }
 
-/// <summary>IA-2. <see cref="IWeeklySummaryRepository" /> in memory, with the identity EF would assign.</summary>
+/// <summary><see cref="IWeeklySummaryRepository" /> in memory, with the identity EF would assign.</summary>
 public sealed class InMemoryWeeklySummaries : IWeeklySummaryRepository
 {
     private readonly List<WeeklySummary> _rows = [];

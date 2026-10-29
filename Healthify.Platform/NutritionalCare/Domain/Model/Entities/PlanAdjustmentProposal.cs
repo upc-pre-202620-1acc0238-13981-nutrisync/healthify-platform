@@ -5,13 +5,13 @@ using Healthify.Platform.Shared.Domain.Model.Entities;
 namespace Healthify.Platform.NutritionalCare.Domain.Model.Entities;
 
 /// <summary>
-///     NC-10. The plan the AI proposes when a sustained deviation reaches the inbox (PR14.IA "Plan propuesto por IA ·
-///     Ajustar la energía y reforzar las cenas · Energía diaria 1 796 → 1 650 kcal…"). Part of the
+///     The plan the AI proposes when a sustained deviation reaches the inbox (for example: adjust the
+///     energy and strengthen dinners, daily energy 1 796 → 1 650 kcal). Part of the
 ///     <c>ReviewItem</c> aggregate: it exists only inside one item and is changed only through it.
 /// </summary>
 /// <remarks>
 ///     A proposal is a text on a screen, not a plan. Business rule: No Signal Or Algorithm Modifies The Plan Without
-///     An Explicit Action Of The Practitioner (NC-10). Attaching one writes this row and nothing else; only the
+///     An Explicit Action Of The Practitioner. Attaching one writes this row and nothing else; only the
 ///     acceptance a practitioner sends creates a version. What the AI proposed is kept as it was, also after it is
 ///     accepted with edits: the version records what was assigned, this row what was proposed.
 /// </remarks>
@@ -21,7 +21,7 @@ public class PlanAdjustmentProposal : IAuditableEntity
     public const int MaximumPatientMessageLength = 500;
     public const int MaximumRationaleLength = 600;
 
-    /// <summary>NC-10: "RecheckAfterDays (1–30)".</summary>
+    /// <summary>"RecheckAfterDays (1–30)".</summary>
     public const int MinimumRecheckAfterDays = 1;
 
     public const int MaximumRecheckAfterDays = 30;
@@ -54,7 +54,7 @@ public class PlanAdjustmentProposal : IAuditableEntity
             throw new ArgumentException("A proposal is traceable to its AI generation.", nameof(aiGenerationId));
         if (string.IsNullOrWhiteSpace(title) || title.Trim().Length > MaximumTitleLength)
             throw new ArgumentException($"The title has 1 to {MaximumTitleLength} characters.", nameof(title));
-        // Business rule: Macros Coherent With The Energy (NC-10): "deben sumar la energía ±2 %".
+        // Business rule: Macros Coherent With The Energy: they add up to the energy within 2 %.
         if (!PlanAdjustmentSafety.AreMacrosCoherent(proposedEnergyKcal, proposedProteinG, proposedCarbG,
                 proposedFatG))
             throw new ArgumentException("The proposed macros must add up to the proposed energy within 2 %.",
@@ -110,13 +110,13 @@ public class PlanAdjustmentProposal : IAuditableEntity
     /// <summary>Guideline catalog codes of the version in force the proposal removes.</summary>
     public IReadOnlyList<string> RemovedGuidelines => _removedGuidelines;
 
-    /// <summary>"Mensaje para Ana", as the AI drafted it. Reaches the patient only if a practitioner assigns it.</summary>
+    /// <summary>The message for the patient, as the AI drafted it. Reaches the patient only if a practitioner assigns it.</summary>
     public string PatientMessage { get; private set; } = null!;
 
-    /// <summary>"Seguimiento: Revisar de nuevo en 7 días".</summary>
+    /// <summary>Follow-up: check again in this many days.</summary>
     public int RecheckAfterDays { get; private set; }
 
-    /// <summary>"Por qué". Professional information.</summary>
+    /// <summary>The "why" section. Professional information.</summary>
     public string Rationale { get; private set; } = null!;
 
     public DateTimeOffset GeneratedAt { get; private set; }
@@ -127,12 +127,12 @@ public class PlanAdjustmentProposal : IAuditableEntity
     public int? AssignedPlanVersion { get; private set; }
 
     /// <summary>
-    ///     X-2. <c>es</c> or <c>en</c>: the language of <see cref="Title" /> and <see cref="Rationale" />, the
-    ///     practitioner's. Null for proposals generated before X-2 (one language, the patient's).
+    ///     <c>es</c> or <c>en</c>: the language of <see cref="Title" /> and <see cref="Rationale" />, the
+    ///     practitioner's. Null for older proposals, written in one language, the patient's.
     /// </summary>
     public string? PractitionerLanguage { get; private set; }
 
-    /// <summary>X-2. <c>es</c> or <c>en</c>: the language of <see cref="PatientMessage" />, the patient's. Null before X-2.</summary>
+    /// <summary><c>es</c> or <c>en</c>: the language of <see cref="PatientMessage" />, the patient's. Null on older proposals.</summary>
     public string? PatientLanguage { get; private set; }
 
     public DateTimeOffset? CreatedAt { get; set; }
@@ -140,7 +140,7 @@ public class PlanAdjustmentProposal : IAuditableEntity
 
     public bool IsProposed => Status.IsProposed;
 
-    /// <summary>IA-8. A practitioner assigned a version from it: it is part of the clinical record.</summary>
+    /// <summary>A practitioner assigned a version from it: it is part of the clinical record.</summary>
     public bool IsAccepted => AssignedPlanVersion is not null;
 
     internal void Accept(int planVersion, bool asIs)

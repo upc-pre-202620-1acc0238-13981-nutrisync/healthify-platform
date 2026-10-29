@@ -1,10 +1,10 @@
 namespace Healthify.Platform.CareRelationship.Application.Internal;
 
 /// <summary>
-///     IA-1. What PT21.IA shows: whether the patient consents to AI processing, and which functions are on. A
+///     What the AI functions screen shows: whether the patient consents to AI processing, and which functions are on. A
 ///     function counts as on only while the consent is there, whatever was stored.
 /// </summary>
-/// <remarks>IN-7: <c>MealPhotoRecognitionEnabled</c> is meal photo recognition («Reconocer comidas por foto»).</remarks>
+/// <remarks><c>MealPhotoRecognitionEnabled</c> is the meal photo recognition switch.</remarks>
 public record AiPreferencesStatus(
     int PatientId,
     bool ConsentGranted,

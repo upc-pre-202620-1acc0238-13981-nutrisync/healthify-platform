@@ -66,7 +66,7 @@ public record EvaluateDayCommand(int PatientId, DateOnly Date);
 public record ReEvaluateWindowCommand(int PatientId, DateOnly Date);
 
 /// <summary>
-///     Subflow 5.4, MA-1 - Mark Unlogged Days Before. Issued by the policy that reacts to Diary Batch
+///     Subflow 5.4 - Mark Unlogged Days Before. Issued by the policy that reacts to Diary Batch
 ///     Synchronized, with the most recent day the batch declared, after the batch's days are evaluated.
 /// </summary>
 /// <remarks>
@@ -124,8 +124,8 @@ public record RecomputeConsistencyIndexCommand(int PatientId);
 public record PromptPatientCommand(int PatientId);
 
 /// <summary>
-///     MA-7 - Acknowledge Consistency Prompt. Issued by the patient's app when it painted the card in PT3 ("Algo no
-///     cuadra"). The moment is the server's: the patient is the one who saw it.
+///     Acknowledge Consistency Prompt. Issued by the patient's app when it showed the "something doesn't add
+///     up" card. The moment is the server's: the patient is the one who saw it.
 /// </summary>
 /// <param name="PatientId">The patient, from the token.</param>
 public record AcknowledgeConsistencyPromptCommand(int PatientId);
@@ -172,7 +172,7 @@ public record RemindPatientCommand(int PatientId);
 /// <param name="Reason">Why.</param>
 public record RecordReferralCommand(int PatientId, int PractitionerId, string Specialty, string Reason);
 
-/// <summary>RM-4 - Close Referral (DECISIÓN §12-#8). Issued by the practitioner who recorded it.</summary>
+/// <summary>Close Referral. Issued by the practitioner who recorded it.</summary>
 /// <param name="ReferralId">The referral.</param>
 /// <param name="PractitionerId">Who closes it, from the token.</param>
 public record CloseReferralCommand(int ReferralId, int PractitionerId);
@@ -181,8 +181,8 @@ public record CloseReferralCommand(int ReferralId, int PractitionerId);
 /// <param name="PatientId">Who is being seen.</param>
 /// <param name="PractitionerId">Who is seeing them.</param>
 /// <param name="ScheduledFor">When.</param>
-/// <param name="Preparation">MA-2. Codes of the closed list; null or empty means no instructions.</param>
-/// <param name="Modality">MA-2. InPerson (default) or Remote.</param>
+/// <param name="Preparation">Codes of the closed list; null or empty means no instructions.</param>
+/// <param name="Modality">InPerson (default) or Remote.</param>
 public record ScheduleFollowUpCommand(
     int PatientId,
     int PractitionerId,
@@ -198,8 +198,8 @@ public record ScheduleFollowUpCommand(
 public record FlagMissedFollowUpCommand(int FollowUpId);
 
 /// <summary>
-///     MA-2 - Complete Follow Up. Issued by the policy that reacts to Consultation Completed (Nutritional
-///     Care, NC-2), never by an endpoint.
+///     Complete Follow Up. Issued by the policy that reacts to Consultation Completed (Nutritional
+///     Care), never by an endpoint.
 /// </summary>
 /// <param name="PatientId">Whose consultation.</param>
 /// <param name="PractitionerId">Who held it.</param>
@@ -213,15 +213,15 @@ public record CompleteFollowUpFromConsultationCommand(
     DateTimeOffset CompletedAt,
     int? ScheduledFollowUpId);
 
-/// <summary>MA-5 - Cancel Follow Up. Issued by the practitioner whose agenda the visit is on.</summary>
+/// <summary>Cancel Follow Up. Issued by the practitioner whose agenda the visit is on.</summary>
 /// <param name="FollowUpId">The visit.</param>
 /// <param name="PractitionerId">Who cancels it, from the token.</param>
 /// <param name="Reason">Short reason, at most 30 characters; null stores "CancelledByPractitioner".</param>
 public record CancelFollowUpCommand(int FollowUpId, int PractitionerId, string? Reason = null);
 
 /// <summary>
-///     CR-4 - Cancel the future visits of a patient when the treatment ends: discharge, or a switch of practitioner
-///     (CR-1). Issued by the policies on Treatment Discharged and Care Link Revoked only, never by an endpoint.
+///     Cancel the future visits of a patient when the treatment ends: discharge, or a switch of practitioner.
+///     Issued by the policies on Treatment Discharged and Care Link Revoked only, never by an endpoint.
 /// </summary>
 /// <param name="PatientId">Whose visits.</param>
 /// <param name="Reason">"Discharged" or "SwitchedPractitioner", at most 30 characters.</param>
@@ -230,7 +230,7 @@ public record CancelFollowUpCommand(int FollowUpId, int PractitionerId, string? 
 /// </param>
 public record CancelFollowUpsForPatientCommand(int PatientId, string Reason, int? PractitionerId = null);
 
-/// <summary>MA-5 - Reschedule Follow Up. Issued by the practitioner whose agenda the visit is on.</summary>
+/// <summary>Reschedule Follow Up. Issued by the practitioner whose agenda the visit is on.</summary>
 /// <param name="FollowUpId">The visit.</param>
 /// <param name="PractitionerId">Who moves it, from the token.</param>
 /// <param name="ScheduledFor">The new moment; it has to be in the future.</param>
@@ -242,11 +242,11 @@ public record RescheduleFollowUpCommand(
     IReadOnlyList<string>? Preparation = null);
 
 /// <summary>
-///     MA-4 - Submit Pre Visit Check In. Issued by the patient (PT25.2 "Enviar a mi nutricionista" and PT25.3
-///     "Editar mi respuesta"): creates the check in of the visit, or edits it.
+///     Submit Pre Visit Check In. Issued by the patient when they send the check in to their practitioner
+///     or edit their answer: creates the check in of the visit, or edits it.
 /// </summary>
 /// <remarks>
-///     Business rule: Check In Raises No Signal (MA-4). Nothing on this record reaches a window, a deviation or the
+///     Business rule: Check In Raises No Signal. Nothing on this record reaches a window, a deviation or the
 ///     consistency index; the check in is voluntary and is read by a person.
 /// </remarks>
 /// <param name="FollowUpId">The visit it is for.</param>
@@ -261,30 +261,30 @@ public record SubmitPreVisitCheckInCommand(
     IReadOnlyList<string>? Difficulties = null,
     IReadOnlyList<PreVisitCheckInQuestionInput>? Questions = null);
 
-/// <summary>MA-4. One question of <see cref="SubmitPreVisitCheckInCommand" />.</summary>
+/// <summary>One question of <see cref="SubmitPreVisitCheckInCommand" />.</summary>
 /// <param name="Text">The question, 3 to 300 characters.</param>
 /// <param name="Origin">Patient (default) or AiSuggested.</param>
 /// <param name="AiGenerationId">The AI generation it came from, when suggested.</param>
-/// <param name="Language">X-2. es or en: the language of an AI suggestion. Ignored for the patient's own questions.</param>
+/// <param name="Language">Es or en: the language of an AI suggestion. Ignored for the patient's own questions.</param>
 public record PreVisitCheckInQuestionInput(string Text, string? Origin = null, long? AiGenerationId = null,
     string? Language = null);
 
 /// <summary>
 ///     Subflow 5.11 - Close Evaluation Window. Issued by the policy that reacts to Care Link Revoked,
 ///     and by the one that reacts to Care Link Established when a window of a previous link is still
-///     open (CR-1). Never by an endpoint.
+///     open. Never by an endpoint.
 /// </summary>
 /// <param name="PatientId">Whose window is closing.</param>
 /// <param name="RevokedAt">The moment the link was revoked, or the moment it was superseded.</param>
 /// <param name="CareLinkId">
-///     CR-1. The link whose window is closing. When given, only an open window of that link is
+///     The link whose window is closing. When given, only an open window of that link is
 ///     closed, so a late revocation of a previous link never closes the window of the new one. Null
 ///     closes whichever window is open.
 /// </param>
 public record CloseEvaluationWindowCommand(int PatientId, DateTimeOffset RevokedAt, int? CareLinkId = null);
 
 /// <summary>
-///     IA-2 - Generate Weekly Summary. Issued by <c>WeeklySummaryHostedService</c> for each patient with an open
+///     Generate Weekly Summary. Issued by <c>WeeklySummaryHostedService</c> for each patient with an open
 ///     window, never by an endpoint. Idempotent: a week already summarized is returned as it is.
 /// </summary>
 /// <param name="PatientId">Whose week.</param>
@@ -292,7 +292,7 @@ public record CloseEvaluationWindowCommand(int PatientId, DateTimeOffset Revoked
 public record GenerateWeeklySummaryCommand(int PatientId, DateOnly WeekStart);
 
 /// <summary>
-///     IA-4 - Suggest Questions (PT25 "Prepara tu consulta"). One generation per visit, or per week without one;
+///     Suggest Questions for the visit. One generation per visit, or per week without one;
 ///     generated again when the check in of the visit changes.
 /// </summary>
 /// <param name="PatientId">Who asks, from the token.</param>
@@ -300,7 +300,7 @@ public record GenerateWeeklySummaryCommand(int PatientId, DateOnly WeekStart);
 public record SuggestQuestionsCommand(int PatientId, int? FollowUpId);
 
 /// <summary>
-///     IA-5 - Summarize Monitoring (PAC-2 "Resumen generado con IA"). Cached six hours per patient and range.
+///     Summarize Monitoring with AI for the practitioner. Cached six hours per patient and range.
 /// </summary>
 /// <param name="PatientId">Whose period.</param>
 /// <param name="PractitionerId">Who reads it, from the token.</param>
@@ -309,20 +309,20 @@ public record SuggestQuestionsCommand(int PatientId, int? FollowUpId);
 public record SummarizeMonitoringCommand(int PatientId, int PractitionerId, DateOnly? From = null, DateOnly? To = null);
 
 /// <summary>
-///     IA-1/CR-2 (§12-#14) - Purge Monitoring AI Content. Issued by the policies that react to the AI consent being
+///     Purge Monitoring AI Content. Issued by the policies that react to the AI consent being
 ///     withdrawn or a function being turned off. Deletes what this context generated for the patient.
 /// </summary>
 /// <param name="PatientId">Whose content.</param>
-/// <param name="WeeklySummaries">IA-2: the weekly summaries.</param>
-/// <param name="SuggestedQuestions">IA-4: the cached suggested questions.</param>
-/// <param name="MonitoringSummaries">IA-5: the cached monitoring summaries.</param>
+/// <param name="WeeklySummaries">The weekly summaries.</param>
+/// <param name="SuggestedQuestions">The cached suggested questions.</param>
+/// <param name="MonitoringSummaries">The cached monitoring summaries.</param>
 public record PurgeMonitoringAiContentCommand(
     int PatientId,
     bool WeeklySummaries,
     bool SuggestedQuestions,
     bool MonitoringSummaries);
 
-/// <summary>§12-#14 - Retention of the weekly summaries: the ones generated before the cut are deleted.</summary>
+/// <summary>Retention of the weekly summaries: the ones generated before the cut are deleted.</summary>
 /// <param name="GeneratedBefore">The cut (now minus <c>Ai:RetentionDays</c>).</param>
 /// <param name="BatchSize">How many to delete in one cycle.</param>
 public record PurgeExpiredWeeklySummariesCommand(DateTimeOffset GeneratedBefore, int BatchSize = 500);

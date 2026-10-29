@@ -38,31 +38,31 @@ public enum IamError
     /// <summary>Rule: Role Immutable Per Session (Subflow 1.2).</summary>
     RoleImmutablePerSession,
 
-    /// <summary>Rule: Name Required At Registration (IAM-1). Given names and family names, as human text.</summary>
+    /// <summary>Rule: Name Required At Registration. Given names and family names, as human text.</summary>
     NameRequired,
 
-    /// <summary>IAM-3. The language is not one the interface is offered in: es or en.</summary>
+    /// <summary>The language is not one the interface is offered in: es or en.</summary>
     InvalidPreferredLanguage,
 
     /// <summary>
-    ///     IAM-4. The refresh token is unknown, expired, already rotated or belongs to a terminated session. One
+    ///     The refresh token is unknown, expired, already rotated or belongs to a terminated session. One
     ///     value for all of them, so the endpoint does not say which.
     /// </summary>
     RefreshTokenInvalid,
 
     /// <summary>
-    ///     IAM-2. The reset code is wrong, expired, already verified or out of attempts, or the email has no account.
+    ///     The reset code is wrong, expired, already verified or out of attempts, or the email has no account.
     ///     One value for all of them, so the endpoint does not say which.
     /// </summary>
     PasswordResetCodeInvalid,
 
     /// <summary>
-    ///     IAM-2. The reset token is unknown, expired or already used. One value for all of them, so the endpoint does
+    ///     The reset token is unknown, expired or already used. One value for all of them, so the endpoint does
     ///     not say which.
     /// </summary>
     PasswordResetTokenInvalid,
 
-    /// <summary>Rule: New Password Differs From The Current One (IAM-2).</summary>
+    /// <summary>Rule: New Password Differs From The Current One.</summary>
     PasswordReuseNotAllowed,
 
     UnexpectedError
