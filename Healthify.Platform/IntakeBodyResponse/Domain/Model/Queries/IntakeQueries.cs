@@ -45,6 +45,14 @@ public record GetPendingSyncQueueByPatientIdQuery(int PatientId);
 /// </summary>
 public record GetFoodNamesQuery(IReadOnlyCollection<int> ReferenceFoodIds);
 
+/// <summary>
+///     IN-8. Whether the given foods look in or off the patient's plan, one suggestion each, in order.
+/// </summary>
+/// <param name="PatientId">From the token: the patient.</param>
+/// <param name="LocalDate">The patient's day, for what is left today; null judges only the restrictions.</param>
+/// <param name="Candidates">The foods about to be logged.</param>
+public record GetPlanFitsQuery(int PatientId, DateOnly? LocalDate, IReadOnlyList<PlanFitCandidate> Candidates);
+
 /// <summary>Every reading of one patient. Input to the trend recalculation.</summary>
 public record GetSelfWeighInsByPatientIdQuery(int PatientId);
 

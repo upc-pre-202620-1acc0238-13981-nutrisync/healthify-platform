@@ -249,9 +249,22 @@ public static class MealPhotoAnalysisResourceAssembler
     {
         return new MealPhotoAnalysisResource(view.AnalysisId, view.ReferenceFoodId, view.FoodName,
             view.EstimatedGrams, view.Confidence,
-            view.Alternatives.Select(a => new MealPhotoAlternativeResource(a.Name, a.Grams, a.ReferenceFoodId))
+            view.Alternatives.Select((a, i) => new MealPhotoAlternativeResource(a.Name, a.Grams, a.ReferenceFoodId,
+                    PlanFitResourceAssembler.ToResource(view.AlternativePlanFits?.ElementAtOrDefault(i))))
                 .ToList(),
-            view.ExpiresAt);
+            view.ExpiresAt, PlanFitResourceAssembler.ToResource(view.PlanFit));
+    }
+}
+
+/// <summary>IN-8.</summary>
+public static class PlanFitResourceAssembler
+{
+    public static PlanFitResource? ToResource(PlanFit? fit)
+    {
+        return fit is null
+            ? null
+            : new PlanFitResource(fit.SuggestedAdherence, fit.ViolatedRestrictions, fit.Reason, fit.EnergyKcal,
+                fit.RemainingKcal);
     }
 }
 
