@@ -547,7 +547,8 @@ public record MealPhotoAnalysisResource(
     decimal EstimatedGrams,
     decimal Confidence,
     IReadOnlyList<MealPhotoAlternativeResource> Alternatives,
-    DateTimeOffset ExpiresAt)
+    DateTimeOffset ExpiresAt,
+    PlanFitResource? PlanFit = null)
 {
     /// <summary>What <c>photo-logs</c> references. Valid until <see cref="ExpiresAt" />.</summary>
     public Guid AnalysisId { get; init; } = AnalysisId;
@@ -569,11 +570,24 @@ public record MealPhotoAnalysisResource(
 
     /// <summary>After this instant the analysis can no longer be logged (24 hours by default).</summary>
     public DateTimeOffset ExpiresAt { get; init; } = ExpiresAt;
+
+    /// <summary>
+    ///     IN-8. The suggestion for «¿Estaba en tu plan?» of the dish, which the app preselects. Null when there is
+    ///     none (no plan published yet).
+    /// </summary>
+    public PlanFitResource? PlanFit { get; init; } = PlanFit;
 }
 
 /// <summary>IN-7. Another dish the photo could show.</summary>
-public record MealPhotoAlternativeResource(string Name, decimal Grams, int? ReferenceFoodId)
+public record MealPhotoAlternativeResource(
+    string Name,
+    decimal Grams,
+    int? ReferenceFoodId,
+    PlanFitResource? PlanFit = null)
 {
+    /// <summary>IN-8. The suggestion for this dish, or null when the catalog does not carry it.</summary>
+    public PlanFitResource? PlanFit { get; init; } = PlanFit;
+
     /// <summary>Its name: the catalog's when the catalog carries it.</summary>
     public string Name { get; init; } = Name;
 
@@ -582,6 +596,33 @@ public record MealPhotoAlternativeResource(string Name, decimal Grams, int? Refe
 
     /// <summary>The catalog entry, or null when the local catalog does not carry it (the app lets the patient search).</summary>
     public int? ReferenceFoodId { get; init; } = ReferenceFoodId;
+}
+
+/// <summary>
+///     IN-8. A suggestion for «¿Esta comida estaba en tu plan?», computed by the server without AI. The app preselects
+///     it; the patient may change it, and what is logged is always their own answer.
+/// </summary>
+public record PlanFitResource(
+    string SuggestedAdherence,
+    IReadOnlyList<string> ViolatedRestrictions,
+    string Reason,
+    decimal EnergyKcal,
+    decimal? RemainingKcal)
+{
+    /// <summary><c>InPlan</c> or <c>OffPlan</c>.</summary>
+    public string SuggestedAdherence { get; init; } = SuggestedAdherence;
+
+    /// <summary>The restriction codes of the plan the food seems to break (NC-6); empty when none.</summary>
+    public IReadOnlyList<string> ViolatedRestrictions { get; init; } = ViolatedRestrictions;
+
+    /// <summary><c>Fits</c>, <c>BreaksRestriction</c> or <c>ExceedsRemaining</c>: the app shows its own text for each.</summary>
+    public string Reason { get; init; } = Reason;
+
+    /// <summary>The energy of the portion, in kcal.</summary>
+    public decimal EnergyKcal { get; init; } = EnergyKcal;
+
+    /// <summary>What was left today before this meal, or null when the day was not sent.</summary>
+    public decimal? RemainingKcal { get; init; } = RemainingKcal;
 }
 
 /// <summary>IN-6. The entries a meal logged in a group became.</summary>
