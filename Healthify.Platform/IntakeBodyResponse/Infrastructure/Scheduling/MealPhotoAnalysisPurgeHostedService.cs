@@ -6,7 +6,7 @@ using Healthify.Platform.Shared.Application.Patterns;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Scheduling;
 
 /// <summary>
-///     IN-7. Policy "When A Photo Analysis Expires": deletes the meal photo analyses whose lifetime (24 hours by
+///     Policy "When A Photo Analysis Expires": deletes the meal photo analyses whose lifetime (24 hours by
 ///     default) has passed, every <c>Scheduling:MealPhotoAnalysisPurgeIntervalMinutes</c> (60). Runs even with AI off,
 ///     so analyses made while it was on still go.
 /// </summary>

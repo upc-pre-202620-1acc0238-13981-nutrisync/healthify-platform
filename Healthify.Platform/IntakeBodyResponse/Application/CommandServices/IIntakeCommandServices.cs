@@ -38,12 +38,8 @@ public interface IDiaryEntryCommandService
     Task<Result<DiaryEntry, IntakeError>> Handle(LogMealManuallyCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IN-6 - Log a meal in a group: one entry per food, one transaction, the day evaluated once.</summary>
+    /// <summary>Log a meal in a group: one entry per food, one transaction, the day evaluated once.</summary>
     Task<Result<MealGroupLogOutcome, IntakeError>> Handle(LogMealGroupManuallyCommand command,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>Subflow 4.4 - Log Off Plan Meal. One tap, no detail requested.</summary>
-    Task<Result<DiaryEntry, IntakeError>> Handle(LogOffPlanMealCommand command,
         CancellationToken cancellationToken = default);
 
     /// <summary>Subflow 4.6 - Sync Pending Entries.</summary>
@@ -51,13 +47,13 @@ public interface IDiaryEntryCommandService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>Subflow 4.5 - Record Self Weigh In, and IN-4 - Sync Pending Self Weigh Ins.</summary>
+/// <summary>Subflow 4.5 - Record Self Weigh In, and Sync Pending Self Weigh Ins.</summary>
 public interface ISelfWeighInCommandService
 {
     Task<Result<SelfWeighIn, IntakeError>> Handle(RecordSelfWeighInCommand command,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IN-4. Idempotent by client identifier; one trend recalculation per batch.</summary>
+    /// <summary>Idempotent by client identifier; one trend recalculation per batch.</summary>
     Task<Result<SelfWeighInSyncOutcome, IntakeError>> Handle(SyncSelfWeighInsCommand command,
         CancellationToken cancellationToken = default);
 }
@@ -69,7 +65,7 @@ public interface IWeightTrendCommandService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>IA-3 - Meal ideas within what is left today, and their purge.</summary>
+/// <summary>Meal ideas within what is left today, and their purge.</summary>
 public interface IMealIdeasCommandService
 {
     /// <summary>Two or three ideas, an <c>IntakeError</c> (nothing left, no targets…) or an <c>AiError</c>.</summary>
@@ -80,7 +76,7 @@ public interface IMealIdeasCommandService
     Task<Result<int, IntakeError>> Handle(PurgeMealIdeasCommand command, CancellationToken cancellationToken = default);
 }
 
-/// <summary>IN-7 - Meal photo recognition: the analysis of a photo, and the purges of the temporary analyses.</summary>
+/// <summary>Meal photo recognition: the analysis of a photo, and the purges of the temporary analyses.</summary>
 public interface IMealPhotoAnalysisCommandService
 {
     /// <summary>The analysis, an <c>IntakeError</c> (photo invalid, not recognized…) or an <c>AiError</c>.</summary>

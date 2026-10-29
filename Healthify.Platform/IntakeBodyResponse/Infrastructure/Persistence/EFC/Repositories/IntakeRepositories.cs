@@ -124,7 +124,7 @@ public class DiaryEntryRepository(AppDbContext context)
     }
 }
 
-/// <summary>IN-7. The temporary photo analyses. Deleting them is the point: they expire, and they go with the consent.</summary>
+/// <summary>The temporary photo analyses. Deleting them is the point: they expire, and they go with the consent.</summary>
 public class MealPhotoAnalysisRepository(AppDbContext context)
     : BaseRepository<MealPhotoAnalysis>(context), IMealPhotoAnalysisRepository
 {

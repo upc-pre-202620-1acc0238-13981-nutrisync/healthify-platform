@@ -3,7 +3,7 @@ using Healthify.Platform.Shared.Application.Ai;
 
 namespace Healthify.Platform.IntakeBodyResponse.Application.Internal;
 
-/// <summary>IN-7. What the model answers (schema of <c>meal-photo-recognition@n.md</c>).</summary>
+/// <summary>What the model answers (schema of <c>meal-photo-recognition@n.md</c>).</summary>
 public sealed record MealPhotoRecognitionOutput(
     string DishName,
     decimal EstimatedGrams,
@@ -11,7 +11,7 @@ public sealed record MealPhotoRecognitionOutput(
     IReadOnlyList<MealPhotoAlternativeOutput> Alternatives,
     MealPhotoNutrientsOutput NutrientsPer100g);
 
-/// <summary>IN-7. Another dish the photo could show, as the model wrote it.</summary>
+/// <summary>Another dish the photo could show, as the model wrote it.</summary>
 /// <param name="Name">The dish, as the model named it.</param>
 /// <param name="Grams">Its own portion.</param>
 /// <param name="NutrientsPer100g">
@@ -24,11 +24,11 @@ public sealed record MealPhotoAlternativeOutput(
     decimal Grams,
     MealPhotoNutrientsOutput? NutrientsPer100g = null);
 
-/// <summary>IN-7. The nutrients per 100 g the model estimated for the main dish.</summary>
+/// <summary>The nutrients per 100 g the model estimated for the main dish.</summary>
 public sealed record MealPhotoNutrientsOutput(decimal Kcal, decimal Protein, decimal Carb, decimal Fat);
 
 /// <summary>
-///     IN-7, guard 6. The business rules of the recognition the schema cannot say: there is a dish (an empty name is
+///     Guard 6. The business rules of the recognition the schema cannot say: there is a dish (an empty name is
 ///     the model saying it sees none), names are names (they carry letters), the portion is in range and the
 ///     alternatives are complete. Nutrients are not judged here: they matter only if the dish has to be created, and
 ///     then the catalog judges them (AI Estimated Nutrients Coherent).
@@ -65,7 +65,7 @@ public sealed class MealPhotoRecognitionOutputValidator : IAiOutputValidator<Mea
 }
 
 /// <summary>
-///     IN-7. Application DTO: the analysis as the patient sees it on PT7. Says nothing about whether the food was in
+///     Application DTO: the analysis as the patient sees it on confirmation. Says nothing about whether the food was in
 ///     the catalog or created from the estimate.
 /// </summary>
 /// <param name="AnalysisId">What <c>photo-logs</c> references.</param>
@@ -75,9 +75,9 @@ public sealed class MealPhotoRecognitionOutputValidator : IAiOutputValidator<Mea
 /// <param name="Confidence">How sure the AI was, from 0 to 1.</param>
 /// <param name="Alternatives">Up to three, resolved to the local catalog when it carries them.</param>
 /// <param name="ExpiresAt">After this instant the analysis can no longer be logged.</param>
-/// <param name="PlanFit">IN-8. The suggestion for «¿Estaba en tu plan?» of the dish, or null when there is none.</param>
+/// <param name="PlanFit">The suggestion for "was it in your plan?" of the dish, or null when there is none.</param>
 /// <param name="AlternativePlanFits">
-///     IN-8. The same for each alternative, in the order of <paramref name="Alternatives" />; null for one the catalog
+///     The same for each alternative, in the order of <paramref name="Alternatives" />; null for one the catalog
 ///     does not carry. Null when there is no suggestion at all.
 /// </param>
 public sealed record MealPhotoAnalysisView(

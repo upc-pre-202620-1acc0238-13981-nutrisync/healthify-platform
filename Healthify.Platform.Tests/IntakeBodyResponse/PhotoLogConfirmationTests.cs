@@ -17,7 +17,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>IN-2. A photo meal saved already confirmed, in a single transaction.</summary>
+/// <summary>A photo meal saved already confirmed, in a single transaction.</summary>
 public class PhotoLogConfirmationTests
 {
     private const int PatientId = 1;

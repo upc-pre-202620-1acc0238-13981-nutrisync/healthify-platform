@@ -36,12 +36,12 @@ using Xunit;
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
 /// <summary>
-///     IN-7 against a real MySQL server: the four migrations run down and up again over existing rows (foods become
+///     Meal photo recognition against a real MySQL server: the four migrations run down and up again over existing rows (foods become
 ///     Imported or LocalOverride and verified, preferences stay off), two requests creating the same AI-estimated
 ///     dish at the same instant leave one row (the unique index on source_hash decides), the analysis round-trips
 ///     without any image, one analysis is logged once, and a resent clientEntryId does not duplicate.
 /// </summary>
-/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (CLAUDE.md §5).</remarks>
+/// <remarks>Skipped unless <c>HEALTHIFY_IT_MYSQL</c> is set (see CLAUDE.md).</remarks>
 [Collection(MySqlCollection.Name)]
 [Trait("Category", "MySql")]
 public class MealPhotoMySqlTests
@@ -63,7 +63,7 @@ public class MealPhotoMySqlTests
                 "column_name IN ('input_image_hash', 'meal_photo_recognition_enabled', 'is_verified', 'verified_by', " +
                 "'meal_photo_analysis_id', 'proposed_ai_generation_id')"));
 
-            // Rows as they are before IN-7.
+            // Rows as they are before meal photo recognition.
             await context.Database.ExecuteSqlRawAsync(
                 "INSERT INTO reference_foods (local_name, energy_kcal_per_100g, protein_g_per_100g, carb_g_per_100g, " +
                 "fat_g_per_100g, source_hash, is_local_override) VALUES " +

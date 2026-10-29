@@ -12,7 +12,7 @@ public class ProposalKeptAlongsideConfirmationTests
     private const int ProposedFoodId = 12;
     private const decimal ProposedGrams = 320m;
 
-    // IN-1 made the answer to «¿Esta comida estaba en tu plan?» part of every confirmation. The rule
+    // The answer to "was this meal in your plan?" is part of every confirmation. The rule
     // characterized here does not depend on which answer is given.
     private static readonly PlanAdherence Answer = new(PlanAdherence.InPlan);
 

@@ -18,13 +18,13 @@ public record GetDiaryEntryByIdQuery(int DiaryEntryId);
 public record GetWeightTrendByPatientIdQuery(int PatientId);
 
 /// <summary>
-///     IN-5. Read model Weight Trend Chart with the summary of its last <paramref name="Weeks" /> weeks
+///     Read model Weight Trend Chart with the summary of its last <paramref name="Weeks" /> weeks
 ///     (<c>?weeks=4</c> by default) and the count of excluded readings in them.
 /// </summary>
 public record GetWeightTrendRangeByPatientIdQuery(int PatientId, int Weeks = WeightTrendRange.DefaultWeeks);
 
 /// <summary>
-///     IA-2. The trend over an explicit range of local days (<paramref name="From" /> to <paramref name="To" />, both
+///     The trend over an explicit range of local days (<paramref name="From" /> to <paramref name="To" />, both
 ///     included), independent of the day it is asked.
 /// </summary>
 public record GetWeightTrendBetweenByPatientIdQuery(int PatientId, DateOnly From, DateOnly To);
@@ -39,14 +39,14 @@ public record GetWeightTrendBetweenByPatientIdQuery(int PatientId, DateOnly From
 public record GetPendingSyncQueueByPatientIdQuery(int PatientId);
 
 /// <summary>
-///     IN-1. The local names of the given catalog foods, so the diary reads «Ceviche · 280 g» rather
+///     The local names of the given catalog foods, so the diary reads «Ceviche · 280 g» rather
 ///     than an identifier. A food the catalog cannot resolve keeps its identifier and loses only the
 ///     label.
 /// </summary>
 public record GetFoodNamesQuery(IReadOnlyCollection<int> ReferenceFoodIds);
 
 /// <summary>
-///     IN-8. Whether the given foods look in or off the patient's plan, one suggestion each, in order.
+///     Whether the given foods look in or off the patient's plan, one suggestion each, in order.
 /// </summary>
 /// <param name="PatientId">From the token: the patient.</param>
 /// <param name="LocalDate">The patient's day, for what is left today; null judges only the restrictions.</param>
@@ -54,7 +54,7 @@ public record GetFoodNamesQuery(IReadOnlyCollection<int> ReferenceFoodIds);
 public record GetPlanFitsQuery(int PatientId, DateOnly? LocalDate, IReadOnlyList<PlanFitCandidate> Candidates);
 
 /// <summary>
-///     IN-9. What the patient logged on one of their days, next to the published targets (PT3 «Medidor del día»).
+///     What the patient logged on one of their days, next to the published targets (the day's gauge).
 /// </summary>
 /// <param name="PatientId">From the token: the patient.</param>
 /// <param name="LocalDate">The patient's day: today on their device.</param>
@@ -63,5 +63,5 @@ public record GetDailyIntakeQuery(int PatientId, DateOnly LocalDate);
 /// <summary>Every reading of one patient. Input to the trend recalculation.</summary>
 public record GetSelfWeighInsByPatientIdQuery(int PatientId);
 
-/// <summary>IN-3. The patients who have at least one reading, ascending. Input to the one-shot recalculation.</summary>
+/// <summary>The patients who have at least one reading, ascending. Input to the one-shot recalculation.</summary>
 public record GetPatientIdsWithSelfWeighInsQuery;

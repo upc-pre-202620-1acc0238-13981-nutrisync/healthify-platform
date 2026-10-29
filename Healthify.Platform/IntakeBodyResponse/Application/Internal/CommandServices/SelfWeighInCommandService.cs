@@ -54,7 +54,7 @@ public class SelfWeighInCommandService(
             return Failure(IntakeError.LocalTimestampRequired);
         }
 
-        // Business rule: Protocol Compliance Declared (Subflow 4.5). IN-3: fasted is the one question
+        // Business rule: Protocol Compliance Declared (Subflow 4.5). Fasted is the one question
         // asked; same time of day and same scale are stored as an older client declared them, or null.
         var protocolCompliance = new ProtocolCompliance(command.FastedState, command.SameTimeOfDay,
             command.SameScale);
@@ -86,12 +86,12 @@ public class SelfWeighInCommandService(
     }
 
     /// <summary>
-    ///     IN-4 - Sync Pending Self Weigh Ins.
+    ///     Sync Pending Self Weigh Ins.
     /// </summary>
     /// <remarks>
     ///     Each reading is its own committed step, as in Subflow 4.6, so an interrupted batch keeps what it
     ///     had already stored and the resend finds it. The retroactive window does not apply: a queued
-    ///     reading was taken at the moment it declares (§12.2), and weigh-ins have no window anyway.
+    ///     reading was taken at the moment it declares, and weigh-ins have no window anyway.
     /// </remarks>
     public async Task<Result<SelfWeighInSyncOutcome, IntakeError>> Handle(SyncSelfWeighInsCommand command,
         CancellationToken cancellationToken = default)
@@ -109,8 +109,8 @@ public class SelfWeighInCommandService(
             if (cancellationToken.IsCancellationRequested) break;
 
             // Business rule: Idempotency By Aggregate Id (Subflow 4.6), inside one batch. Unlike the
-            // diary, a repeat is resolved in silence («Duplicado en envío → se resuelve en silencio»).
-            // DECISIÓN IN-4: the repeat reports what its first copy got; AlreadyPresent when it was stored.
+            // diary, a repeat sent twice is resolved in silence.
+            // The repeat reports what its first copy got; AlreadyPresent when it was stored.
             if (seenInThisBatch.TryGetValue(pending.ClientEntryId, out var first))
             {
                 outcomes.Add(first.SelfWeighInId is { } id
@@ -136,7 +136,7 @@ public class SelfWeighInCommandService(
             outcomes.Add(outcome);
         }
 
-        // IN-4: one Recalculate Weight Trend per batch, not per reading.
+        // One Recalculate Weight Trend per batch, not per reading.
         if (created.Count > 0)
             await mediator.PublishAsync(new SelfWeighInBatchSynchronized(command.PatientId, created),
                 cancellationToken);

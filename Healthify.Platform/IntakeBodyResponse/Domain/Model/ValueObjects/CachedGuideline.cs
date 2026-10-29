@@ -1,7 +1,7 @@
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 /// <summary>
-///     NC-6. One guideline of the cached contract: a catalog code, which the device translates, or a custom
+///     One guideline of the cached contract: a catalog code, which the device translates, or a custom
 ///     text written by the practitioner, which is clinical data and is never translated.
 /// </summary>
 /// <remarks>
@@ -29,8 +29,8 @@ public sealed record CachedGuideline
 }
 
 /// <summary>
-///     NC-8. One line of "Qué cambió en esta versión" as the published contract carried it. This context does
-///     not interpret it: the device writes the sentence from the type and the codes, offline (PT4).
+///     One line of "What changed in this version" as the published contract carried it. This context does
+///     not interpret it: the device writes the sentence from the type and the codes, offline.
 /// </summary>
 public sealed record CachedPlanChange
 {

@@ -16,8 +16,8 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 namespace Healthify.Platform.IntakeBodyResponse.Interfaces.REST;
 
 /// <summary>
-///     IN-7. «Viendo tu foto…»: the AI recognizes the dish of a photo on the server and proposes it, with its portion
-///     and alternatives, for the patient to confirm on PT7.
+///     The AI recognizes the dish of a photo on the server and proposes it, with its portion
+///     and alternatives, for the patient to confirm.
 /// </summary>
 /// <remarks>
 ///     Patient only, for their own meals. The photo is read into memory, stripped of its metadata, sent to the AI

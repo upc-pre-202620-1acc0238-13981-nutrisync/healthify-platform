@@ -3,7 +3,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 namespace Healthify.Platform.IntakeBodyResponse.Domain.Services;
 
 /// <summary>
-///     IN-8. How a food is suggested in or off the plan, the same for a photo and for a meal logged by hand. Pure: the
+///     How a food is suggested in or off the plan, the same for a photo and for a meal logged by hand. Pure: the
 ///     caller brings the restrictions, what is left today and the energy of the portion.
 /// </summary>
 /// <remarks>
@@ -14,7 +14,7 @@ namespace Healthify.Platform.IntakeBodyResponse.Domain.Services;
 /// </remarks>
 public static class PlanFitRules
 {
-    /// <summary>IN-8: how far above what is left a portion may go and still be suggested in the plan.</summary>
+    /// <summary>How far above what is left a portion may go and still be suggested in the plan.</summary>
     public const decimal ExceedsRemainingToleranceKcal = 100m;
 
     /// <param name="names">Every name the food goes by: the catalog's and, from a photo, the AI's.</param>
@@ -27,7 +27,7 @@ public static class PlanFitRules
     {
         var energy = decimal.Round(Math.Max(0m, energyKcal), 0);
 
-        // Business rule: Restrictions Of The Plan Come First (IN-8, NC-6).
+        // Business rule: Restrictions Of The Plan Come First.
         var violated = names.Where(n => !string.IsNullOrWhiteSpace(n))
             .SelectMany(n => lexicon.ViolatedRestrictions(n, restrictions))
             .Distinct(StringComparer.OrdinalIgnoreCase)

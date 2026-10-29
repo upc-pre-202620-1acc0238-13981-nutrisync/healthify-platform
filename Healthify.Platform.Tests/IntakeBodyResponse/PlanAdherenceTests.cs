@@ -3,7 +3,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Model.ValueObjects;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>IN-1. «¿Esta comida estaba en tu plan?» as an attribute of an ordinary entry.</summary>
+/// <summary>"Was this meal in your plan?" as an attribute of an ordinary entry.</summary>
 public class PlanAdherenceTests
 {
     private static readonly PlanAdherence InPlan = new(PlanAdherence.InPlan);

@@ -12,7 +12,7 @@ namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Maintenance;
 public record WeightTrendRecalculationReport(int Patients, int Recalculated, IReadOnlyList<int> FailedPatientIds);
 
 /// <summary>
-///     IN-3. One-shot job that issues Recalculate Weight Trend for every patient with readings, so the trends
+///     One-shot job that issues Recalculate Weight Trend for every patient with readings, so the trends
 ///     computed under the three-condition protocol are rebuilt under the configured one (fasted only).
 /// </summary>
 /// <remarks>

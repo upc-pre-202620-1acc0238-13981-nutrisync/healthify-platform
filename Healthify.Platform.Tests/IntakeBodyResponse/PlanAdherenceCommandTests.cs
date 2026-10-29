@@ -15,7 +15,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>IN-1 acceptance criteria on the diary command service.</summary>
+/// <summary>Plan adherence acceptance criteria on the diary command service.</summary>
 public class PlanAdherenceCommandTests
 {
     private const int PatientId = 1;
@@ -110,22 +110,6 @@ public class PlanAdherenceCommandTests
         var published = Fakes.Published(_mediator);
         Assert.Equal(PlanAdherence.OffPlan, Assert.IsType<EstimateAdjustedByPatient>(published[0]).PlanAdherence);
         Assert.Equal(PlanAdherence.OffPlan, Assert.IsType<EstimateConfirmedByPatient>(published[1]).PlanAdherence);
-    }
-
-    [Fact]
-    public async Task Deprecated_off_plan_endpoint_keeps_working_as_before()
-    {
-        var result = await CreateService().Handle(
-            new LogOffPlanMealCommand(PatientId, DateTimeOffset.UtcNow.AddHours(-1)));
-
-        var entry = Assert.IsType<Result<DiaryEntry, IntakeError>.Success>(result).Value;
-        Assert.True(entry.Provenance.IsOffPlan);
-        Assert.True(entry.PlanAdherence.IsOffPlan);
-        Assert.False(entry.HasConfirmedEstimate);
-
-        var published = Fakes.Published(_mediator);
-        Assert.Equal(PlanAdherence.OffPlan, Assert.IsType<MealLogged>(published[0]).PlanAdherence);
-        Assert.IsType<OffPlanEntryLogged>(published[1]);
     }
 
     private DiaryEntryCommandService CreateService()

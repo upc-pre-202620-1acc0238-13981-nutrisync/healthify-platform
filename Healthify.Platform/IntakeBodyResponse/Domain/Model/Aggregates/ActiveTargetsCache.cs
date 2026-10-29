@@ -54,22 +54,22 @@ public partial class ActiveTargetsCache
     /// <summary>From the practitioner: a catalog code or a custom text each. This context does not interpret them.</summary>
     public IReadOnlyList<string> Guidelines => _guidelines;
 
-    /// <summary>Restriction codes since NC-6.</summary>
+    /// <summary>Restriction codes since restrictions became a closed list.</summary>
     public IReadOnlyList<string> Restrictions => _restrictions;
 
-    /// <summary>NC-6. The same guidelines, telling catalog codes from custom texts.</summary>
+    /// <summary>The same guidelines, telling catalog codes from custom texts.</summary>
     public IReadOnlyList<CachedGuideline> GuidelineItems => _guidelineItems;
 
-    /// <summary>NC-6. Free text restrictions from before the closed list. The patient keeps seeing them.</summary>
+    /// <summary>Free text restrictions from before the closed list. The patient keeps seeing them.</summary>
     public IReadOnlyList<string> LegacyRestrictions => _legacyRestrictions;
 
     /// <summary>
-    ///     NC-8. "Qué cambió en esta versión" (PT4, offline). Null when the contract was published before NC-8 and
+    ///     "What changed in this version" (offline). Null when the contract was published before contracts carried it and
     ///     carries none.
     /// </summary>
     public IReadOnlyList<CachedPlanChange>? ChangesFromPrevious => _changesFromPrevious;
 
-    /// <summary>NC-9. The practitioner's message to the patient for this version, if any.</summary>
+    /// <summary>The practitioner's message to the patient for this version, if any.</summary>
     public string? PatientMessage { get; private set; }
 
     /// <summary>Subflow 4.1 - a newer version of the contract arrived.</summary>
@@ -102,7 +102,7 @@ public partial class ActiveTargetsCache
         _restrictions.AddRange(command.Restrictions
             .Where(r => !string.IsNullOrWhiteSpace(r)).Select(r => r.Trim()));
 
-        // A contract published before NC-6 carries no items: its guidelines are custom texts, which is what
+        // A contract published before the closed list of restrictions carries no items: its guidelines are custom texts, which is what
         // the data migration turned them into.
         _guidelineItems.Clear();
         _guidelineItems.AddRange(command.GuidelineItems
@@ -111,7 +111,7 @@ public partial class ActiveTargetsCache
         _legacyRestrictions.AddRange((command.LegacyRestrictions ?? [])
             .Where(r => !string.IsNullOrWhiteSpace(r)).Select(r => r.Trim()));
 
-        // NC-8: replaced with the contract, never merged: a contract without changes leaves none behind.
+        // Replaced with the contract, never merged: a contract without changes leaves none behind.
         _changesFromPrevious = command.ChangesFromPrevious?.ToList();
         PatientMessage = string.IsNullOrWhiteSpace(command.PatientMessage) ? null : command.PatientMessage.Trim();
 

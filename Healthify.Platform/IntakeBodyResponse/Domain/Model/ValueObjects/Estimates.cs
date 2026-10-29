@@ -78,7 +78,7 @@ public sealed record ConfirmedEstimate
 ///     it. A reading that falls outside the protocol is kept in full and simply does not smooth the
 ///     trend, because the day someone weighed themselves after lunch is data about their week, not a
 ///     failure.
-///     IN-3: the protocol is now «¿Te pesaste en ayunas?» alone (PT12). Same time of day and same scale
+///     The protocol is now "did you weigh yourself fasted?" alone. Same time of day and same scale
 ///     are no longer asked: they are null on new readings and kept as declared on older ones.
 /// </remarks>
 public sealed record ProtocolCompliance
@@ -92,13 +92,13 @@ public sealed record ProtocolCompliance
 
     public bool FastedState { get; }
 
-    /// <summary>IN-3: no longer asked. Null on readings recorded after IN-3.</summary>
+    /// <summary>No longer asked. Null on readings recorded since the protocol became fasted only.</summary>
     public bool? SameTimeOfDay { get; }
 
-    /// <summary>IN-3: no longer asked. Null on readings recorded after IN-3.</summary>
+    /// <summary>No longer asked. Null on readings recorded since the protocol became fasted only.</summary>
     public bool? SameScale { get; }
 
-    /// <summary>IN-3: under the default protocol, fasted is all it takes to smooth the trend.</summary>
+    /// <summary>Under the default protocol, fasted is all it takes to smooth the trend.</summary>
     public bool FollowsProtocol => FollowsUnder(SelfWeighInProtocol.Default);
 
     /// <summary>Whether this declaration meets every condition <paramref name="protocol" /> asks for.</summary>
@@ -109,12 +109,12 @@ public sealed record ProtocolCompliance
 }
 
 /// <summary>
-///     IN-3. The conditions a self weigh-in must declare to smooth the trend. Read from
+///     The conditions a self weigh-in must declare to smooth the trend. Read from
 ///     <c>Intake:SelfWeighInProtocol</c>; <see cref="Default" /> is fasted only.
 /// </summary>
 /// <remarks>
 ///     Business rule: Only Protocol Compliant Weigh Ins Smooth The Trend (Subflow 4.5). The protocol is a
-///     list so that the questions removed by IN-3 can come back by configuration. A condition the
+///     list so that the questions removed from it can come back by configuration. A condition the
 ///     patient was not asked (null) is not met: a reading cannot follow a rule nobody put to it.
 /// </remarks>
 public sealed record SelfWeighInProtocol
@@ -125,7 +125,7 @@ public sealed record SelfWeighInProtocol
 
     private static readonly string[] KnownConditions = [Fasted, SameTimeOfDay, SameScale];
 
-    /// <summary>IN-3: «¿Te pesaste en ayunas?» and nothing else.</summary>
+    /// <summary>"Did you weigh yourself fasted?" and nothing else.</summary>
     public static readonly SelfWeighInProtocol Default = new([Fasted]);
 
     public SelfWeighInProtocol(IEnumerable<string> conditions)
@@ -197,14 +197,14 @@ public sealed record WeightTrendPoint
 }
 
 /// <summary>
-///     RM-2/IN-5. Where the smoothed series went over a range: "−0,3 kg/sem · Tendencia · 4 semanas".
+///     Where the smoothed series went over a range, such as -0.3 kg per week over 4 weeks.
 /// </summary>
 /// <remarks>
 ///     Business rule: Daily Figure Never Exposed As Headline (Subflow 4.5). The summary is a slope and a change
 ///     between smoothed points, never the reading of a day. The slope is a simple least squares line over the
 ///     smoothed points against time in weeks; with fewer than two points there is no direction, so both
 ///     figures are null.
-///     IN-5: the weight trend endpoint exposes it, over <see cref="WeightTrendRange" />, next to the excluded
+///     The weight trend endpoint exposes it, over <see cref="WeightTrendRange" />, next to the excluded
 ///     readings count.
 /// </remarks>
 /// <param name="SlopeKgPerWeek">Kilograms per week, rounded to two decimals; negative means going down.</param>
@@ -234,12 +234,12 @@ public sealed record WeightTrendSummary(decimal? SlopeKgPerWeek, decimal? Change
 }
 
 /// <summary>
-///     IN-5. The last weeks of the trend as PT13, PT20 and PAC-1 read them: «Resumen: subió 0,6 kg en 4 semanas» and
-///     «Algunos registros no siguieron el protocolo y no están en esta línea, pero sí quedaron guardados».
+///     The last weeks of the trend as every trend chart reads them: the summary (up 0.6 kg in 4 weeks) and the
+///     note that some readings did not follow the protocol and are not in the line, but were kept.
 /// </summary>
 /// <remarks>
 ///     Business rule: Daily Figure Never Exposed As Headline (Subflow 4.5). Slope and change come from the smoothed
-///     points of the range; there is no «peso de hoy» here.
+///     points of the range; there is no "today's weight" here.
 ///     Business rule: Excluded Weigh Ins Are Kept As Data (Subflow 4.5). <see cref="ExcludedReadingsCount" /> is
 ///     what lets the client explain the gap without naming a culprit: a count, not a list of readings.
 /// </remarks>
@@ -259,7 +259,7 @@ public sealed record WeightTrendRange(
     public const int MaxWeeks = 52;
 
     /// <summary>
-    ///     DECISIÓN IN-5: a number of weeks outside 1..<see cref="MaxWeeks" /> is clamped rather than refused; the
+    ///     A number of weeks outside 1..<see cref="MaxWeeks" /> is clamped rather than refused; the
     ///     query string is a view preference, not a clinical input.
     /// </summary>
     public static int ClampWeeks(int? weeks)

@@ -29,14 +29,14 @@ public interface IDiaryEntryQueryService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     IN-1. Local names by catalog identifier, each distinct food looked up once. Identifiers the
+    ///     Local names by catalog identifier, each distinct food looked up once. Identifiers the
     ///     catalog cannot resolve are absent from the result.
     /// </summary>
     Task<IReadOnlyDictionary<int, string>> Handle(GetFoodNamesQuery query,
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>IN-8. The suggestion for «¿Estaba en tu plan?».</summary>
+/// <summary>The suggestion for "was it in your plan?".</summary>
 public interface IPlanFitQueryService
 {
     /// <summary>
@@ -48,7 +48,7 @@ public interface IPlanFitQueryService
         CancellationToken cancellationToken = default);
 }
 
-/// <summary>IN-9. What the patient logged today and what is left of their targets.</summary>
+/// <summary>What the patient logged today and what is left of their targets.</summary>
 public interface IDailyIntakeQueryService
 {
     /// <summary>
@@ -63,7 +63,7 @@ public interface IDailyIntakeQueryService
 /// <summary>Every reading, including the ones excluded from the trend.</summary>
 public interface ISelfWeighInQueryService
 {
-    /// <summary>IN-3. The patients with at least one reading.</summary>
+    /// <summary>The patients with at least one reading.</summary>
     Task<IReadOnlyList<int>> Handle(GetPatientIdsWithSelfWeighInsQuery query,
         CancellationToken cancellationToken = default);
 
@@ -74,11 +74,11 @@ public interface ISelfWeighInQueryService
 /// <summary>Read model Weight Trend Chart.</summary>
 public interface IWeightTrendQueryService
 {
-    /// <summary>IN-5. The trend and the summary of its last weeks, or null when there is no trend.</summary>
+    /// <summary>The trend and the summary of its last weeks, or null when there is no trend.</summary>
     Task<WeightTrendView?> Handle(GetWeightTrendRangeByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 
-    /// <summary>IA-2. The trend over an explicit range of local days, or null when there is no trend.</summary>
+    /// <summary>The trend over an explicit range of local days, or null when there is no trend.</summary>
     Task<WeightTrendView?> Handle(GetWeightTrendBetweenByPatientIdQuery query,
         CancellationToken cancellationToken = default);
 

@@ -16,7 +16,7 @@ using NSubstitute;
 
 namespace Healthify.Platform.Tests.IntakeBodyResponse;
 
-/// <summary>IN-1 on the offline synchronisation, including queues sent by older clients.</summary>
+/// <summary>Plan adherence on the offline synchronisation, including queues sent by older clients.</summary>
 public class SyncPlanAdherenceTests
 {
     private const int PatientId = 1;

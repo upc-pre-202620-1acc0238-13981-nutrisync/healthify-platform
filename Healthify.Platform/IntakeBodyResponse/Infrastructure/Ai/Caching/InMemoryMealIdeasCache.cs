@@ -4,12 +4,12 @@ using Healthify.Platform.IntakeBodyResponse.Application.Internal;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Ai.Caching;
 
 /// <summary>
-///     IA-3. <see cref="IMealIdeasCache" /> in the memory of the process (singleton), with an absolute lifetime per
+///     <see cref="IMealIdeasCache" /> in the memory of the process (singleton), with an absolute lifetime per
 ///     entry measured on <see cref="TimeProvider" />.
 /// </summary>
 /// <remarks>
-///     DECISIÓN IA-3: in memory, not in a table, as the MD allows («en memoria o en ai_generations») and as IA-4/IA-5
-///     already do: ideas nobody stored cannot outlive a revocation (§12-#14), a restart only costs a new generation,
+///     In memory, not in a table, as the spec allows (in memory or in ai_generations) and as the other AI
+///     features already do: ideas nobody stored cannot outlive a revocation, a restart only costs a new generation,
 ///     and the validated output stays audited in <c>ai_generations</c>. With several instances each keeps its own
 ///     entries; a hit is served only after the consent gate passes again.
 /// </remarks>

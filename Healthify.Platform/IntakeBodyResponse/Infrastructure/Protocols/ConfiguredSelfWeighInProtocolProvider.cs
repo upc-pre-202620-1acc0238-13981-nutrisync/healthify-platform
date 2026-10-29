@@ -4,7 +4,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Services;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Protocols;
 
 /// <summary>
-///     IN-3. Reads <c>Intake:SelfWeighInProtocol</c> (a list of Fasted, SameTimeOfDay, SameScale) and falls back
+///     Reads <c>Intake:SelfWeighInProtocol</c> (a list of Fasted, SameTimeOfDay, SameScale) and falls back
 ///     to <see cref="SelfWeighInProtocol.Default" /> (fasted only) when the key is missing or invalid.
 /// </summary>
 /// <remarks>

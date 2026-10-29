@@ -5,7 +5,7 @@ using Healthify.Platform.IntakeBodyResponse.Domain.Services;
 namespace Healthify.Platform.IntakeBodyResponse.Infrastructure.Imaging;
 
 /// <summary>
-///     IN-7. <see cref="IPhotoMetadataStripper" /> for JPEG and WebP, by rewriting the container without decoding the
+///     <see cref="IPhotoMetadataStripper" /> for JPEG and WebP, by rewriting the container without decoding the
 ///     image: the pixels are copied as they are, the metadata blocks are left out.
 /// </summary>
 /// <remarks>

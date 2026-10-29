@@ -15,8 +15,8 @@ using Healthify.Platform.Shared.Domain.Repositories;
 namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServices;
 
 /// <summary>
-///     IN-7 - Analyze Meal Photo (PT6.1 «Viendo tu foto…»): the AI recognizes the dish on the server, the catalog
-///     resolves it, and the analysis waits 24 hours for the patient to confirm it on PT7.
+///     Analyze Meal Photo: the AI recognizes the dish on the server, the catalog resolves it, and the analysis
+///     waits 24 hours for the patient to confirm it.
 /// </summary>
 /// <remarks>
 ///     The order is the specification:
@@ -27,18 +27,18 @@ namespace Healthify.Platform.IntakeBodyResponse.Application.Internal.CommandServ
 ///     4. the generation through the shared pipeline, which owns the gates in their order: kill switch and flag
 ///     (503), consent and the <c>MealPhotoRecognition</c> preference (403, before anything reaches the AI), the daily
 ///     quota (429), the provider (503), the schema and <see cref="MealPhotoRecognitionOutputValidator" />. A rejected
-///     output is <see cref="IntakeError.PhotoNotRecognized" /> (422, PT7.3 → log it by hand);
-///     5. the dish resolved, in this order: the local catalog (FC-2), the external providers (Search Food, idempotent
+///     output is <see cref="IntakeError.PhotoNotRecognized" /> (422, the app offers to log it by hand);
+///     5. the dish resolved, in this order: the local catalog, the external providers (Search Food, idempotent
 ///     by source hash), and last a food created from the AI's nutrients, which the catalog refuses when they are
 ///     incoherent (then <see cref="IntakeError.PhotoNotRecognized" />). The alternatives follow the same path without
 ///     the providers: the local catalog, then a food created from their own nutrients (or the similar entry); one
 ///     the catalog refuses stays without a food and never fails the analysis;
 ///     6. the analysis stored without any image, with its lifetime;
-///     7. IN-8: the suggestion for «¿Estaba en tu plan?» of the dish and of each alternative
+///     7. the suggestion for "was it in your plan?" of the dish and of each alternative
 ///     (<see cref="IPlanFitQueryService" />), from the plan's restrictions and what is left today. Never sent to the
 ///     AI, and it never fails the analysis.
 ///     It creates no diary entry: logging is <c>photo-logs</c> with the <c>analysisId</c>.
-///     Business rule: Photo Never Stored (IN-7). The bytes live in this method and in the request to the provider;
+///     Business rule: Photo Never Stored. The bytes live in this method and in the request to the provider;
 ///     they are never written, logged nor kept. The audit keeps their SHA-256.
 /// </remarks>
 public class MealPhotoAnalysisCommandService(
@@ -56,26 +56,26 @@ public class MealPhotoAnalysisCommandService(
     TimeProvider timeProvider,
     ILogger<MealPhotoAnalysisCommandService> logger) : IMealPhotoAnalysisCommandService
 {
-    /// <summary>IN-7: «máximo 2 MB configurable» (<c>Intake:MealPhoto:MaxBytes</c>).</summary>
+    /// <summary>Two MB at most, configurable (<c>Intake:MealPhoto:MaxBytes</c>).</summary>
     public const int DefaultMaxBytes = 2 * 1024 * 1024;
 
-    /// <summary>IN-7: «de forma temporal (por ejemplo 24 h)» (<c>Intake:MealPhoto:AnalysisLifetimeHours</c>).</summary>
+    /// <summary>Kept only for a while, 24 hours by default (<c>Intake:MealPhoto:AnalysisLifetimeHours</c>).</summary>
     public const int DefaultAnalysisLifetimeHours = 24;
 
     /// <summary>
-    ///     DECISIÓN IN-7: dish names are catalog vocabulary, in Spanish whatever the reader's language (as the
-    ///     ingredients of IA-3), so the prompt is always rendered in Spanish. The output has no text for a reader.
+    ///     Dish names are catalog vocabulary, in Spanish whatever the reader's language (as the
+    ///     ingredients of meal ideas), so the prompt is always rendered in Spanish. The output has no text for a reader.
     /// </summary>
     public const string CatalogLanguage = "es";
 
-    /// <summary>IN-7: how many catalog names go in the prompt (<c>FoodCatalog:PromptCatalogNamesCount</c>).</summary>
+    /// <summary>How many catalog names go in the prompt (<c>FoodCatalog:PromptCatalogNamesCount</c>).</summary>
     public const int DefaultCatalogNameHints = 100;
 
-    /// <summary>IN-7: how long the list is kept in memory (<c>FoodCatalog:PromptCatalogNamesCacheMinutes</c>).</summary>
+    /// <summary>How long the list is kept in memory (<c>FoodCatalog:PromptCatalogNamesCacheMinutes</c>).</summary>
     public const int DefaultCatalogNameHintsCacheMinutes = 60;
 
     /// <summary>
-    ///     DECISIÓN IN-7: a food becomes a hint only when at least this many different patients logged it, so the list is
+    ///     A food becomes a hint only when at least this many different patients logged it, so the list is
     ///     a statistic of the catalog and never reveals what one patient eats.
     /// </summary>
     public const int MinimumPatientsPerHint = 3;
@@ -103,7 +103,7 @@ public class MealPhotoAnalysisCommandService(
 
         try
         {
-            // 2. Business rule: Photo Leaves Without Patient Data (IN-7).
+            // 2. Business rule: Photo Leaves Without Patient Data.
             MealPhoto clean;
             try
             {
@@ -154,7 +154,7 @@ public class MealPhotoAnalysisCommandService(
             await analysisRepository.AddAsync(analysis, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
 
-            // 7. IN-8: the plan suggestion, computed here from the plan and the diary; the AI never sees either.
+            // 7. The plan suggestion, computed here from the plan and the diary; the AI never sees either.
             var fits = await PlanFitsAsync(command, analysis, output.DishName, cancellationToken);
 
             return new Result<MealPhotoAnalysisView, IntakeAiFailure>.Success(new MealPhotoAnalysisView(analysis.Id,
@@ -209,7 +209,7 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     IN-8. The suggestion for the dish first, then one per alternative in order. Null when there is none (no plan
+    ///     The suggestion for the dish first, then one per alternative in order. Null when there is none (no plan
     ///     published yet, or the suggestion failed): a suggestion never fails the analysis.
     /// </summary>
     private async Task<IReadOnlyList<PlanFit?>?> PlanFitsAsync(AnalyzeMealPhotoCommand command,
@@ -259,7 +259,7 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     IN-7. The catalog names the model uses verbatim when one of them is the dish, so a known dish is not named
+    ///     The catalog names the model uses verbatim when one of them is the dish, so a known dish is not named
     ///     differently and created twice (see <see cref="CatalogNameHintsReader" />).
     /// </summary>
     private Task<IReadOnlyList<string>> CatalogNameHintsAsync(CancellationToken cancellationToken)
@@ -268,7 +268,7 @@ public class MealPhotoAnalysisCommandService(
             configuration, logger).ReadAsync(cancellationToken);
     }
 
-    /// <summary>IN-7, step 4: local catalog → external providers → created from the estimate.</summary>
+    /// <summary>Step 4: local catalog → external providers → created from the estimate.</summary>
     private async Task<(int ReferenceFoodId, string Name)?> ResolveDishAsync(MealPhotoRecognitionOutput output,
         long generationId, CancellationToken cancellationToken)
     {
@@ -289,13 +289,13 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     IN-7: each alternative follows the main dish's path, so the patient can choose it: the local catalog (FC-2),
+    ///     Each alternative follows the main dish's path, so the patient can choose it: the local catalog,
     ///     then a food created from the alternative's own nutrients (<c>meal-photo-recognition@3</c>), which the catalog
     ///     resolves to a clearly similar entry (Similar Dish Reused, Not Duplicated) or creates, idempotent by source
     ///     hash. The main dish is not repeated, nor one food twice.
     /// </summary>
     /// <remarks>
-    ///     DECISIÓN IN-7: no external provider is waited for an alternative (the patient is waiting for the analysis);
+    ///     No external provider is waited for an alternative (the patient is waiting for the analysis);
     ///     the AI's nutrients stand in for it. An alternative without nutrients (an output shaped as v2) or with
     ///     nutrients the catalog refuses (AI Estimated Nutrients Coherent) stays without a food, as before: it is
     ///     shown but cannot be chosen, and the analysis never fails because of it.
@@ -327,7 +327,7 @@ public class MealPhotoAnalysisCommandService(
     }
 
     /// <summary>
-    ///     IN-7. The food of an alternative the local catalog lacks, from its own nutrients; (null, its name) when it
+    ///     The food of an alternative the local catalog lacks, from its own nutrients; (null, its name) when it
     ///     brings none or the catalog refuses them.
     /// </summary>
     private async Task<(int? ReferenceFoodId, string Name)> CreateAlternativeAsync(MealPhotoAlternativeOutput alternative,
