@@ -242,11 +242,16 @@ public record MealGroupItem(int ReferenceFoodId, decimal PortionGrams, Guid? Cli
 /// <remarks>The photo is held in memory for this command only; it is never stored nor logged.</remarks>
 /// <param name="PatientId">From the token: the patient.</param>
 /// <param name="Photo">The bytes of the photo as uploaded.</param>
-public record AnalyzeMealPhotoCommand(int PatientId, byte[]? Photo)
+/// <param name="LocalDate">
+///     IN-8. The patient's day, so the plan suggestion weighs what is left today. Optional: without it (or out of
+///     range) only the restrictions are weighed. Never sent to the AI.
+/// </param>
+public record AnalyzeMealPhotoCommand(int PatientId, byte[]? Photo, DateOnly? LocalDate = null)
 {
     public override string ToString()
     {
-        return $"AnalyzeMealPhotoCommand {{ PatientId = {PatientId}, Photo = {Photo?.Length ?? 0} bytes }}";
+        return $"AnalyzeMealPhotoCommand {{ PatientId = {PatientId}, Photo = {Photo?.Length ?? 0} bytes, " +
+               $"LocalDate = {LocalDate} }}";
     }
 }
 
