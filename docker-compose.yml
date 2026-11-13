@@ -34,6 +34,11 @@ services:
       - Smtp__Username=${SMTP_USERNAME:-}
       - Smtp__Password=${SMTP_PASSWORD:-}
       - Smtp__From=${SMTP_FROM:-}
+      - Reminders__FollowUp__Enabled=${REMINDERS_ENABLED:-true}
+      - Reminders__FollowUp__LeadHours=${REMINDERS_LEAD_HOURS:-24,1}
+      - Reminders__FollowUp__NotifyPractitioner=${REMINDERS_NOTIFY_PRACTITIONER:-false}
+      - Reminders__FollowUp__PracticeAddress=${REMINDERS_PRACTICE_ADDRESS:-}
+      - Reminders__FollowUp__VideoCallUrl=${REMINDERS_VIDEO_CALL_URL:-}
     ports:
       - "8080:8080"
 
