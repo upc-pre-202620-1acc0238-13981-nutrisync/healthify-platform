@@ -423,7 +423,21 @@ builder.Services.AddScoped<IReferralRepository, ReferralRepository>();
 builder.Services.AddScoped<IScheduledFollowUpRepository, ScheduledFollowUpRepository>();
 builder.Services.AddScoped<IPreVisitCheckInRepository, PreVisitCheckInRepository>();
 builder.Services.AddScoped<IWeeklySummaryRepository, WeeklySummaryRepository>();
-builder.Services.AddSingleton<IFollowUpCalendar, ClinicalTimeZoneFollowUpCalendar>();
+builder.Services.AddSingleton<Healthify.Platform.MonitoringAdherence.Infrastructure.Clock.ClinicalTimeZoneFollowUpCalendar>();
+builder.Services.AddSingleton<IFollowUpCalendar>(sp =>
+    sp.GetRequiredService<Healthify.Platform.MonitoringAdherence.Infrastructure.Clock.ClinicalTimeZoneFollowUpCalendar>());
+builder.Services.AddSingleton<Healthify.Platform.MonitoringAdherence.Domain.Services.IFollowUpLocalClock>(sp =>
+    sp.GetRequiredService<Healthify.Platform.MonitoringAdherence.Infrastructure.Clock.ClinicalTimeZoneFollowUpCalendar>());
+// Appointment reminder emails (policy "When The Visit Is Near"): the shared SMTP sender, the reminder log and the
+// command service the hosted service runs.
+builder.Services.AddSingleton<Healthify.Platform.Shared.Domain.Services.IMailSender,
+    Healthify.Platform.Shared.Infrastructure.Mailing.SmtpMailSender>();
+builder.Services.AddScoped<Healthify.Platform.MonitoringAdherence.Domain.Repositories.IFollowUpReminderRepository,
+    Healthify.Platform.MonitoringAdherence.Infrastructure.Persistence.EFC.Repositories.FollowUpReminderRepository>();
+builder.Services.AddScoped<Healthify.Platform.MonitoringAdherence.Domain.Services.IFollowUpReminderNotifier,
+    Healthify.Platform.MonitoringAdherence.Infrastructure.Mailing.SmtpFollowUpReminderNotifier>();
+builder.Services.AddScoped<Healthify.Platform.MonitoringAdherence.Application.CommandServices.IFollowUpReminderCommandService,
+    Healthify.Platform.MonitoringAdherence.Application.Internal.CommandServices.FollowUpReminderCommandService>();
 // The words a generated text must not contain, and the in-memory cache of the suggested questions and the
 // practitioner monitoring summary.
 builder.Services.AddSingleton<IAiLanguageLexicon>(EmbeddedAiLanguageLexicon.Instance);
@@ -504,6 +518,9 @@ builder.Services.AddHostedService<ConsistencyEscalationHostedService>();
 
 // Policy "When Scheduled Date Passed Without Visit" - MonitoringAdherence, Subflow 5.10
 builder.Services.AddHostedService<MissedFollowUpHostedService>();
+
+// Policy "When The Visit Is Near" - MonitoringAdherence: appointment reminder emails, Reminders:FollowUp:*
+builder.Services.AddHostedService<Healthify.Platform.MonitoringAdherence.Infrastructure.Scheduling.FollowUpReminderHostedService>();
 
 // Policy "When The Week Ends" - MonitoringAdherence: weekly summaries, Ai:Features:WeeklySummary:Cron
 builder.Services.AddHostedService<WeeklySummaryHostedService>();
