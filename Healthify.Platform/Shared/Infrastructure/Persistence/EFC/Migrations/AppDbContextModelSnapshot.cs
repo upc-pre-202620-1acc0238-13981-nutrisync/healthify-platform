@@ -1047,6 +1047,45 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.ToTable("evaluation_windows", (string)null);
                 });
 
+            modelBuilder.Entity("Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates.FollowUpReminderLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("FollowUpId")
+                        .HasColumnType("int")
+                        .HasColumnName("follow_up_id");
+
+                    b.Property<int>("LeadMinutes")
+                        .HasColumnType("int")
+                        .HasColumnName("lead_minutes");
+
+                    b.Property<string>("Recipient")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)")
+                        .HasColumnName("recipient");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("sent_at");
+
+                    b.Property<DateTimeOffset>("VisitMoment")
+                        .HasColumnType("datetime")
+                        .HasColumnName("visit_moment");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_follow_up_reminder_logs");
+
+                    b.HasIndex("FollowUpId", "Recipient", "LeadMinutes", "VisitMoment")
+                        .IsUnique()
+                        .HasDatabaseName("ux_follow_up_reminder_logs_reminder");
+
+                    b.ToTable("follow_up_reminder_logs", (string)null);
+                });
+
             modelBuilder.Entity("Healthify.Platform.MonitoringAdherence.Domain.Model.Aggregates.PreVisitCheckIn", b =>
                 {
                     b.Property<int>("Id")

@@ -47,7 +47,18 @@ on `3307`). Migrations are applied at startup.
 | `ConnectionStrings__DefaultConnection` | Overrides the connection string |
 | `Usda__ApiKey` | USDA FoodData Central key; empty disables that provider |
 | `Ai__Enabled`, `Ai__Gemini__ApiKey` | Turn AI on and give it its key |
-| `Smtp__Host`, `Smtp__Username`, `Smtp__Password`, `Smtp__From` | SMTP for the password reset email; without a host nothing is sent (in Development the code goes to the log) |
+| `Smtp__Host`, `Smtp__Username`, `Smtp__Password`, `Smtp__From` | SMTP for the password reset email **and the appointment reminders**; without a host nothing is sent (in Development the reset code goes to the log) |
+| `Reminders__FollowUp__Enabled` | Appointment reminder emails on or off (default `true`; they need SMTP anyway) |
+| `Reminders__FollowUp__LeadHours` | Hours before the visit to remind, comma-separated (default `24,1`; decimals allowed, e.g. `0.5`). Only the nearest open window is sent |
+| `Reminders__FollowUp__NotifyPractitioner` | Also email the practitioner (default `false`) |
+| `Reminders__FollowUp__IntervalMinutes`, `Reminders__FollowUp__BatchSize` | How often the worker looks (default 10) and how many visits per cycle (default 200) |
+| `Reminders__FollowUp__PracticeAddress`, `Reminders__FollowUp__VideoCallUrl` | Shown in the email for in-person / remote visits (optional; the link must be `https`) |
+
+Appointment reminders: every scheduled visit is reminded once per window; delivered reminders are recorded in
+`follow_up_reminder_logs` (applied by the migration `Monitoring_AddFollowUpReminderLogs`), so a restart never resends
+them. A cancelled visit is never reminded; a rescheduled one is reminded again for its new moment and the email says it
+moved. Times are written in `MonitoringAdherence:ClinicalTimeZone` (default `America/Lima`). The re-engagement email
+is designed but not built: see [docs/reengagement-email-design.md](docs/reengagement-email-design.md).
 
 Secrets are never committed: `appsettings.Development.json` is git-ignored. Run the tests with
 `dotnet test healthify-platform.sln`; the MySQL integration tests run only when `HEALTHIFY_IT_MYSQL` points to a
