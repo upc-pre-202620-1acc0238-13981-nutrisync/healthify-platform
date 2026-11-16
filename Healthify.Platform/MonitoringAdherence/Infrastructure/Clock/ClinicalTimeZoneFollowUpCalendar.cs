@@ -10,7 +10,7 @@ namespace Healthify.Platform.MonitoringAdherence.Infrastructure.Clock;
 ///     NOTE: technical duplicate of the Nutritional Care clinical clock. This context cannot depend on that
 ///     context's services, so it reads its own key; both default to the same zone.
 /// </remarks>
-public class ClinicalTimeZoneFollowUpCalendar : IFollowUpCalendar
+public class ClinicalTimeZoneFollowUpCalendar : IFollowUpCalendar, IFollowUpLocalClock
 {
     public const string DefaultTimeZoneId = "America/Lima";
 
@@ -51,6 +51,11 @@ public class ClinicalTimeZoneFollowUpCalendar : IFollowUpCalendar
     public DateOnly LocalDateOf(DateTimeOffset moment)
     {
         return DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(moment, _timeZone).DateTime);
+    }
+
+    public DateTimeOffset ToLocal(DateTimeOffset moment)
+    {
+        return TimeZoneInfo.ConvertTime(moment, _timeZone);
     }
 
     private static TimeZoneInfo? Resolve(string id)
