@@ -63,7 +63,7 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset?>("ConsentAiProcessingDecidedAt")
-                        .HasColumnType("datetime")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("consent_ai_decided_at");
 
                     b.Property<bool>("ConsentAiProcessingGranted")
@@ -77,7 +77,7 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnName("consent_granted");
 
                     b.Property<DateTimeOffset?>("ConsentGrantedAt")
-                        .HasColumnType("datetime")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("consent_granted_at");
 
                     b.Property<string>("ConsentScope")
@@ -86,7 +86,7 @@ namespace Healthify.Platform.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnName("consent_scope");
 
                     b.Property<DateTimeOffset?>("ConsentWithdrawnAt")
-                        .HasColumnType("datetime")
+                        .HasColumnType("datetime(6)")
                         .HasColumnName("consent_withdrawn_at");
 
                     b.Property<DateTimeOffset?>("CreatedAt")
