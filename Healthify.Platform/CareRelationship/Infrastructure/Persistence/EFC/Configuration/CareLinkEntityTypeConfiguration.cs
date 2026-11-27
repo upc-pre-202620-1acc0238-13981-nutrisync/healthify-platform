@@ -42,12 +42,12 @@ public class CareLinkEntityTypeConfiguration : IEntityTypeConfiguration<CareLink
         // and the patient granting it, and a nullable OwnsOne is fragile in that exact case.
         builder.Property(c => c.ConsentGranted).HasColumnName("consent_granted").IsRequired();
         builder.Property(c => c.ConsentScope).HasColumnName("consent_scope").HasMaxLength(200);
-        builder.Property(c => c.ConsentGrantedAt).HasColumnName("consent_granted_at");
-        builder.Property(c => c.ConsentWithdrawnAt).HasColumnName("consent_withdrawn_at");
+        builder.Property(c => c.ConsentGrantedAt).HasColumnName("consent_granted_at").HasColumnType("datetime(6)");
+        builder.Property(c => c.ConsentWithdrawnAt).HasColumnName("consent_withdrawn_at").HasColumnType("datetime(6)");
         // AI processing consent, inside the same consent. Existing rows: off, never decided.
         builder.Property(c => c.ConsentAiProcessingGranted).HasColumnName("consent_ai_processing")
             .IsRequired().HasDefaultValue(false);
-        builder.Property(c => c.ConsentAiProcessingDecidedAt).HasColumnName("consent_ai_decided_at");
+        builder.Property(c => c.ConsentAiProcessingDecidedAt).HasColumnName("consent_ai_decided_at").HasColumnType("datetime(6)");
 
         builder.Property(c => c.CreatedAt).HasColumnName("created_at");
         builder.Property(c => c.UpdatedAt).HasColumnName("updated_at");
